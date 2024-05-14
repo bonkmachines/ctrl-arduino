@@ -27,10 +27,17 @@ jobs:
         wget https://github.com/ThrowTheSwitch/Unity/archive/refs/heads/master.zip -O /tmp/Unity.zip
         unzip /tmp/Unity.zip -d /tmp
 
+    - name: Move Unity Library
+      run: mv /tmp/Unity-master /tmp/Unity
+
+    - name: Copy unity_config.h
+      run: cp test/unity_config.h /tmp/Unity/src/
+
     - name: Build and Test with PlatformIO
-      run: pio ci --project-conf=platformio.ini --board=teensy41 --lib="."
+      run: pio ci --project-conf=platformio.ini --board=teensy41 --lib="/tmp/Unity"
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
+        PLATFORMIO_BUILD_FLAGS: -I src
 
     - name: Generate coverage data
       run: |
