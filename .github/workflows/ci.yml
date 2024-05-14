@@ -41,7 +41,7 @@ jobs:
       run: platformio platform install teensy
 
     - name: Run PlatformIO Tests
-      run: platformio test -e ci-teensy --without-upload
+      run: platformio test -e ci-teensy --without-uploading
 
     - name: Generate coverage report
       run: gcovr -r . --xml -o coverage.xml
