@@ -2,7 +2,7 @@
 
 [![GitHub Release](https://img.shields.io/github/v/release/bonkmachines/ctrl-arduino?include_prereleases)](https://github.com/bonkmachines/ctrl-arduino/releases/latest)
 [![GitHub License](https://img.shields.io/github/license/bonkmachines/ctrl-arduino)](LICENSE)
-[![Examples compilation](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/examples-compilation.yml/badge.svg)](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/examples-compilation.yml)
+[![Compile examples](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/compile-examples.yml/badge.svg)](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/compile-examples.yml)
 ![GitHub last commit](https://img.shields.io/github/last-commit/bonkmachines/ctrl-arduino)
 ![Github Created At](https://img.shields.io/github/created-at/bonkmachines/ctrl-arduino)
 
