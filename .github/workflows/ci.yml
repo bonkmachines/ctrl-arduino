@@ -36,6 +36,9 @@ jobs:
     - name: Copy unity_config.h
       run: cp test/unity_config.h /tmp/Unity/src/
 
+    - name: Start remote agent
+      run: platformio remote agent start
+      
     - name: Run tests on the embedded target
       env:
         PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}
