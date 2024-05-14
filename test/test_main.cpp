@@ -35,6 +35,14 @@ extern void test_led_can_toggle();
 extern void test_led_can_change_brightness();
 extern void test_led_can_be_calibrated();
 
+void setUp(void) {
+    // Empty setup function
+}
+
+void tearDown(void) {
+    // Empty teardown function
+}
+
 void setup()
 {
     delay(2000);
