@@ -40,12 +40,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-platformio-
 
-    - name: Build project
-      run: platformio run -e test
-
-    - name: Run tests
-      run: platformio test -e test
-
     - name: Generate coverage report
       run: platformio test -e test --coverage
 
