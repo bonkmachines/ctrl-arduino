@@ -22,6 +22,11 @@ jobs:
     - name: Install PlatformIO Core
       run: pip install --upgrade platformio
 
+    - name: Download Unity Library
+      run: |
+        wget https://github.com/ThrowTheSwitch/Unity/archive/refs/heads/master.zip -O /tmp/Unity.zip
+        unzip /tmp/Unity.zip -d /tmp
+
     - name: Build and Test with PlatformIO
       run: pio ci --project-conf=platformio.ini --board=teensy41 --lib="."
       env:
