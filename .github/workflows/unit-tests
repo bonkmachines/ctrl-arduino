@@ -1,0 +1,23 @@
+name: Unit Tests
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up PlatformIO
+      uses: platformio/platformio-action@v2
+      with:
+        platformio-ci: true
+
+    - name: Build and Run Tests
+      run: |
+        platformio test -e test
+o
