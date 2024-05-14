@@ -18,7 +18,3 @@ std::string encoderHandlerResult;
 uint8_t potentiometerSig = 1;
 uint16_t mockPotentiometerInput = 0; // 0 - 1023
 int potentiometerHandlerResult;
-
-// Global LED variable definitions
-extern uint8_t ledSig;
-extern uint16_t mockLedOutput;
