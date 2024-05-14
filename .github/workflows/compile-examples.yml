@@ -1,4 +1,4 @@
-name: Examples compilation
+name: Compile examples
 
 # The workflow will run on every push and pull request to the repository
 on:
