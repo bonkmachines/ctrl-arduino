@@ -30,7 +30,7 @@ Led led(23, 15);
 
 void setup()
 {
-  // Turn on the LED and set the brightness to 100%
+  // Turn on the LED and set the brightness to 0%
   led.turnOn();
   led.setBrightness(0);
 }
