@@ -40,7 +40,7 @@ jobs:
       run: pio ci --lib="/tmp/Unity" --board=teensy41
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
-        PLATFORMIO_BUILD_FLAGS: -D UNIT_TEST -I/src -fprofile-arcs -ftest-coverage
+        PLATFORMIO_BUILD_FLAGS: -D UNIT_TEST -Isrc -fprofile-arcs -ftest-coverage
 
     - name: Generate Coverage Report
       run: gcovr -r . --xml-pretty -o coverage.xml
