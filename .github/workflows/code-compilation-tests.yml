@@ -23,4 +23,4 @@ jobs:
             - ./examples
           libraries: |
             # Libraries
-            - source-path: ./
+            - source-path: ./src
