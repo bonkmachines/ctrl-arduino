@@ -22,6 +22,9 @@ jobs:
     - name: Install PlatformIO Core
       run: pip install --upgrade platformio
 
+    - name: Install gcovr
+      run: pip install gcovr
+
     - name: Download Unity Library
       run: |
         wget https://github.com/ThrowTheSwitch/Unity/archive/refs/heads/master.zip -O /tmp/Unity.zip
@@ -33,13 +36,14 @@ jobs:
     - name: Copy unity_config.h
       run: cp test/unity_config.h /tmp/Unity/src/
 
-    - name: Generate coverage data
-      run: |
-        platformio test -e local-test
-        mv .pio/build/local-test/coverage.info coverage.info
+    - name: Build and Test with PlatformIO
+      run: platformio test -e local-test
+
+    - name: Generate Coverage Report
+      run: gcovr -r . --xml-pretty -o coverage.xml
 
     - name: Upload coverage report to Codecov
       uses: codecov/codecov-action@v2
       with:
-        files: coverage.info
+        files: coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}
