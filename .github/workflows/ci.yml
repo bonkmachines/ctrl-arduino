@@ -14,37 +14,34 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Python 3.8
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: 3.8
+        python-version: '3.8'
 
-    - name: Set up PlatformIO
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-
-    - name: Install PlatformIO CLI
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y python3-pip
-        pip3 install -U platformio
+    - name: Install PlatformIO Core
+      run: pip install --upgrade platformio
 
     - name: Install gcovr
       run: pip install gcovr
 
     - name: Cache PlatformIO
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
-        path: ~/.platformio
-        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
+        path: |
+          ~/.cache/pip
+          ~/.platformio/.cache
+        key: ${{ runner.os }}-pio-${{ hashFiles('**/platformio.ini') }}
         restore-keys: |
-          ${{ runner.os }}-platformio-
+          ${{ runner.os }}-pio-
 
-    - name: Run tests
-      run: platformio test -e ci-test
+    - name: Install Teensy platform
+      run: platformio platform install teensy
+
+    - name: Run PlatformIO CI
+      run: pio ci --board=teensy41 --project-conf=platformio.ini --lib="." test
 
     - name: Generate coverage report
       run: gcovr -r . --xml -o coverage.xml
