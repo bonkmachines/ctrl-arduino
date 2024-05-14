@@ -34,9 +34,10 @@ jobs:
       run: cp test/unity_config.h /tmp/Unity/src/
 
     - name: Build and Test with PlatformIO
-      run: pio ci --project-conf=platformio.ini --board=teensy41 --lib="/tmp/Unity" --lib="/src"
+      run: pio ci --project-conf=platformio.ini --board=teensy41 --lib="/tmp/Unity"
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
+        PLATFORMIO_BUILD_FLAGS: -I src
 
     - name: Generate coverage data
       run: |
