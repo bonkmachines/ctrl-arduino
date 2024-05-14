@@ -35,7 +35,7 @@ jobs:
 
     - name: Generate coverage data
       run: |
-        platformio test -e local-test --coverage
+        platformio test -e local-test
         mv .pio/build/local-test/coverage.info coverage.info
 
     - name: Upload coverage report to Codecov
