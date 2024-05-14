@@ -37,7 +37,7 @@ jobs:
       run: cp test/unity_config.h /tmp/Unity/src/
 
     - name: Run PlatformIO
-      run: pio ci --lib="/src" --lib="/tmp/Unity" --board=teensy41
+      run: pio ci --lib="." --lib="/tmp/Unity" --board=teensy41
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
         PLATFORMIO_BUILD_FLAGS: -D UNIT_TEST -Lsrc -fprofile-arcs -ftest-coverage
