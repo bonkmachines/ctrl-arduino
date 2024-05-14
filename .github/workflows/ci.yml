@@ -1,56 +1,39 @@
 name: CI
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        example: [test]
+
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up Python 3.8
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.8'
+        python-version: '3.11'
 
     - name: Install PlatformIO Core
       run: pip install --upgrade platformio
 
-    - name: Install gcovr
-      run: pip install gcovr
+    - name: Build and Test with PlatformIO
+      run: pio ci --project-conf=platformio.ini --board=teensy41 --lib="."
+      env:
+        PLATFORMIO_CI_SRC: ${{ matrix.example }}
 
-    - name: Cache PlatformIO
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cache/pip
-          ~/.platformio/.cache
-        key: ${{ runner.os }}-pio-${{ hashFiles('**/platformio.ini') }}
-        restore-keys: |
-          ${{ runner.os }}-pio-
+    - name: Generate coverage data
+      run: |
+        platformio test -e test --coverage
+        mv .pio/build/local-test/coverage.info coverage.info
 
-    - name: Install Teensy platform
-      run: platformio platform install teensy
-
-    - name: Run PlatformIO Tests
-      run: platformio test -e ci-test
-
-    - name: Generate coverage report
-      run: gcovr -r . --xml -o coverage.xml
-
-    - name: Upload coverage to Codecov
+    - name: Upload coverage report to Codecov
       uses: codecov/codecov-action@v2
       with:
+        files: coverage.info
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: coverage.xml
-        flags: unittests
-        name: codecov-upload
-        fail_ci_if_error: true
