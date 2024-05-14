@@ -4,7 +4,7 @@
 */
 
 // Buttons
-#include "../examples/button/button_basic/button_basic.ino"
+// #include "../examples/button/button_basic/button_basic.ino"
 // #include "../examples/button/button_alternative/button_alternative.ino"
 // #include "../examples/button/button_advanced/button_advanced.ino"
 
@@ -21,3 +21,6 @@
 // LED's
 // #include "../examples/led/led_blink/led_blink.ino"
 // #include "../examples/led/led_fade/led_fade.ino"
+
+void setup() {}
+void loop() {}
