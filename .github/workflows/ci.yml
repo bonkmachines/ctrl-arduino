@@ -36,8 +36,10 @@ jobs:
     - name: Copy unity_config.h
       run: cp test/unity_config.h /tmp/Unity/src/
 
-    - name: Build and Test with PlatformIO
-      run: platformio test -e local-test
+    - name: Run PlatformIO
+      run: pio ci --board=teensy41
+      env:
+        PLATFORMIO_CI_SRC: ${{ matrix.example }}
 
     - name: Generate Coverage Report
       run: gcovr -r . --xml-pretty -o coverage.xml
