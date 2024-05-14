@@ -44,7 +44,7 @@ jobs:
           ${{ runner.os }}-platformio-
 
     - name: Run tests
-      run: platformio test -e test
+      run: platformio test -e ci-test
 
     - name: Generate coverage report
       run: gcovr -r . --xml -o coverage.xml
