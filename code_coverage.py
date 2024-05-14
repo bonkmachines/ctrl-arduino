@@ -1,3 +1,5 @@
+Import("env")
+
 import os
 
 def after_test(source, target, env):
