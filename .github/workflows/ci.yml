@@ -40,8 +40,8 @@ jobs:
     - name: Install Teensy platform
       run: platformio platform install teensy
 
-    - name: Run PlatformIO CI
-      run: pio ci --board=teensy41 --project-conf=platformio.ini --lib="." test
+    - name: Run PlatformIO Tests
+      run: platformio test -e ci-teensy
 
     - name: Generate coverage report
       run: gcovr -r . --xml -o coverage.xml
