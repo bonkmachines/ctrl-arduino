@@ -37,7 +37,7 @@ jobs:
       run: pio ci --project-conf=platformio.ini --board=teensy41 --lib="/tmp/Unity"
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
-        PLATFORMIO_BUILD_FLAGS: -include CtrlBtn.h
+        PLATFORMIO_BUILD_FLAGS: -include src/CtrlBtn.h
 
     - name: Generate coverage data
       run: |
