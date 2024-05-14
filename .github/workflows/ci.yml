@@ -36,16 +36,10 @@ jobs:
     - name: Copy unity_config.h
       run: cp test/unity_config.h /tmp/Unity/src/
 
-    - name: Run PlatformIO
-      run: pio ci --lib="." --lib="/tmp/Unity" --board=teensy41
+    - name: Run tests on the embedded target
       env:
-        PLATFORMIO_CI_SRC: ${{ matrix.example }}
-        PLATFORMIO_BUILD_FLAGS: -D UNIT_TEST -Lsrc -fprofile-arcs -ftest-coverage
-
-    - name: Run Tests with PlatformIO
-      run: platformio test -e local-test
-      env:
-        PLATFORMIO_BUILD_FLAGS: -D UNIT_TEST -Lsrc -fprofile-arcs -ftest-coverage
+        PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}
+      run: platformio remote test -e local-test -v
 
     - name: Generate Coverage Report
       run: gcovr -r . --xml-pretty -o coverage.xml
