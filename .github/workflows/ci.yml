@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        example: [src]
+        example: [test]
 
     steps:
     - name: Checkout repository
@@ -36,7 +36,7 @@ jobs:
     - name: Build and Test with PlatformIO
       run: pio ci --project-conf=platformio.ini --board=teensy41 --lib="/tmp/Unity"
       env:
-        PLATFORMIO_CI_SRC: ${{ matrix.example }}
+        PLATFORMIO_CI_SRC: src
 
     - name: Generate coverage data
       run: |
