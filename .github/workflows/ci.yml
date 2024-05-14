@@ -33,11 +33,6 @@ jobs:
     - name: Copy unity_config.h
       run: cp test/unity_config.h /tmp/Unity/src/
 
-    - name: Build and Test with PlatformIO
-      run: pio ci --project-conf=platformio.ini --board=teensy41 --lib="/tmp/Unity"
-      env:
-        PLATFORMIO_CI_SRC: src
-
     - name: Generate coverage data
       run: |
         platformio test -e local-test --coverage
