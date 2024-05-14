@@ -36,7 +36,7 @@ jobs:
     - name: Build and Test with PlatformIO
       run: pio ci --project-conf=platformio.ini --board=teensy41 --lib="/tmp/Unity"
       env:
-        PLATFORMIO_CI_SRC: src
+        PLATFORMIO_CI_SRC: test
 
     - name: Generate coverage data
       run: |
