@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -32,6 +32,9 @@ jobs:
         sudo apt-get install -y python3-pip
         pip3 install -U platformio
 
+    - name: Install gcovr
+      run: pip install gcovr
+
     - name: Cache PlatformIO
       uses: actions/cache@v2
       with:
@@ -40,8 +43,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-platformio-
 
+    - name: Run tests
+      run: platformio test -e test
+
     - name: Generate coverage report
-      run: platformio test -e test --coverage
+      run: gcovr -r . --xml -o coverage.xml
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
