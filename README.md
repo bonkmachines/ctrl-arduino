@@ -4,7 +4,6 @@
 [![Unit tests](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/unit-tests.yml)
 [![Compile examples](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/compile-examples.yml/badge.svg)](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/compile-examples.yml)
 [![Spell Check status](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/spell-check.yml/badge.svg)](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/spell-check.yml)
-![GitHub last commit](https://img.shields.io/github/last-commit/bonkmachines/ctrl-arduino)
 
 Welcome to CTRL! This library contains interfaces for the usage of buttons, rotary encoders, potentiometers and LEDs. Whether you need a nicely debounced button or encoder, a smooth yet responsive and accurate potentiometer, or a flashing LED, you've come to the right place. All these real-world objects are represented by feature-rich software counterparts. You can instantiate them in several ways to meet your project demands, and you can extend them as needed, adding whatever extra functionality you require.
 
