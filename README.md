@@ -1,7 +1,7 @@
 # CTRL Library for Arduino
 
 [![GitHub Release](https://img.shields.io/github/v/release/bonkmachines/ctrl-arduino?include_prereleases)](https://github.com/bonkmachines/ctrl-arduino/releases/latest)
-[![Unit tests](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/ci.yml/badge.svg)](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/ci.yml)
+[![Unit tests](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/unit-tests.yml)
 [![Compile examples](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/compile-examples.yml/badge.svg)](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/compile-examples.yml)
 [![Spell Check status](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/spell-check.yml/badge.svg)](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/spell-check.yml)
 ![GitHub last commit](https://img.shields.io/github/last-commit/bonkmachines/ctrl-arduino)
