@@ -1,5 +1,5 @@
 /*!
- *  @file       Arduino_CTRL.h
+ *  @file       CTRL.h
  *  Project     Arduino CTRL Library
  *  @brief      CTRL Library for interfacing with common controls
  *  @author     Johannes Jan Prins
@@ -25,8 +25,8 @@
  * THE SOFTWARE.
  */
 
-#ifndef ARDUINO_CTRL_h
-#define ARDUINO_CTRL_h
+#ifndef CTRL_h
+#define CTRL_h
 
 #include "CtrlBase.h"
 #include "CtrlBtn.h"
