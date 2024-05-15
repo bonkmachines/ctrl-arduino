@@ -15,7 +15,7 @@
   Usage:
   Create a button with reference to:
   - Signal pin      (required / the input pin your button is hooked up to)
-  - Bouce duration  (required / in milliseconds)
+  - Bounce duration (required / in milliseconds)
   
   The following handler methods can then be (optionally) set for the created button object:
   - setOnPress(onPress)

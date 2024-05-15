@@ -59,5 +59,5 @@ void test_encoder_advanced_can_be_turned_right()
     mockDtInput = HIGH;
     encoder.process(); // Process internal state
 
-    TEST_ASSERT_EQUAL_STRING("right", encoderHandlerResult.c_str()); // Verify the encoder has turned rigt
+    TEST_ASSERT_EQUAL_STRING("right", encoderHandlerResult.c_str()); // Verify the encoder has turned right
 }
