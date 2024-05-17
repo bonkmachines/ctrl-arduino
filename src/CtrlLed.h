@@ -31,7 +31,7 @@
 #include "CtrlBase.h"
 #include <Arduino.h>
 
-class Led : public IMuxableOutput
+class CtrlLed : public IMuxableOutput
 {
   protected:
     int8_t sig; // Signal pin connected to the LED
@@ -40,7 +40,7 @@ class Led : public IMuxableOutput
     uint8_t maxBrightness; // Maximum brightness value
 
   public:
-    explicit Led(
+    explicit CtrlLed(
         int8_t sig,
         uint8_t maxBrightness = 255
     );

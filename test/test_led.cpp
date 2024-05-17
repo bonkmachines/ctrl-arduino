@@ -6,7 +6,7 @@
 
 void test_led_can_be_turned_on_and_off()
 {
-    Led led(23, 15);
+    CtrlLed led(23, 15);
 
     TEST_ASSERT_TRUE(led.isOff());
 
@@ -21,7 +21,7 @@ void test_led_can_be_turned_on_and_off()
 
 void test_led_can_toggle()
 {
-    Led led(23, 15);
+    CtrlLed led(23, 15);
 
     TEST_ASSERT_TRUE(led.isOff());
 
@@ -36,7 +36,7 @@ void test_led_can_toggle()
 
 void test_led_can_change_brightness()
 {
-    Led led(23, 15);
+    CtrlLed led(23, 15);
 
     led.setBrightness(0);
 
@@ -49,7 +49,7 @@ void test_led_can_change_brightness()
 
 void test_led_can_be_calibrated()
 {
-    Led led(23);
+    CtrlLed led(23);
 
     led.setMaxBrightness(50);
 

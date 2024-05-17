@@ -26,7 +26,7 @@
    The maximum brightness can be used to calibrate an LED in case
    you are using LED's that have a different maximum brightness.
 */
-Led led(23, 15);
+CtrlLed led(23, 15);
 
 void setup()
 {
