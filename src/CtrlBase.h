@@ -28,24 +28,31 @@
 #ifndef CtrlBase_h
 #define CtrlBase_h
 
-class IMuxableInput {
+#include "CtrlMux.h"
+
+class Muxable
+{
     protected:
         bool enabled = true;
+        CtrlMux* mux = nullptr;
+        bool muxed = false;
+
+        explicit Muxable(
+            CtrlMux* mux = nullptr
+        );
+
+        ~Muxable() = default;
 
     public:
-        virtual ~IMuxableInput() = default;
 
         virtual void process() = 0;
-
         void enable();
-
         void disable();
-
         [[nodiscard]] bool isEnabled() const;
-
         [[nodiscard]] bool isDisabled() const;
+        [[nodiscard]] bool isMuxed() const;
 };
 
-class IMuxableOutput { };
+void setDelay(uint64_t duration);
 
 #endif

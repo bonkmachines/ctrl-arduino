@@ -28,18 +28,28 @@
 #include "CtrlBtn.h"
 
 CtrlBtnBase::CtrlBtnBase(
-    const uint8_t sig,
-    const uint16_t bounceDuration
-) {
+    const uint8_t sig, // If multiplexed, this will be the channel number on the mux
+    const uint16_t bounceDuration,
+    CtrlMux* mux
+) : Muxable(mux)
+{
     this->sig = sig;
     this->bounceDuration = bounceDuration;
-    pinMode(sig, INPUT_PULLUP);
+    if (!this->isMuxed()) pinMode(sig, INPUT_PULLUP);
     this->currentState = CtrlBtnBase::processInput();
     this->lastState = currentState;
 }
 
 uint8_t CtrlBtnBase::processInput()
 {
+    if (this->isMuxed()) {
+        if (this->mux->acquire()) {
+            const uint8_t result = this->mux->digitalReader(this->sig);
+            this->mux->release();
+            return result;
+        }
+        return this->lastState;
+    }
     #ifdef UNIT_TEST
         // Simulated digitalRead testing
         extern uint8_t mockButtonInput;
@@ -60,13 +70,13 @@ void CtrlBtnBase::process()
     if (reading != this->lastState) {
         this->debounceStart = currentTime;
     }
-    if ((currentTime - this->debounceStart) > bounceDuration) {
+    if (currentTime - this->debounceStart > bounceDuration) {
         if (reading != this->currentState) {
         this->currentState = reading;
             if (this->currentState == LOW) {
-                onPress();
+                this->onPress();
             } else {
-                onRelease();
+                this->onRelease();
             }
         }
     }
@@ -85,8 +95,11 @@ CtrlBtn::CtrlBtn(
     const uint8_t sig,
     const uint16_t bounceDuration,
     const CallbackFunction onPressCallback,
-    const CallbackFunction onReleaseCallback
-): CtrlBtnBase(sig, bounceDuration), onPressCallback(onPressCallback), onReleaseCallback(onReleaseCallback) { }
+    const CallbackFunction onReleaseCallback,
+    CtrlMux* mux
+): CtrlBtnBase(sig, bounceDuration, mux),
+    onPressCallback(onPressCallback),
+    onReleaseCallback(onReleaseCallback) { }
 
 void CtrlBtn::setOnPress(const CallbackFunction callback)
 {
@@ -116,10 +129,15 @@ CtrlBtn CtrlBtn::create(
     const uint8_t sig,
     const uint16_t bounceDuration,
     const CallbackFunction onPressCallback,
-    const CallbackFunction onReleaseCallback
+    const CallbackFunction onReleaseCallback,
+    CtrlMux* mux
 ) {
-      CtrlBtn button(sig, bounceDuration);
-      button.setOnPress(onPressCallback);
-      button.setOnRelease(onReleaseCallback);
-      return button;
+    CtrlBtn button(
+        sig,
+        bounceDuration,
+        onPressCallback,
+        onReleaseCallback,
+        mux
+    );
+    return button;
 }

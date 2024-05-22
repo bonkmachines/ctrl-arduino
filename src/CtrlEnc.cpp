@@ -29,44 +29,56 @@
 
 CtrlEncBase::CtrlEncBase(
     const uint8_t clk,
-    const uint8_t dt
-) {
+    const uint8_t dt,
+    CtrlMux* mux
+) : Muxable(mux)
+{
     this->clk = clk;
     this->dt = dt;
-    pinMode(clk, INPUT);
-    pinMode(dt, INPUT);
+    if (!this->isMuxed()) pinMode(clk, INPUT);
+    if (!this->isMuxed()) pinMode(dt, INPUT);
 }
 
 void CtrlEncBase::process()
 {
     if (this->isDisabled()) return;
-    if (readEncoder()) {
-        if (isTurningLeft()) {
-            onTurnLeft();
-        } else if (isTurningRight()) {
-            onTurnRight();
+    if (this->readEncoder()) {
+        if (this->isTurningLeft()) {
+            this->onTurnLeft();
+        } else if (this->isTurningRight()) {
+            this->onTurnRight();
         }
     }
 }
 
 void CtrlEncBase::processInput()
 {
-    #ifdef UNIT_TEST
-        // Simulated pin states for testing
-        extern int8_t mockClkInput;
-        extern int8_t mockDtInput;
-        if (mockClkInput) this->values[0] |= 0x01;
-        if (mockDtInput) this->values[0] |= 0x02;
-    #else
+    if (this->isMuxed()) {
+        if (this->mux->acquire()) {
+            const uint8_t clkReading = this->mux->digitalReader(this->clk);
+            const uint8_t dtReading = this->mux->digitalReader(this->dt);
+            this->mux->release();
+            if (clkReading) values[0] |= 0x01;
+            if (dtReading) values[0] |= 0x02;
+        }
+    } else {
+        #ifdef UNIT_TEST
+            // Simulated pin states for testing
+            extern int8_t mockClkInput;
+            extern int8_t mockDtInput;
+            if (mockClkInput) this->values[0] |= 0x01;
+            if (mockDtInput) this->values[0] |= 0x02;
+        #else
         // Normal operation with real hardware
-        if (digitalRead(clk)) values[0] |= 0x01;
-        if (digitalRead(dt)) values[0] |= 0x02;
-    #endif
+            if (digitalRead(clk)) values[0] |= 0x01;
+            if (digitalRead(dt)) values[0] |= 0x02;
+        #endif
+    }
 }
 
 int8_t CtrlEncBase::readEncoder()
 {
-    static int8_t table[] = {0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0};
+    static int8_t table[] = { 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0 };
     this->values[0] <<= 2;
     this->processInput();
     this->values[0] &= 0x0f;
@@ -79,15 +91,9 @@ int8_t CtrlEncBase::readEncoder()
     return 0;
 }
 
-bool CtrlEncBase::isTurningLeft() const
-{
-    return this->values[0] == 0x0b;
-}
+bool CtrlEncBase::isTurningLeft() const { return this->values[0] == 0x0b; }
 
-bool CtrlEncBase::isTurningRight() const
-{
-    return this->values[0] == 0x07;
-}
+bool CtrlEncBase::isTurningRight() const { return this->values[0] == 0x07; }
 
 void CtrlEncBase::onTurnLeft() { }
 
@@ -97,8 +103,11 @@ CtrlEnc::CtrlEnc(
     const uint8_t clk,
     const uint8_t dt,
     const CallbackFunction onTurnLeftCallback,
-    const CallbackFunction onTurnRightCallback
-) : CtrlEncBase(clk, dt), onTurnLeftCallback(onTurnLeftCallback), onTurnRightCallback(onTurnRightCallback) { }
+    const CallbackFunction onTurnRightCallback,
+    CtrlMux* mux
+) : CtrlEncBase(clk, dt, mux),
+    onTurnLeftCallback(onTurnLeftCallback),
+    onTurnRightCallback(onTurnRightCallback) { }
 
 void CtrlEnc::setOnTurnLeft(const CallbackFunction callback)
 {
@@ -128,8 +137,15 @@ CtrlEnc CtrlEnc::create(
     const uint8_t clk,
     const uint8_t dt,
     const CallbackFunction onTurnLeftCallback,
-    const CallbackFunction onTurnRightCallback
+    const CallbackFunction onTurnRightCallback,
+    CtrlMux* mux
 ) {
-    CtrlEnc encoder(clk, dt, onTurnLeftCallback, onTurnRightCallback);
+    CtrlEnc encoder(
+        clk,
+        dt,
+        onTurnLeftCallback,
+        onTurnRightCallback,
+        mux
+    );
     return encoder;
 }

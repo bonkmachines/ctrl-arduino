@@ -28,7 +28,7 @@
 #include "CtrlLed.h"
 
 CtrlLed::CtrlLed(
-    const int8_t sig,
+    const uint8_t sig,
     const uint8_t maxBrightness
 ) {
     this->sig = sig;
@@ -39,26 +39,31 @@ CtrlLed::CtrlLed(
     analogWrite(sig, 0); // Ensure LED is off initially
 }
 
+void CtrlLed::processOutput(const uint8_t sig, const uint8_t brightness)
+{
+    analogWrite(sig, brightness);
+}
+
 void CtrlLed::toggle()
 {
     this->on = !this->on;
     if (this->on) {
-        analogWrite(sig, brightness);
+        processOutput(sig, brightness);
     } else {
-        analogWrite(sig, 0);
+        processOutput(sig, 0);
     }
 }
 
 void CtrlLed::turnOn()
 {
     this->on = true;
-    analogWrite(this->sig, this->brightness);
+    processOutput(this->sig, this->brightness);
 }
 
 void CtrlLed::turnOff()
 {
     this->on = false;
-    analogWrite(this->sig, 0);
+    processOutput(this->sig, 0);
 }
 
 void CtrlLed::setMaxBrightness(const uint8_t maxBrightness)
@@ -70,7 +75,7 @@ void CtrlLed::setBrightness(const uint8_t percentage)
 {
     this->brightness = map(percentage, 0, 100, 0, this->maxBrightness);
     if (this->on) {
-        analogWrite(this->sig, this->brightness);
+         processOutput(this->sig, this->brightness);
     }
 }
 
@@ -92,4 +97,15 @@ bool CtrlLed::isOn() const
 bool CtrlLed::isOff() const
 {
     return !this->on;
+}
+
+CtrlLed CtrlLed::create(
+    const uint8_t sig,
+    const uint16_t maxBrightness
+) {
+    const CtrlLed led(
+        sig,
+        maxBrightness
+    );
+    return led;
 }

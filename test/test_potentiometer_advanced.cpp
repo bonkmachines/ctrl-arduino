@@ -28,7 +28,7 @@ void test_potentiometer_advanced_can_be_turned_to_minimum()
     mockPotentiometerInput = 0; // Simulate a minimum position of the pot. Range:0 - 1023
     potentiometer.process(); // Process internal current state
 
-    TEST_ASSERT_EQUAL_INT(0, potentiometer.getValue()); // Expected value on halfway turn, considering maxOutPutValue
+    TEST_ASSERT_EQUAL_INT(0, potentiometer.getValue()); // Expected value, considering maxOutPutValue
 }
 
 void test_potentiometer_advanced_can_be_turned_to_maximum()
@@ -40,5 +40,5 @@ void test_potentiometer_advanced_can_be_turned_to_maximum()
     mockPotentiometerInput = 1023; // Simulate a maximum position of the pot. Range:0 - 1023
     potentiometer.process(); // Process internal current state
 
-    TEST_ASSERT_EQUAL_INT(100, potentiometer.getValue()); // Expected value on halfway turn, considering maxOutPutValue
+    TEST_ASSERT_EQUAL_INT(100, potentiometer.getValue()); // Expected value, considering maxOutPutValue
 }

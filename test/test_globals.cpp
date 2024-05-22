@@ -15,6 +15,15 @@ uint8_t mockDtInput = LOW; // HIGH or LOW
 std::string encoderHandlerResult;
 
 // Global potentiometer variable definitions
-uint8_t potentiometerSig = 1;
+uint8_t potentiometerSig = 4;
 uint16_t mockPotentiometerInput = 0; // 0 - 1023
 int potentiometerHandlerResult;
+
+// Global multiplexer variable definitions
+uint8_t muxSig = 5;
+uint8_t muxS0 = 6;
+uint8_t muxS1 = 7;
+uint8_t muxS2 = 8;
+uint8_t muxS3 = 9;
+uint8_t mockMuxDigitalInput = HIGH;
+uint16_t mockMuxAnalogInput = 0;

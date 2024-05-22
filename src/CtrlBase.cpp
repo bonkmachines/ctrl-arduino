@@ -27,18 +27,41 @@
 
 #include "CtrlBase.h"
 
-void IMuxableInput::enable() {
-  this->enabled = true;
+Muxable::Muxable(
+    CtrlMux* mux
+) {
+    this->mux = mux;
+    this->muxed = mux != nullptr;
 }
 
-void IMuxableInput::disable() {
-  this->enabled = false;
+void Muxable::enable()
+{
+    this->enabled = true;
 }
 
-bool IMuxableInput::isEnabled() const {
-  return this->enabled;
+void Muxable::disable()
+{
+    this->enabled = false;
 }
 
-bool IMuxableInput::isDisabled() const {
-  return !this->isEnabled();
+bool Muxable::isEnabled() const
+{
+    return this->enabled;
+}
+
+bool Muxable::isDisabled() const
+{
+    return !this->isEnabled();
+}
+
+bool Muxable::isMuxed() const
+{
+    return this->muxed;
+}
+
+void setDelay(const uint64_t duration)
+{
+    const uint64_t startTime = micros();
+    const uint64_t targetTime = startTime + duration;
+    while (micros() < targetTime) { }
 }

@@ -30,19 +30,30 @@
 CtrlPotBase::CtrlPotBase(
     const uint8_t sig,
     const int maxOutputValue,
-    const uint8_t margin
-) {
+    const uint8_t margin,
+    CtrlMux* mux
+) : Muxable(mux)
+{
     this->sig = sig;
     this->maxOutputValue = maxOutputValue;
     this->margin = margin;
-    pinMode(sig, INPUT);
+    if (!this->isMuxed()) pinMode(sig, INPUT);
+    this->lastValue = CtrlPotBase::processInput();
 }
 
 uint16_t CtrlPotBase::processInput()
 {
+    if (this->isMuxed()) {
+        if (this->mux->acquire()) {
+            const uint16_t result = this->mux->analogReader(this->sig);
+            this->mux->release();
+            return result;
+        }
+        return this->lastValue;
+    }
     #ifdef UNIT_TEST
         // Simulated analogRead for testing
-        extern int mockPotentiometerInput;
+        extern uint16_t mockPotentiometerInput;
         return mockPotentiometerInput;
     #else
         // Normal operation with real hardware
@@ -59,7 +70,7 @@ void CtrlPotBase::process()
         if (value >= this->analogMax - this->margin) value = this->analogMax; // Snap to top
         if (value <= this->margin) value = 0; // Snap to bottom
 
-        uint16_t mappedValue = map(value, 0, this->analogMax, 0, this->maxOutputValue);
+        const uint16_t mappedValue = map(value, 0, this->analogMax, 0, this->maxOutputValue);
         if (mappedValue != this->lastMappedValue) {
             this->onValueChange(mappedValue);
             this->lastMappedValue = mappedValue;
@@ -76,8 +87,10 @@ CtrlPot::CtrlPot(
     const uint8_t sig,
     const int maxOutputValue,
     const uint8_t margin,
-    const CallbackFunction onValueChangeCallback
-): CtrlPotBase(sig, maxOutputValue, margin), onValueChangeCallback(onValueChangeCallback) { }
+    const CallbackFunction onValueChangeCallback,
+    CtrlMux* mux
+): CtrlPotBase(sig, maxOutputValue, margin, mux),
+    onValueChangeCallback(onValueChangeCallback) { }
 
 void CtrlPot::setOnValueChange(const CallbackFunction callback)
 {
@@ -95,9 +108,15 @@ CtrlPot CtrlPot::create(
     const uint8_t sig,
     const int maxOutputValue,
     const uint8_t margin,
-    const CallbackFunction onValueChangeCallback
+    const CallbackFunction onValueChangeCallback,
+    CtrlMux* mux
 ) {
-    CtrlPot pot(sig, maxOutputValue, margin);
-    pot.setOnValueChange(onValueChangeCallback);
+    CtrlPot pot(
+        sig,
+        maxOutputValue,
+        margin,
+        onValueChangeCallback,
+        mux
+    );
     return pot;
 }
