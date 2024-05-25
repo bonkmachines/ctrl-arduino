@@ -7,7 +7,7 @@
 
   Usage:
   Create a multiplexer with reference to:
-  - Sig  (required) Singal pin.
+  - Sig  (required) Signal pin.
   - S0   (required) Select input 0.
   - S1   (required) Select input 1.
   - S2   (required) Select input 2.
