@@ -29,17 +29,28 @@
 #include "CtrlMux.h"
 
 CtrlMux::CtrlMux(
+    const uint8_t count,
+    const uint8_t switchInterval,
     const uint8_t sig,
     const uint8_t s0,
     const uint8_t s1,
     const uint8_t s2,
     const uint8_t s3
-) : sig(sig), s0(s0), s1(s1), s2(s2), s3(s3)
+) : count(count),
+    switchInterval(switchInterval),
+    sig(sig),
+    s0(s0),
+    s1(s1),
+    s2(s2),
+    s3(s3),
+    s3Present(s3 != UINT8_MAX)
 {
     pinMode(this->s0, OUTPUT);
     pinMode(this->s1, OUTPUT);
     pinMode(this->s2, OUTPUT);
-    pinMode(this->s3, OUTPUT);
+    if (this->s3Present) {
+        pinMode(this->s3, OUTPUT);
+    }
 }
 
 void CtrlMux::setSignalPinToDigitalIn()
@@ -63,16 +74,51 @@ void CtrlMux::setChannel(const uint8_t channel) const
     digitalWrite(this->s0, bitRead(channel, 0));
     digitalWrite(this->s1, bitRead(channel, 1));
     digitalWrite(this->s2, bitRead(channel, 2));
-    digitalWrite(this->s3, bitRead(channel, 3));
+    if (this->s3Present) {
+        digitalWrite(this->s3, bitRead(channel, 3));
+    }
 }
 
-bool CtrlMux::acquire()
+void CtrlMux::subscribe(const uint8_t channel)
 {
-    if (!this->occupied) {
+    this->subscribers[channel] = 1;
+}
+
+bool CtrlMux::subscribed(const uint8_t channel) const
+{
+    return this->subscribers[channel] == 1;
+}
+
+bool CtrlMux::subscriptionComplete() const
+{
+    for (uint8_t i = 0; i < this->count; i++) {
+        if (this->subscribers[i] != 1) return false;
+    }
+    return true;
+}
+
+bool CtrlMux::acquire(const uint8_t channel)
+{
+    if (!this->subscribed(channel)) {
+        this->subscribe(channel);
+        return false;
+    }
+    if (!this->subscriptionComplete()) {
+        return false;
+    }
+    if (!this->occupied && this->subscriberIsNext(channel)) {
         this->occupied = true;
+        this->previousSubscriber = channel;
         return true;
     }
     return false;
+}
+
+bool CtrlMux::subscriberIsNext(const uint8_t channel) const
+{
+    if (this->count == 1) return true; // If we declare one possible subscriber, it's always next :)
+    if (this->previousSubscriber == this->count - 1) return channel == 0; // We reach the final subscriber and go back to 0
+    return this->previousSubscriber == channel - 1;
 }
 
 void CtrlMux::release()
@@ -86,14 +132,9 @@ uint8_t CtrlMux::digitalReader(const uint8_t channel)
 
     this->setChannel(channel);
 
-    setDelay(50);
+    setDelayMicroseconds(this->switchInterval);
 
-    #ifdef UNIT_TEST
-        extern uint8_t mockMuxDigitalInput;
-        return mockMuxDigitalInput;
-    #else
-        return digitalRead(this->sig);
-    #endif
+    return digitalRead(this->sig);
 }
 
 uint16_t CtrlMux::analogReader(const uint8_t channel)
@@ -102,12 +143,7 @@ uint16_t CtrlMux::analogReader(const uint8_t channel)
 
     this->setChannel(channel);
 
-    setDelay(50);
+    setDelayMicroseconds(this->switchInterval);
 
-    #ifdef UNIT_TEST
-        extern uint16_t mockMuxAnalogInput;
-        return mockMuxAnalogInput;
-    #else
-        return analogRead(this->sig);
-    #endif
+    return analogRead(this->sig);
 }

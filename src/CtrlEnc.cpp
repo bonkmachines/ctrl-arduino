@@ -54,11 +54,14 @@ void CtrlEncBase::process()
 void CtrlEncBase::processInput()
 {
     if (this->isMuxed()) {
-        if (this->mux->acquire()) {
+        if (this->mux->acquire(this->clk)) {
             const uint8_t clkReading = this->mux->digitalReader(this->clk);
-            const uint8_t dtReading = this->mux->digitalReader(this->dt);
             this->mux->release();
             if (clkReading) values[0] |= 0x01;
+        }
+        if (this->mux->acquire(this->dt)) {
+            const uint8_t dtReading = this->mux->digitalReader(this->dt);
+            this->mux->release();
             if (dtReading) values[0] |= 0x02;
         }
     } else {

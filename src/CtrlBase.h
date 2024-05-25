@@ -53,6 +53,8 @@ class Muxable
         [[nodiscard]] bool isMuxed() const;
 };
 
-void setDelay(uint64_t duration);
+void setDelayMicroseconds(uint64_t duration);
+
+void setDelayMilliseconds(uint64_t duration);
 
 #endif

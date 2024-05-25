@@ -37,7 +37,7 @@ class CtrlEncBase : public Muxable
     protected:
         uint8_t clk; // CLK pin
         uint8_t dt; // DT pin
-        int values[2] = {0, 0}; // State of the encoder
+        int values[2] = { 0, 0 }; // State of the encoder
 
         CtrlEncBase(
             uint8_t clk,

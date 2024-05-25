@@ -43,7 +43,7 @@ CtrlBtnBase::CtrlBtnBase(
 uint8_t CtrlBtnBase::processInput()
 {
     if (this->isMuxed()) {
-        if (this->mux->acquire()) {
+        if (this->mux->acquire(this->sig)) {
             const uint8_t result = this->mux->digitalReader(this->sig);
             this->mux->release();
             return result;

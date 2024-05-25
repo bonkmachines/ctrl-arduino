@@ -32,29 +32,40 @@
 
 class CtrlMux
 {
-    protected:
+    public:
+        uint8_t count;
+        uint8_t switchInterval;
         uint8_t sig;
         uint8_t s0;
         uint8_t s1;
         uint8_t s2;
         uint8_t s3;
+        bool s3Present;
+        uint8_t subscribers[16] = { };
+        uint8_t previousSubscriber = 0;
         bool occupied = false;
-        static constexpr uint8_t switchInterval = 50; // 50 microseconds
         uint8_t currentPinMode = 0;
-
-    public:
-        CtrlMux(
-            uint8_t sig,
-            uint8_t s0,
-            uint8_t s1,
-            uint8_t s2,
-            uint8_t s3
-        );
 
         void setSignalPinToDigitalIn();
         void setSignalPinToAnalogIn();
         void setChannel(uint8_t channel) const;
-        bool acquire();
+
+    public:
+        CtrlMux(
+            uint8_t count,
+            uint8_t switchInterval,
+            uint8_t sig,
+            uint8_t s0,
+            uint8_t s1,
+            uint8_t s2,
+            uint8_t s3 = UINT8_MAX // Default to a value indicating S3 is not used
+        );
+
+        void subscribe(uint8_t channel);
+        [[nodiscard]] bool subscribed(uint8_t channel) const;
+        [[nodiscard]] bool subscriptionComplete() const;
+        [[nodiscard]] bool subscriberIsNext(uint8_t channel) const;
+        bool acquire(uint8_t channel);
         void release();
         [[nodiscard]] uint8_t digitalReader(uint8_t channel);
         [[nodiscard]] uint16_t analogReader(uint8_t channel);

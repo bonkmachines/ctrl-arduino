@@ -36,17 +36,18 @@ class CtrlPotBase : public Muxable
 {
     protected:
         uint8_t sig; // Analog pin connected to the potentiometer.
-        int maxOutputValue; // The maximum output value of the potentiometer.
-        uint8_t margin; // Margin to handle noisy pots.
         uint16_t lastValue = 0; // Last read value from the potentiometer.
-        uint16_t lastMappedValue = 0; // Last mapped value.
+        uint16_t lastMappedValue = 0; // Last mapped value based on a mapping to maxOutputValue.
+        float smoothedValue = 0.0; // Smoothed value for the potentiometer.
+        float alpha = 0.0005; // Smoothing factor (0 < alpha <= 1)
+        float sensitivity = 0.05; // Sensitivity factor (0.01 to 100)
+        int maxOutputValue;
         uint16_t analogMax = 1023; // Maximum value from analogRead().
-        uint16_t hysteresisThreshold = 5; // Define a threshold for hysteresis
 
-        CtrlPotBase(
+        explicit CtrlPotBase(
             uint8_t sig,
             int maxOutputValue,
-            uint8_t margin,
+            float sensitivity,
             CtrlMux* mux = nullptr
         );
 
@@ -54,6 +55,8 @@ class CtrlPotBase : public Muxable
 
         virtual uint16_t processInput();
         virtual void onValueChange(int value);
+        void setSensitivity(float sensitivity);
+        void updateAlpha();
 
     public:
         void process() override;
@@ -66,10 +69,10 @@ class CtrlPot final : public CtrlPotBase
     CallbackFunction onValueChangeCallback;
 
     protected:
-        CtrlPot(
+        explicit CtrlPot(
             uint8_t sig,
             int maxOutputValue,
-            uint8_t margin,
+            float sensitivity,
             CallbackFunction onValueChangeCallback = nullptr,
             CtrlMux* mux = nullptr
         );
@@ -78,7 +81,7 @@ class CtrlPot final : public CtrlPotBase
         static CtrlPot create(
             uint8_t sig,
             int maxOutputValue,
-            uint8_t margin,
+            float sensitivity,
             CallbackFunction onValueChangeCallback = nullptr,
             CtrlMux* mux = nullptr
         );

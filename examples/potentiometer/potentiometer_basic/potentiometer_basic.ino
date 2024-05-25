@@ -6,19 +6,19 @@
 
   Usage:
   Create a potentiometer with reference to:
-  - Signal pin             (required / the input pin your potentiometer is hooked up to)
-  - Max. output value      (required) The maximum output value of the potentiometer (e.g. for a MIDI signal you'd set this to 127)
-  - Sensitivity margin     (required) If you have a pot with jitter (instable readings), increase this value till it becomes stable
-  - onValueChange handler  (optional)
+  - Signal pin             (required) The input pin your potentiometer is hooked up to.
+  - Max. output value      (required) The maximum output value of the potentiometer (e.g. for a MIDI signal you'd set this to 127).
+  - Sensitivity margin     (required) Decrease this for instable (jittery) pots, min: 0.01, max: 100.
+  - onValueChange handler  (optional) This will be called as soon as the reading of the potentiometer changes.
 
   Available methods:
-  - process()           Is used to poll the potentiometer and handle all it's functionality (used in the loop method)
-  - getValue()          Retrieves the current value of the potentiometer
-  - setOnValueChange()  Sets the onValueChange handler
-  - disable()           Disables the potentiometer
-  - enable()            Enables the potentiometer
-  - isEnabled()         Checks if the potentiometer is enabled
-  - isDisabled()        Checks if the potentiometer is disabled
+  - process()           Is used to poll the potentiometer and handle all it's functionality (used in the loop method).
+  - getValue()          Retrieves the current value of the potentiometer.
+  - setOnValueChange()  Sets the onValueChange handler. Will be called as soon as the reading of the potentiometer changes.
+  - disable()           Disables the potentiometer.
+  - enable()            Enables the potentiometer.
+  - isEnabled()         Checks if the potentiometer is enabled.
+  - isDisabled()        Checks if the potentiometer is disabled.
 */
 
 #include <CtrlPot.h>
@@ -29,14 +29,14 @@ void onValueChange(int value) {
   Serial.println(value);
 }
 
-// Instantiate a potentiometer with the pin number, max. output value, sensitivity margin & onValueChange handler (optional)
-CtrlPot potentiometer = CtrlPot::create(24, 100, 10, onValueChange);
+// Instantiate a potentiometer with the pin number, max. output value, sensitivity margin (can be 0.01 to 100) & onValueChange handler (optional).
+CtrlPot potentiometer = CtrlPot::create(24, 100, 0.05, onValueChange);
 
 void setup() {
   Serial.begin(9600);
 }
 
 void loop() {
-  // The process method will keep polling our potentiometer object and handle all it's functionality
+  // The process method will keep polling our potentiometer object and handle all it's functionality.
   potentiometer.process();
 }

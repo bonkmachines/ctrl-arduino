@@ -59,9 +59,16 @@ bool Muxable::isMuxed() const
     return this->muxed;
 }
 
-void setDelay(const uint64_t duration)
+void setDelayMicroseconds(const uint64_t duration)
 {
     const uint64_t startTime = micros();
     const uint64_t targetTime = startTime + duration;
     while (micros() < targetTime) { }
+}
+
+void setDelayMilliseconds(const uint64_t duration)
+{
+    const uint64_t startTime = millis();
+    const uint64_t targetTime = startTime + duration;
+    while (millis() < targetTime) { }
 }
