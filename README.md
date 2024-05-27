@@ -11,12 +11,17 @@ The goal of this library is to offer uniform interfaces with flexible ways of im
 
 Before I show you some examples of how to implement this library, don't forget to take a look at the [examples](https://github.com/bonkmachines/ctrl-arduino/tree/main/examples "View the examples") in this repository. There you will find detailed instructions on how to use everything. All right, let's get on with it!
 
-
 ## Installation
 
-Go to https://github.com/bonkmachines/ctrl-arduino. Click on the green "Code" button on the top right of the page. Then select "Download zip". Next open your Arduino IDE, click on "Sketch" in the top menu, next select "Include Library" and then "Add .ZIP LIbrary". Browse to where you saved the downloaded file and import it.
+Open the Arduino IDE Library manager, search for "CTRL" and hit "INSTALL".
 
-<img src="https://github.com/bonkmachines/ctrl-arduino/blob/main/assets/ss_add_library_manual.png" alt="add-library" width="700">
+<img src="https://github.com/bonkmachines/ctrl-arduino/blob/main/assets/ss_add_library.png" alt="add-library" width="700">
+
+## Manual installation
+
+If you prefer a manual installation instead, go to https://github.com/bonkmachines/ctrl-arduino/releases, and download the latest release. Next open your Arduino IDE, click on "Sketch" in the top menu, next select "Include Library" and then "Add .ZIP LIbrary". Browse to where you saved the downloaded file and import it.
+
+<img src="https://github.com/bonkmachines/ctrl-arduino/blob/main/assets/ss_add_library_manual.png" alt="add-library-manual" width="700">
 
 ## Example
 
