@@ -36,10 +36,11 @@ class CtrlBtnBase : public Muxable
 {
     protected:
         uint8_t sig; // Signal pin
-        bool currentState;
-        bool lastState;
+        bool currentState = HIGH;
+        bool lastState = HIGH;
         unsigned long debounceStart = 0;
         uint16_t bounceDuration;
+        bool initialized = false;
 
         CtrlBtnBase(
             uint8_t sig,
@@ -49,12 +50,14 @@ class CtrlBtnBase : public Muxable
 
         ~CtrlBtnBase() = default;
 
+        void initialize();
         virtual uint8_t processInput();
         virtual void onPress();
         virtual void onRelease();
 
     public:
         void process() override;
+        [[nodiscard]] bool isInitialized() const;
         [[nodiscard]] bool isPressed() const;
         [[nodiscard]] bool isReleased() const;
 };

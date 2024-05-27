@@ -5,11 +5,12 @@
 
 void test_encoder_common_initial_state()
 {
-    CtrlEnc encoder = CtrlEnc::create(encoderClkSig, encoderDtSig);
+    CtrlEnc encoder = CtrlEnc::create(1, 2);
 
     // Reset the state
     mockClkInput = LOW;
     mockDtInput = LOW;
+
     encoder.process(); // Process internal state
 
     TEST_ASSERT_FALSE(encoder.isTurningLeft()); // Encoder should not be turning left
@@ -18,7 +19,7 @@ void test_encoder_common_initial_state()
 
 void test_encoder_common_can_be_disabled_and_enabled()
 {
-    CtrlEnc encoder = CtrlEnc::create(encoderClkSig, encoderDtSig);
+    CtrlEnc encoder = CtrlEnc::create(1, 2);
 
     encoder.disable(); // Disable the encoder
     encoder.process(); // Process internal state

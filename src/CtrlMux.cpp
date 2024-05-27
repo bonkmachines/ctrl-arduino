@@ -126,7 +126,7 @@ void CtrlMux::release()
     this->occupied = false;
 }
 
-uint8_t CtrlMux::digitalReader(const uint8_t channel)
+uint8_t CtrlMux::readBtnSig(const uint8_t channel)
 {
     this->setSignalPinToDigitalIn();
 
@@ -134,10 +134,53 @@ uint8_t CtrlMux::digitalReader(const uint8_t channel)
 
     setDelayMicroseconds(this->switchInterval);
 
-    return digitalRead(this->sig);
+    #ifdef UNIT_TEST
+        // Simulated digitalRead testing
+        extern uint8_t mockMuxBtnSigInput;
+        return mockMuxBtnSigInput;
+    #else
+        // Normal operation with real hardware
+        return digitalRead(this->sig);
+    #endif
 }
 
-uint16_t CtrlMux::analogReader(const uint8_t channel)
+uint8_t CtrlMux::readEncClk(const uint8_t channel)
+{
+    this->setSignalPinToDigitalIn();
+
+    this->setChannel(channel);
+
+    setDelayMicroseconds(this->switchInterval);
+
+    #ifdef UNIT_TEST
+        // Simulated digitalRead testing
+        extern uint8_t mockMuxEncClkInput;
+        return mockMuxEncClkInput;
+    #else
+        // Normal operation with real hardware
+        return digitalRead(this->sig);
+    #endif
+}
+
+uint8_t CtrlMux::readEncDt(const uint8_t channel)
+{
+    this->setSignalPinToDigitalIn();
+
+    this->setChannel(channel);
+
+    setDelayMicroseconds(this->switchInterval);
+
+    #ifdef UNIT_TEST
+        // Simulated digitalRead testing
+        extern uint8_t mockMuxEncDtInput;
+        return mockMuxEncDtInput;
+    #else
+        // Normal operation with real hardware
+        return digitalRead(this->sig);
+    #endif
+}
+
+uint16_t CtrlMux::readPotSig(const uint8_t channel)
 {
     this->setSignalPinToAnalogIn();
 
@@ -145,5 +188,12 @@ uint16_t CtrlMux::analogReader(const uint8_t channel)
 
     setDelayMicroseconds(this->switchInterval);
 
-    return analogRead(this->sig);
+    #ifdef UNIT_TEST
+        // Simulated analogRead testing
+        extern uint16_t mockMuxPotSigInput;
+        return mockMuxPotSigInput;
+    #else
+        // Normal operation with real hardware
+        return analogRead(this->sig);
+    #endif
 }

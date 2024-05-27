@@ -5,7 +5,7 @@
 
 void test_potentiometer_common_can_be_disabled_and_enabled()
 {
-    CtrlPot potentiometer = CtrlPot::create(potentiometerSig, 100, 0.05);
+    CtrlPot potentiometer = CtrlPot::create(1, 100, 0.05);
 
     potentiometer.disable(); // Disable the potentiometer
     potentiometer.process(); // Process internal state
@@ -20,7 +20,7 @@ void test_potentiometer_common_can_be_disabled_and_enabled()
 
 void test_potentiometer_common_can_be_turned()
 {
-    CtrlPot potentiometer = CtrlPot::create(potentiometerSig, 100, 0.05);
+    CtrlPot potentiometer = CtrlPot::create(1, 100, 0.05);
 
     mockPotentiometerInput = 512; // Simulate a halfway position of the pot. Range:0 - 1023
 

@@ -5,19 +5,19 @@
 
 // Define an onTurnLeft handler
 void onTurnLeftHandlerBasic() {
-    encoderHandlerResult = "left";
+    encoderHandlerResult = "basic encoder turn left";
 }
 
 // Define an onTurnRight handler
 void onTurnRighthandlerBasic() {
-    encoderHandlerResult = "right";
+    encoderHandlerResult = "basic encoder turn right";
 }
 
 void test_encoder_basic_can_be_turned_left()
 {
     CtrlEnc encoder = CtrlEnc::create(
-        encoderClkSig,
-        encoderDtSig,
+        1,
+        2,
         onTurnLeftHandlerBasic,
         onTurnRighthandlerBasic
     );
@@ -26,6 +26,7 @@ void test_encoder_basic_can_be_turned_left()
     encoderHandlerResult = "";
     mockClkInput = LOW;
     mockDtInput = LOW;
+
     encoder.process(); // Process internal state
 
     // Simulate the sequence for a counterclockwise turn
@@ -36,14 +37,14 @@ void test_encoder_basic_can_be_turned_left()
     mockDtInput = HIGH;
     encoder.process(); // Process internal state
 
-    TEST_ASSERT_EQUAL_STRING("left", encoderHandlerResult.c_str()); // Verify the encoder has turned left
+    TEST_ASSERT_EQUAL_STRING("basic encoder turn left", encoderHandlerResult.c_str()); // Verify the encoder has turned left
 }
 
 void test_encoder_basic_can_be_turned_right()
 {
     CtrlEnc encoder = CtrlEnc::create(
-        encoderClkSig,
-        encoderDtSig,
+        1,
+        2,
         onTurnLeftHandlerBasic,
         onTurnRighthandlerBasic
     );
@@ -52,6 +53,7 @@ void test_encoder_basic_can_be_turned_right()
     encoderHandlerResult = "";
     mockClkInput = LOW;
     mockDtInput = LOW;
+
     encoder.process(); // Process internal state
 
     // Simulate the sequence for a clockwise turn
@@ -62,5 +64,5 @@ void test_encoder_basic_can_be_turned_right()
     mockDtInput = HIGH;
     encoder.process(); // Process internal state
 
-    TEST_ASSERT_EQUAL_STRING("right", encoderHandlerResult.c_str()); // Verify the encoder has turned right
+    TEST_ASSERT_EQUAL_STRING("basic encoder turn right", encoderHandlerResult.c_str()); // Verify the encoder has turned right
 }

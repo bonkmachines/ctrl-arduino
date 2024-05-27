@@ -51,6 +51,7 @@ class Muxable
         [[nodiscard]] bool isEnabled() const;
         [[nodiscard]] bool isDisabled() const;
         [[nodiscard]] bool isMuxed() const;
+        void setMultiplexer(CtrlMux &mux);
 };
 
 void setDelayMicroseconds(uint64_t duration);

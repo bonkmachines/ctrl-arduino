@@ -41,8 +41,9 @@ class CtrlPotBase : public Muxable
         float smoothedValue = 0.0; // Smoothed value for the potentiometer.
         float alpha = 0.0005; // Smoothing factor (0 < alpha <= 1)
         float sensitivity = 0.05; // Sensitivity factor (0.01 to 100)
-        int maxOutputValue;
+        int maxOutputValue; // The maximum value at full turn
         uint16_t analogMax = 1023; // Maximum value from analogRead().
+        bool initialized = false;
 
         explicit CtrlPotBase(
             uint8_t sig,
@@ -53,6 +54,7 @@ class CtrlPotBase : public Muxable
 
         ~CtrlPotBase() = default;
 
+        void initialize();
         virtual uint16_t processInput();
         virtual void onValueChange(int value);
         void setSensitivity(float sensitivity);
@@ -60,6 +62,7 @@ class CtrlPotBase : public Muxable
 
     public:
         void process() override;
+        [[nodiscard]] bool isInitialized() const;
         [[nodiscard]] uint16_t getValue() const;
 };
 

@@ -32,7 +32,7 @@
 
 class CtrlMux
 {
-    public:
+    protected:
         uint8_t count;
         uint8_t switchInterval;
         uint8_t sig;
@@ -67,8 +67,10 @@ class CtrlMux
         [[nodiscard]] bool subscriberIsNext(uint8_t channel) const;
         bool acquire(uint8_t channel);
         void release();
-        [[nodiscard]] uint8_t digitalReader(uint8_t channel);
-        [[nodiscard]] uint16_t analogReader(uint8_t channel);
+        [[nodiscard]] uint8_t readBtnSig(uint8_t channel);
+        [[nodiscard]] uint8_t readEncClk(uint8_t channel);
+        [[nodiscard]] uint8_t readEncDt(uint8_t channel);
+        [[nodiscard]] uint16_t readPotSig(uint8_t channel);
 };
 
 #endif // CTRLMUX_H

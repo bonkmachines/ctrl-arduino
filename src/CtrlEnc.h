@@ -38,6 +38,7 @@ class CtrlEncBase : public Muxable
         uint8_t clk; // CLK pin
         uint8_t dt; // DT pin
         int values[2] = { 0, 0 }; // State of the encoder
+        bool initialized = false;
 
         CtrlEncBase(
             uint8_t clk,
@@ -47,6 +48,7 @@ class CtrlEncBase : public Muxable
 
         ~CtrlEncBase() = default;
 
+        void initialize();
         virtual void processInput();
         virtual int8_t readEncoder();
         virtual void onTurnLeft();
@@ -54,6 +56,7 @@ class CtrlEncBase : public Muxable
 
     public:
         void process() override;
+        [[nodiscard]] bool isInitialized() const;
         [[nodiscard]] bool isTurningLeft() const;
         [[nodiscard]] bool isTurningRight() const;
 };

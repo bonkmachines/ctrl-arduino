@@ -15,15 +15,16 @@
   onRelease() methods and add any additional functionality that you need.
 
   Available methods:
-  - process()       Is used to poll the button and handle all it's functionality (used in the loop method).
-  - setOnPress()    Sets the onPress handler. Is called when the button is pressed.
-  - setOnRelease()  Sets the onRelease handler. Is called when the button is released.
-  - disable()       Disables the button.
-  - enable()        Enables the button.
-  - isEnabled()     Checks if the button is enabled.
-  - isDisabled()    Checks if the button is disabled.
-  - isPressed()     Checks if the button is currently being pressed.
-  - isReleased()    Checks if the button is currently not being pressed.
+  - process()         Is used to poll the button and handle all it's functionality (used in the loop method).
+  - setOnPress()      Sets the onPress handler. Is called when the button is pressed.
+  - setOnRelease()    Sets the onRelease handler. Is called when the button is released.
+  - setMultiplexer()  Sets the multiplexer that the button subscribes to.
+  - disable()         Disables the button.
+  - enable()          Enables the button.
+  - isEnabled()       Checks if the button is enabled.
+  - isDisabled()      Checks if the button is disabled.
+  - isPressed()       Checks if the button is currently being pressed.
+  - isReleased()      Checks if the button is currently not being pressed.
 */
 
 #include <CtrlBtn.h>

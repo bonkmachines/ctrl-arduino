@@ -36,10 +36,30 @@ CtrlPotBase::CtrlPotBase(
 {
     this->sig = sig;
     this->maxOutputValue = maxOutputValue;
+    setSensitivity(sensitivity);
+}
+
+void CtrlPotBase::initialize()
+{
     if (!this->isMuxed()) pinMode(sig, INPUT);
     this->lastValue = CtrlPotBase::processInput();
     this->smoothedValue = static_cast<float>(this->lastValue);
-    setSensitivity(sensitivity);
+    this->initialized = true;
+}
+
+void CtrlPotBase::process()
+{
+    if (!this->isInitialized()) this->initialize();
+    if (this->isDisabled()) return;
+    uint16_t newValue = this->processInput();
+    if (newValue != this->lastValue) {
+        uint16_t mappedValue = map(newValue, 0, this->analogMax, 0, this->maxOutputValue);
+        if (mappedValue != this->lastMappedValue) {
+            this->onValueChange(mappedValue);
+            this->lastMappedValue = mappedValue;
+        }
+        this->lastValue = newValue;
+    }
 }
 
 uint16_t CtrlPotBase::processInput()
@@ -47,7 +67,7 @@ uint16_t CtrlPotBase::processInput()
     uint16_t rawValue;
     if (this->isMuxed()) {
         if (this->mux->acquire(this->sig)) {
-            rawValue = this->mux->analogReader(this->sig);
+            rawValue = this->mux->readPotSig(this->sig);
             this->mux->release();
         } else {
             return this->lastValue;
@@ -64,25 +84,12 @@ uint16_t CtrlPotBase::processInput()
 
     // Apply exponential smoothing
     this->smoothedValue = this->smoothedValue + this->alpha * (static_cast<float>(rawValue) - this->smoothedValue);
-
     return static_cast<uint16_t>(this->smoothedValue);
 }
 
 void CtrlPotBase::onValueChange(int value) { }
 
-void CtrlPotBase::process()
-{
-    if (this->isDisabled()) return;
-    uint16_t newValue = this->processInput();
-    if (newValue != this->lastValue) {
-        uint16_t mappedValue = map(newValue, 0, this->analogMax, 0, this->maxOutputValue);
-        if (mappedValue != this->lastMappedValue) {
-            this->onValueChange(mappedValue);
-            this->lastMappedValue = mappedValue;
-        }
-        this->lastValue = newValue;
-    }
-}
+bool CtrlPotBase::isInitialized() const { return this->initialized; }
 
 uint16_t CtrlPotBase::getValue() const
 {
@@ -118,16 +125,6 @@ CtrlPot::CtrlPot(
     CtrlMux* mux
 ) : CtrlPotBase(sig, maxOutputValue, sensitivity, mux), onValueChangeCallback(onValueChangeCallback) { }
 
-CtrlPot CtrlPot::create(
-    const uint8_t sig,
-    const int maxOutputValue,
-    const float sensitivity,
-    const CallbackFunction onValueChangeCallback,
-    CtrlMux* mux
-) {
-    return CtrlPot(sig, maxOutputValue, sensitivity, onValueChangeCallback, mux);
-}
-
 void CtrlPot::setOnValueChange(const CallbackFunction callback)
 {
     this->onValueChangeCallback = callback;
@@ -138,4 +135,20 @@ void CtrlPot::onValueChange(const int value)
     if (this->onValueChangeCallback) {
         this->onValueChangeCallback(value);
     }
+}
+
+CtrlPot CtrlPot::create(
+    const uint8_t sig,
+    const int maxOutputValue,
+    const float sensitivity,
+    const CallbackFunction onValueChangeCallback,
+    CtrlMux* mux
+) {
+    return CtrlPot(
+        sig,
+        maxOutputValue,
+        sensitivity,
+        onValueChangeCallback,
+        mux
+    );
 }

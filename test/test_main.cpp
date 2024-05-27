@@ -35,6 +35,10 @@ extern void test_led_can_toggle();
 extern void test_led_can_change_brightness();
 extern void test_led_can_be_calibrated();
 
+// Multiplexer test methods
+extern void test_buttons_can_be_multiplexed();
+extern void test_potentiometers_can_be_multiplexed();
+extern void test_rotary_encoders_can_be_multiplexed();
 
 void setUp(void) {
     // Empty setup function
@@ -83,6 +87,11 @@ void setup()
     RUN_TEST(test_led_can_toggle);
     RUN_TEST(test_led_can_change_brightness);
     RUN_TEST(test_led_can_be_calibrated);
+
+    // Multiplexer tests
+    RUN_TEST(test_buttons_can_be_multiplexed);
+    RUN_TEST(test_potentiometers_can_be_multiplexed);
+    RUN_TEST(test_rotary_encoders_can_be_multiplexed);
 
     UNITY_END(); // Finish Unity Testing
 }

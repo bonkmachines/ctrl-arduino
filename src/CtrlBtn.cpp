@@ -29,22 +29,49 @@
 
 CtrlBtnBase::CtrlBtnBase(
     const uint8_t sig, // If multiplexed, this will be the channel number on the mux
-    const uint16_t bounceDuration,
-    CtrlMux* mux
+    const uint16_t bounceDuration, // In microseconds
+    CtrlMux* mux // Instance of the multiplexer
 ) : Muxable(mux)
 {
     this->sig = sig;
     this->bounceDuration = bounceDuration;
+}
+
+void CtrlBtnBase::initialize()
+{
     if (!this->isMuxed()) pinMode(sig, INPUT_PULLUP);
     this->currentState = CtrlBtnBase::processInput();
     this->lastState = currentState;
+    this->initialized = true;
+}
+
+void CtrlBtnBase::process()
+{
+    if (!this->isInitialized()) this->initialize();
+    if (this->isDisabled()) return;
+    const unsigned long currentTime = millis();
+    const bool reading = this->processInput();
+    if (reading != this->lastState) {
+        this->debounceStart = currentTime;
+    }
+    if (currentTime - this->debounceStart > bounceDuration) {
+        if (reading != this->currentState) {
+            this->currentState = reading;
+            if (this->currentState == LOW) {
+                this->onPress();
+            } else {
+                this->onRelease();
+            }
+        }
+    }
+    this->lastState = reading;
 }
 
 uint8_t CtrlBtnBase::processInput()
 {
     if (this->isMuxed()) {
         if (this->mux->acquire(this->sig)) {
-            const uint8_t result = this->mux->digitalReader(this->sig);
+            const uint8_t result = this->mux->readBtnSig(this->sig);
             this->mux->release();
             return result;
         }
@@ -60,28 +87,7 @@ uint8_t CtrlBtnBase::processInput()
     #endif
 }
 
-void CtrlBtnBase::process()
-{
-    if (this->isDisabled()) return;
-
-    const unsigned long currentTime = millis();
-    const bool reading = this->processInput();
-
-    if (reading != this->lastState) {
-        this->debounceStart = currentTime;
-    }
-    if (currentTime - this->debounceStart > bounceDuration) {
-        if (reading != this->currentState) {
-        this->currentState = reading;
-            if (this->currentState == LOW) {
-                this->onPress();
-            } else {
-                this->onRelease();
-            }
-        }
-    }
-    this->lastState = reading;
-}
+bool CtrlBtnBase::isInitialized() const { return this->initialized; }
 
 bool CtrlBtnBase::isPressed() const { return this->currentState == LOW; }
 

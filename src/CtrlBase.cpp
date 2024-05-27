@@ -59,6 +59,12 @@ bool Muxable::isMuxed() const
     return this->muxed;
 }
 
+void Muxable::setMultiplexer(CtrlMux &mux)
+{
+    this->mux = &mux;
+    this->muxed = true;
+}
+
 void setDelayMicroseconds(const uint64_t duration)
 {
     const uint64_t startTime = micros();

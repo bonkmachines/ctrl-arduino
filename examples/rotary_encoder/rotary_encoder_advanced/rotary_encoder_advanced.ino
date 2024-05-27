@@ -17,6 +17,7 @@
   - process()         Is used to poll the rotary encoder and handle all it's functionality (used in the loop method).
   - setOnTurnLeft()   Sets the onTurnleft handler. Is called when you turn left.
   - setOnTurnRight()  Sets the onTurnRight handler. Is called when you turn right.
+  - setMultiplexer()  Sets the multiplexer that the rotary encoder subscribes to.
   - disable()         Disables the rotary encoder.
   - enable()          Enables the rotary encoder.
   - isEnabled()       Checks if the rotary encoder is enabled.
