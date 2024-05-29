@@ -29,19 +29,18 @@ The multiplexer has 8 pins to consider:
 - S0, S1, S2, and S3 are address selection pins used to specify which input channel to connect to the output.
 - SIG - the signal input/output pin
 
-As your circuit grows in complexity, adding a decoupling capacitor across the VCC 
-and GND pins becomes increasingly important. This capacitor serves to stabilize 
-the voltage supply, reduce noise, and improve overall performance and reliability. 
-In this case you could start with a 100 nF capacitor. Put it as close as possible 
-to the VCC and GND pin of the multiplexer. If that is not enough you can go up to 
-something like 1 µF (if you are dealing with a very noisy system). Note that going 
-up in capacitance comes with trade-offs such as increased component size, cost, 
-and potential impact on circuit response time.
-
-Ok, enough with the talk, hook up the components according to the figure below, 
-and next have a look at the example code.
+Now hook up the components according to the figure below.
 
 ![Multiplexer schematic](assets/multiplexer_breadboard.png)
+
+As your circuit grows in complexity, adding a decoupling capacitor across the VCC
+and GND pins becomes increasingly important. This capacitor serves to stabilize
+the voltage supply, reduce noise, and improve overall performance and reliability.
+In this case you could start with a 100 nF capacitor. Put it as close as possible
+to the VCC and GND pin of the multiplexer. If that is not enough you can go up to
+something like 1 µF (if you are dealing with a very noisy system). Note that going
+up in capacitance comes with trade-offs such as increased component size, cost,
+and potential impact on circuit response time.
 
 ***
 

@@ -45,18 +45,20 @@ if necessary (since there is only one input device in this circuit,
 it will not matter). However, note that higher capacitance will make 
 the potentiometer less responsive.
 
-If you have motorized components in your circuit, they can introduce 
-significant noise. To mitigate this, place capacitors across the motor’s 
-power supply, use twisted pairs for the signal and ground wires to the 
-potentiometer, and for the motor power leads. Also, avoid running the 
-potentiometer’s twisted pair too close and parallel to the motor power leads 
+![Rotary encoder schematic](assets/potentiometer_breadboard.png)
+
+If you have motorized components in your circuit, they can introduce
+significant noise. To mitigate this, place capacitors across the motor’s
+power supply, use twisted pairs for the signal and ground wires to the
+potentiometer, and for the motor power leads. Also, avoid running the
+potentiometer’s twisted pair too close and parallel to the motor power leads
 (or any other source of high frequency interference).
 
-A good practice is to utilize separate ground (and power) rails to 
-separate analog inputs from digital ones (most boards have multiple ground 
-and power pins). Connect the analog potentiometers, to a dedicated analog 
-ground (and power rail), while the digital components (buttons & rotary 
-encoders) should be connected to a separate digital ground (and power rail). 
+A good practice is to utilize separate ground (and power) rails to
+separate analog inputs from digital ones (most boards have multiple ground
+and power pins). Connect the analog potentiometers, to a dedicated analog
+ground (and power rail), while the digital components (buttons & rotary
+encoders) should be connected to a separate digital ground (and power rail).
 This separation helps to reduce interference from digital switching noise.
 
 Another factor is mechanical instability. If the potentiometer is not
@@ -64,11 +66,6 @@ securely mounted (breadboards are notoriously known for causing noisy
 connections), any slight movement or vibration can affect the resistance
 and, consequently, the readings. Ensuring that the potentiometer is
 firmly fixed in place can help maintain consistent measurements.
-
-Ok, that was quite a bit of theory :) Let's hook this up and then get some 
-code onto the board.
-
-![Rotary encoder schematic](assets/potentiometer_breadboard.png)
 
 ***
 

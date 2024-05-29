@@ -90,4 +90,4 @@ However, be aware that the quality of these encoders is often lower, as they are
 typically inexpensive.  So yeah... take your pick, have fun hooking it up, and 
 hopefully you'll make some great stuff :)
 
-<img src="img/rotary_encoder_ky-040.png" alt="Rotary encoder schematic" width="250"/><br>
+<img src="assets/rotary_encoder_ky-040.png" alt="Rotary encoder schematic" width="250"/><br>
