@@ -49,9 +49,11 @@ and potential impact on circuit response time.
 We will assume you know how to use the Arduino IDE and upload your sketches
 to a board. If not, have a look at the tutorials at: https://www.arduino.cc/guide
 
-NOTE: In the Arduino IDE under 'Tools', make sure to set the 'USB Type' to 'Serial'.
-Then upload the sketch to your board and open up the monitor when done. 
-This allows you to see the output of the button presses.
+Also make sure you have the CTRL library installed through the library manager.
+
+NOTE: Then upload the sketch to your board and open up the serial monitor.
+This allows you to see the output of the button presses. For some boards
+you have to set the 'USB Type' to 'Serial', in the Arduino IDE under 'Tools'.
 
 P.S.You can easily adapt this guide to work for potentiometers and rotary encoders.
 Just create a bunch of [potentiometers](potentiometers.md) or [rotary encoders](rotary_encoders.md) 

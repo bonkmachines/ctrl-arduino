@@ -74,9 +74,11 @@ firmly fixed in place can help maintain consistent measurements.
 We will assume you know how to use the Arduino IDE and upload your sketches
 to a board. If not, have a look at the tutorials at: https://www.arduino.cc/guide
 
-NOTE: In the Arduino IDE under 'Tools', make sure to set the 'USB Type' to 'Serial'.
-Then upload the sketch to your board and open up the monitor when done.
-This allows you to see the output value of the potentiometer.
+Also make sure you have the CTRL library installed through the library manager.
+
+NOTE: Then upload the sketch to your board and open up the serial monitor.
+This allows you to see the output value of the potentiometer. For some boards
+you have to set the 'USB Type' to 'Serial', in the Arduino IDE under 'Tools'.
 
 ```c++
 #include <CtrlPot.h>

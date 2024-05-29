@@ -7,9 +7,10 @@ applications, such as volume knobs, motor control, and user interfaces.
 They are also less susceptible to electronic noise compared to 
 potentiometers, making them an excellent choice for many projects.
 
-Additionally, we will implement a filter circuit to improve signal 
-reliability and show you how to use the CTRL library to handle 
-the encoder input efficiently.
+The CTRL library already provides some (out of the box) filtering / 
+debouncing of the encoder signal, but additionally we will implement 
+a filter circuit to improve signal reliability and show you how to use 
+the CTRL library to handle the encoder input efficiently.
 
 <div style="float: right; margin-left: 15px;">
   <img src="assets/rotary_encoder_bourns_pec11r.jpg" alt="Rotary encoder schematic" width="250"/>
@@ -48,9 +49,11 @@ connect all wires and components as shown in the figure below.
 We will assume you know how to use the Arduino IDE and upload your sketches
 to a board. If not, have a look at the tutorials at: https://www.arduino.cc/guide
 
-NOTE: In the Arduino IDE under 'Tools', make sure to set the 'USB Type' to 'Serial'.
-Then upload the sketch to your board and open up the monitor when done.
-This allows you to see the output of the encoder turning.
+Also make sure you have the CTRL library installed through the library manager.
+
+NOTE: Then upload the sketch to your board and open up the serial monitor.
+This allows you to see the output of the encoder turning. For some boards
+you have to set the 'USB Type' to 'Serial', in the Arduino IDE under 'Tools'.
 
 ```c++
 #include <CtrlEnc.h>
@@ -84,10 +87,10 @@ void loop() {
 ### Final thoughts
 
 If you prefer not to build your own filter circuit, you can opt for an encoder like 
-the KY-040, which comes with a built-in filter. This allows you to skip connecting the 
-capacitors and resistors as described in the instructions above, and connect it directly. 
-However, be aware that the quality of these encoders is often lower, as they are 
-typically inexpensive.  So yeah... take your pick, have fun hooking it up, and 
-hopefully you'll make some great stuff :)
+the KY-040, which comes with a built-in filter and a switch. This allows you to skip 
+connecting the capacitors and resistors as described in the instructions above, and 
+connect it directly. However, be aware that the quality of these encoders is often 
+lower, as they are typically inexpensive. So yeah... take your pick, have fun 
+hooking it up, and hopefully you'll be able to make some awesome stuff :)
 
 <img src="assets/rotary_encoder_ky-040.png" alt="Rotary encoder schematic" width="250"/><br>
