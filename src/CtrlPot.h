@@ -28,32 +28,41 @@
 #ifndef CtrlPot_h
 #define CtrlPot_h
 
-#include "CtrlBase.h"
 #include <Arduino.h>
+#include "CtrlBase.h"
+#include "CtrlMux.h"
 
-class CtrlPotBase : public IMuxableInput
+class CtrlPotBase : public Muxable
 {
-protected:
-    uint8_t sig; // Analog pin connected to the potentiometer.
-    int maxOutputValue; // The maximum output value of the potentiometer.
-    uint8_t margin; // Margin to handle noisy pots.
-    uint16_t lastValue = 0; // Last read value from the potentiometer.
-    uint16_t lastMappedValue = 0; // Last mapped value.
-    uint16_t analogMax = 1023; // Maximum value from analogRead().
+    protected:
+        uint8_t sig; // Analog pin connected to the potentiometer.
+        uint16_t lastValue = 0; // Last read value from the potentiometer.
+        uint16_t lastMappedValue = 0; // Last mapped value based on a mapping to maxOutputValue.
+        float smoothedValue = 0.0; // Smoothed value for the potentiometer.
+        float alpha = 0.0005; // Smoothing factor (0 < alpha <= 1)
+        float sensitivity = 0.05; // Sensitivity factor (0.01 to 100)
+        int maxOutputValue; // The maximum value at full turn
+        uint16_t analogMax = 1023; // Maximum value from analogRead().
+        bool initialized = false;
 
-    CtrlPotBase(
-        uint8_t sig,
-        int maxOutputValue,
-        uint8_t margin
-    );
+        explicit CtrlPotBase(
+            uint8_t sig,
+            int maxOutputValue,
+            float sensitivity,
+            CtrlMux* mux = nullptr
+        );
 
-    virtual uint16_t processInput();
+        ~CtrlPotBase() = default;
 
-    virtual void onValueChange(int value);
+        void initialize();
+        virtual uint16_t processInput();
+        virtual void onValueChange(int value);
+        void setSensitivity(float sensitivity);
+        void updateAlpha();
 
     public:
         void process() override;
-
+        [[nodiscard]] bool isInitialized() const;
         [[nodiscard]] uint16_t getValue() const;
 };
 
@@ -63,19 +72,21 @@ class CtrlPot final : public CtrlPotBase
     CallbackFunction onValueChangeCallback;
 
     protected:
-        CtrlPot(
+        explicit CtrlPot(
             uint8_t sig,
             int maxOutputValue,
-            uint8_t margin,
-            CallbackFunction onValueChangeCallback = nullptr
+            float sensitivity,
+            CallbackFunction onValueChangeCallback = nullptr,
+            CtrlMux* mux = nullptr
         );
 
     public:
         static CtrlPot create(
             uint8_t sig,
             int maxOutputValue,
-            uint8_t margin,
-            CallbackFunction onValueChangeCallback = nullptr
+            float sensitivity,
+            CallbackFunction onValueChangeCallback = nullptr,
+            CtrlMux* mux = nullptr
         );
 
         void setOnValueChange(CallbackFunction callback);

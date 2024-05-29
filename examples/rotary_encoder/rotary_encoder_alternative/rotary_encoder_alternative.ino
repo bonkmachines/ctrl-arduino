@@ -13,34 +13,35 @@
 
   Usage:
   Create a rotary encoder with reference to:
-  - CLK signal pin   (required / the clk input pin your rotary encoder is hooked up to)
-  - DT signal pint   (required / the dt input pin your rotary encoder is hooked up to)
+  - CLK signal pin    (required) The clk input pin your rotary encoder is hooked up to.
+  - DT signal pint    (required) The dt input pin your rotary encoder is hooked up to.
   
   The following handler methods can then be (optionally) set for the created rotary encoder object:
   - setOnTurnLeft(onTurnLeft)
-  - setOnTurnRight(onTurnRight);
+  - setOnTurnRight(onTurnRight)
 
   Available methods:
-  - process()         Is used to poll the rotary encoder and handle all it's functionality (used in the loop method)
-  - setOnTurnLeft()   Sets the onTurnleft handler
-  - setOnTurnRight()  Sets the onTurnRight handler
-  - disable()         Disables the rotary encoder
-  - enable()          Enables the rotary encoder
-  - isEnabled()       Checks if the rotary encoder is enabled
-  - isDisabled()      Checks if the rotary encoder is disabled
+  - process()         Is used to poll the rotary encoder and handle all it's functionality (used in the loop method).
+  - setOnTurnLeft()   Sets the onTurnleft handler. Is called when you turn left.
+  - setOnTurnRight()  Sets the onTurnRight handler. Is called when you turn right.
+  - setMultiplexer()  Sets the multiplexer that the rotary encoder subscribes to.
+  - disable()         Disables the rotary encoder.
+  - enable()          Enables the rotary encoder.
+  - isEnabled()       Checks if the rotary encoder is enabled.
+  - isDisabled()      Checks if the rotary encoder is disabled.
 */
 
 #include <CtrlEnc.h>
 
-// Instantiate a rotary encoder with the signal pin number & bounce duration
+// Instantiate a rotary encoder with the signal pin number & bounce duration.
 CtrlEnc encoder = CtrlEnc::create(33, 34);
 
-// Define an onTurnLeft handler
+// Define an onTurnLeft handler.
 void onTurnLeft() {
   Serial.println("Alternative rotary encoder turn left");
 }
 
-// Define an onTurnRight handler
+// Define an onTurnRight handler.
 void onTurnRight() {
   Serial.println("Alternative rotary encoder turn right");
 }
@@ -48,12 +49,12 @@ void onTurnRight() {
 void setup() {
   Serial.begin(9600);
 
-  // Register the handlers with the rotary encoder object
+  // Register the handlers with the rotary encoder object.
   encoder.setOnTurnLeft(onTurnLeft);
   encoder.setOnTurnRight(onTurnRight);
 }
 
 void loop() {
-  // The process method will poll the rotary encoder object and handle all it's functionality
+  // The process method will poll the rotary encoder object and handle all it's functionality.
   encoder.process();
 }

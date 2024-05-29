@@ -28,40 +28,37 @@
 #ifndef CtrlLed_h
 #define CtrlLed_h
 
-#include "CtrlBase.h"
 #include <Arduino.h>
 
-class CtrlLed : public IMuxableOutput
+class CtrlLed final
 {
-  protected:
-    int8_t sig; // Signal pin connected to the LED
-    bool on; // Current state of the LED
-    uint8_t brightness; // Current brightness level
-    uint8_t maxBrightness; // Maximum brightness value
+    protected:
+        uint8_t sig; // Signal pin connected to the LED
+        bool on; // Current state of the LED
+        uint8_t brightness; // Current brightness level
+        uint8_t maxBrightness; // Maximum brightness value
 
-  public:
-    explicit CtrlLed(
-        int8_t sig,
-        uint8_t maxBrightness = 255
-    );
+    public:
+        explicit CtrlLed(
+            uint8_t sig,
+            uint8_t maxBrightness = 255
+        );
 
-    void toggle();
+        static void processOutput(uint8_t sig, uint8_t brightness);
+        void toggle();
+        void turnOn();
+        void turnOff();
+        void setMaxBrightness(uint8_t maxBrightness);
+        void setBrightness(uint8_t percentage);
+        [[nodiscard]] uint8_t getMaxBrightness() const;
+        [[nodiscard]] uint8_t getBrightness() const;
+        [[nodiscard]] bool isOn() const;
+        [[nodiscard]] bool isOff() const;
 
-    void turnOn();
-
-    void turnOff();
-
-    void setMaxBrightness(uint8_t maxBrightness);
-
-    void setBrightness(uint8_t percentage);
-
-    [[nodiscard]] uint8_t getMaxBrightness() const;
-
-    [[nodiscard]] uint8_t getBrightness() const;
-
-    [[nodiscard]] bool isOn() const;
-
-    [[nodiscard]] bool isOff() const;
+        static CtrlLed create(
+            uint8_t sig,
+            uint16_t maxBrightness = 255
+        );
 };
 
 #endif

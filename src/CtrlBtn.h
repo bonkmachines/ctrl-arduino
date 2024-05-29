@@ -28,34 +28,37 @@
 #ifndef CtrlBtn_h
 #define CtrlBtn_h
 
-#include "CtrlBase.h"
 #include <Arduino.h>
+#include "CtrlBase.h"
+#include "CtrlMux.h"
 
-class CtrlBtnBase : public IMuxableInput
+class CtrlBtnBase : public Muxable
 {
     protected:
         uint8_t sig; // Signal pin
-        bool currentState;
-        bool lastState;
+        bool currentState = HIGH;
+        bool lastState = HIGH;
         unsigned long debounceStart = 0;
         uint16_t bounceDuration;
+        bool initialized = false;
 
         CtrlBtnBase(
             uint8_t sig,
-            uint16_t bounceDuration
+            uint16_t bounceDuration,
+            CtrlMux* mux = nullptr
         );
 
+        ~CtrlBtnBase() = default;
+
+        void initialize();
         virtual uint8_t processInput();
-
         virtual void onPress();
-
         virtual void onRelease();
 
     public:
         void process() override;
-
+        [[nodiscard]] bool isInitialized() const;
         [[nodiscard]] bool isPressed() const;
-
         [[nodiscard]] bool isReleased() const;
 };
 
@@ -70,7 +73,8 @@ class CtrlBtn final : public CtrlBtnBase
             uint8_t sig,
             uint16_t bounceDuration,
             CallbackFunction onPressCallback = nullptr,
-            CallbackFunction onReleaseCallback = nullptr
+            CallbackFunction onReleaseCallback = nullptr,
+            CtrlMux* mux = nullptr
         );
 
     public:
@@ -78,16 +82,15 @@ class CtrlBtn final : public CtrlBtnBase
             uint8_t sig,
             uint16_t bounceDuration,
             CallbackFunction onPressCallback = nullptr,
-            CallbackFunction onReleaseCallback = nullptr
+            CallbackFunction onReleaseCallback = nullptr,
+            CtrlMux* mux = nullptr
         );
 
         void setOnPress(CallbackFunction callback);
-
         void setOnRelease(CallbackFunction callback);
 
     private:
         void onPress() override;
-
         void onRelease() override;
 };
 

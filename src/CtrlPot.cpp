@@ -2,7 +2,7 @@
  *  @file       CtrlPot.cpp
  *  Project     Arduino CTRL Library
  *  @brief      CTRL Library for interfacing with common controls
- *  @author     Johannes Jan Prins
+ *  @version    1.0
  *  @date       08/05/2024
  *  @license    MIT - Copyright (c) 2024 Johannes Jan Prins
  *
@@ -30,54 +30,100 @@
 CtrlPotBase::CtrlPotBase(
     const uint8_t sig,
     const int maxOutputValue,
-    const uint8_t margin
-) {
+    const float sensitivity,
+    CtrlMux* mux
+) : Muxable(mux)
+{
     this->sig = sig;
     this->maxOutputValue = maxOutputValue;
-    this->margin = margin;
-    pinMode(sig, INPUT);
+    setSensitivity(sensitivity);
 }
 
-uint16_t CtrlPotBase::processInput()
+void CtrlPotBase::initialize()
 {
-    #ifdef UNIT_TEST
-        // Simulated analogRead for testing
-        extern int mockPotentiometerInput;
-        return mockPotentiometerInput;
-    #else
-        // Normal operation with real hardware
-        return analogRead(this->sig);
-    #endif
+    if (!this->isMuxed()) pinMode(sig, INPUT);
+    this->lastValue = CtrlPotBase::processInput();
+    this->smoothedValue = static_cast<float>(this->lastValue);
+    this->initialized = true;
 }
 
 void CtrlPotBase::process()
 {
+    if (!this->isInitialized()) this->initialize();
     if (this->isDisabled()) return;
-
-    uint16_t value = this->processInput();
-    if (abs(value - this->lastValue) > this->margin) {
-        if (value >= this->analogMax - this->margin) value = this->analogMax; // Snap to top
-        if (value <= this->margin) value = 0; // Snap to bottom
-
-        uint16_t mappedValue = map(value, 0, this->analogMax, 0, this->maxOutputValue);
+    uint16_t newValue = this->processInput();
+    if (newValue != this->lastValue) {
+        uint16_t mappedValue = map(newValue, 0, this->analogMax, 0, this->maxOutputValue);
         if (mappedValue != this->lastMappedValue) {
             this->onValueChange(mappedValue);
             this->lastMappedValue = mappedValue;
         }
-        this->lastValue = value;
+        this->lastValue = newValue;
     }
 }
 
-uint16_t CtrlPotBase::getValue() const { return this->lastMappedValue; }
+uint16_t CtrlPotBase::processInput()
+{
+    uint16_t rawValue;
+    if (this->isMuxed()) {
+        if (this->mux->acquire(this->sig)) {
+            rawValue = this->mux->readPotSig(this->sig);
+            this->mux->release();
+        } else {
+            return this->lastValue;
+        }
+    } else {
+        #ifdef UNIT_TEST
+            // Simulated analogRead for testing
+            extern uint16_t mockPotentiometerInput;
+            rawValue = mockPotentiometerInput;
+        #else
+            rawValue = analogRead(this->sig);
+        #endif
+    }
+
+    // Apply exponential smoothing
+    this->smoothedValue = this->smoothedValue + this->alpha * (static_cast<float>(rawValue) - this->smoothedValue);
+    return static_cast<uint16_t>(this->smoothedValue);
+}
 
 void CtrlPotBase::onValueChange(int value) { }
+
+bool CtrlPotBase::isInitialized() const { return this->initialized; }
+
+uint16_t CtrlPotBase::getValue() const
+{
+    return this->lastMappedValue;
+}
+
+void CtrlPotBase::setSensitivity(float sensitivity)
+{
+    // Ensure sensitivity is within the valid range
+    if (sensitivity < 0.01) sensitivity = 0.01;
+    if (sensitivity > 100) sensitivity = 100;
+
+    this->sensitivity = sensitivity;
+    updateAlpha();
+}
+
+void CtrlPotBase::updateAlpha()
+{
+    // Map sensitivity (0.01 - 100) to alpha (0.0001 - 1)
+    constexpr float minSensitivity = 0.01;
+    constexpr float maxSensitivity = 100.0;
+    constexpr float minAlpha = 0.0001;
+    constexpr float maxAlpha = 1.0;
+
+    this->alpha = ((this->sensitivity - minSensitivity) * (maxAlpha - minAlpha) / (maxSensitivity - minSensitivity)) + minAlpha;
+}
 
 CtrlPot::CtrlPot(
     const uint8_t sig,
     const int maxOutputValue,
-    const uint8_t margin,
-    const CallbackFunction onValueChangeCallback
-): CtrlPotBase(sig, maxOutputValue, margin), onValueChangeCallback(onValueChangeCallback) { }
+    const float sensitivity,
+    const CallbackFunction onValueChangeCallback,
+    CtrlMux* mux
+) : CtrlPotBase(sig, maxOutputValue, sensitivity, mux), onValueChangeCallback(onValueChangeCallback) { }
 
 void CtrlPot::setOnValueChange(const CallbackFunction callback)
 {
@@ -94,10 +140,15 @@ void CtrlPot::onValueChange(const int value)
 CtrlPot CtrlPot::create(
     const uint8_t sig,
     const int maxOutputValue,
-    const uint8_t margin,
-    const CallbackFunction onValueChangeCallback
+    const float sensitivity,
+    const CallbackFunction onValueChangeCallback,
+    CtrlMux* mux
 ) {
-    CtrlPot pot(sig, maxOutputValue, margin);
-    pot.setOnValueChange(onValueChangeCallback);
-    return pot;
+    return CtrlPot(
+        sig,
+        maxOutputValue,
+        sensitivity,
+        onValueChangeCallback,
+        mux
+    );
 }

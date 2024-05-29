@@ -28,18 +28,55 @@
 #include "CtrlBtn.h"
 
 CtrlBtnBase::CtrlBtnBase(
-    const uint8_t sig,
-    const uint16_t bounceDuration
-) {
+    const uint8_t sig, // If multiplexed, this will be the channel number on the mux
+    const uint16_t bounceDuration, // In microseconds
+    CtrlMux* mux // Instance of the multiplexer
+) : Muxable(mux)
+{
     this->sig = sig;
     this->bounceDuration = bounceDuration;
-    pinMode(sig, INPUT_PULLUP);
+}
+
+void CtrlBtnBase::initialize()
+{
+    if (!this->isMuxed()) pinMode(sig, INPUT_PULLUP);
     this->currentState = CtrlBtnBase::processInput();
     this->lastState = currentState;
+    this->initialized = true;
+}
+
+void CtrlBtnBase::process()
+{
+    if (!this->isInitialized()) this->initialize();
+    if (this->isDisabled()) return;
+    const unsigned long currentTime = millis();
+    const bool reading = this->processInput();
+    if (reading != this->lastState) {
+        this->debounceStart = currentTime;
+    }
+    if (currentTime - this->debounceStart > bounceDuration) {
+        if (reading != this->currentState) {
+            this->currentState = reading;
+            if (this->currentState == LOW) {
+                this->onPress();
+            } else {
+                this->onRelease();
+            }
+        }
+    }
+    this->lastState = reading;
 }
 
 uint8_t CtrlBtnBase::processInput()
 {
+    if (this->isMuxed()) {
+        if (this->mux->acquire(this->sig)) {
+            const uint8_t result = this->mux->readBtnSig(this->sig);
+            this->mux->release();
+            return result;
+        }
+        return this->lastState;
+    }
     #ifdef UNIT_TEST
         // Simulated digitalRead testing
         extern uint8_t mockButtonInput;
@@ -50,28 +87,7 @@ uint8_t CtrlBtnBase::processInput()
     #endif
 }
 
-void CtrlBtnBase::process()
-{
-    if (this->isDisabled()) return;
-
-    const unsigned long currentTime = millis();
-    const bool reading = this->processInput();
-
-    if (reading != this->lastState) {
-        this->debounceStart = currentTime;
-    }
-    if ((currentTime - this->debounceStart) > bounceDuration) {
-        if (reading != this->currentState) {
-        this->currentState = reading;
-            if (this->currentState == LOW) {
-                onPress();
-            } else {
-                onRelease();
-            }
-        }
-    }
-    this->lastState = reading;
-}
+bool CtrlBtnBase::isInitialized() const { return this->initialized; }
 
 bool CtrlBtnBase::isPressed() const { return this->currentState == LOW; }
 
@@ -85,8 +101,11 @@ CtrlBtn::CtrlBtn(
     const uint8_t sig,
     const uint16_t bounceDuration,
     const CallbackFunction onPressCallback,
-    const CallbackFunction onReleaseCallback
-): CtrlBtnBase(sig, bounceDuration), onPressCallback(onPressCallback), onReleaseCallback(onReleaseCallback) { }
+    const CallbackFunction onReleaseCallback,
+    CtrlMux* mux
+): CtrlBtnBase(sig, bounceDuration, mux),
+    onPressCallback(onPressCallback),
+    onReleaseCallback(onReleaseCallback) { }
 
 void CtrlBtn::setOnPress(const CallbackFunction callback)
 {
@@ -116,10 +135,15 @@ CtrlBtn CtrlBtn::create(
     const uint8_t sig,
     const uint16_t bounceDuration,
     const CallbackFunction onPressCallback,
-    const CallbackFunction onReleaseCallback
+    const CallbackFunction onReleaseCallback,
+    CtrlMux* mux
 ) {
-      CtrlBtn button(sig, bounceDuration);
-      button.setOnPress(onPressCallback);
-      button.setOnRelease(onReleaseCallback);
-      return button;
+    CtrlBtn button(
+        sig,
+        bounceDuration,
+        onPressCallback,
+        onReleaseCallback,
+        mux
+    );
+    return button;
 }

@@ -28,34 +28,36 @@
 #ifndef CtrlEnc_h
 #define CtrlEnc_h
 
-#include "CtrlBase.h"
 #include <Arduino.h>
+#include "CtrlBase.h"
+#include "CtrlMux.h"
 
-class CtrlEncBase : public IMuxableInput
+class CtrlEncBase : public Muxable
 {
     protected:
         uint8_t clk; // CLK pin
         uint8_t dt; // DT pin
-        int values[2] = {0, 0}; // State of the encoder
+        int values[2] = { 0, 0 }; // State of the encoder
+        bool initialized = false;
 
         CtrlEncBase(
             uint8_t clk,
-            uint8_t dt
+            uint8_t dt,
+            CtrlMux* mux = nullptr
         );
 
+        ~CtrlEncBase() = default;
+
+        void initialize();
         virtual void processInput();
-
         virtual int8_t readEncoder();
-
         virtual void onTurnLeft();
-
         virtual void onTurnRight();
 
     public:
         void process() override;
-
+        [[nodiscard]] bool isInitialized() const;
         [[nodiscard]] bool isTurningLeft() const;
-
         [[nodiscard]] bool isTurningRight() const;
 };
 
@@ -70,7 +72,8 @@ class CtrlEnc final : public CtrlEncBase
             uint8_t clk,
             uint8_t dt,
             CallbackFunction onTurnLeftCallback = nullptr,
-            CallbackFunction onTurnRightCallback = nullptr
+            CallbackFunction onTurnRightCallback = nullptr,
+            CtrlMux* mux = nullptr
         );
 
     public:
@@ -78,16 +81,15 @@ class CtrlEnc final : public CtrlEncBase
             uint8_t clk,
             uint8_t dt,
             CallbackFunction onTurnLeftCallback = nullptr,
-            CallbackFunction onTurnRightCallback = nullptr
+            CallbackFunction onTurnRightCallback = nullptr,
+            CtrlMux* mux = nullptr
         );
 
         void setOnTurnLeft(CallbackFunction callback);
-
         void setOnTurnRight(CallbackFunction callback);
 
     private:
         void onTurnLeft() override;
-
         void onTurnRight() override;
 };
 

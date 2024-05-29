@@ -5,20 +5,17 @@
 
 // Define an onTurnLeft handler
 void onTurnLeftHandlerAlternative() {
-    encoderHandlerResult = "left";
+    encoderHandlerResult = "alternative encoder turn left";
 }
 
 // Define an onTurnRight handler
 void onTurnRighthandlerAlternative() {
-    encoderHandlerResult = "right";
+    encoderHandlerResult = "alternative encoder turn right";
 }
 
 void test_encoder_alternative_can_be_turned_left()
 {
-    CtrlEnc encoder = CtrlEnc::create(
-        encoderClkSig,
-        encoderDtSig
-    );
+    CtrlEnc encoder = CtrlEnc::create(1, 2);
 
     encoder.setOnTurnLeft(onTurnLeftHandlerAlternative);
     encoder.setOnTurnRight(onTurnRighthandlerAlternative);
@@ -27,6 +24,7 @@ void test_encoder_alternative_can_be_turned_left()
     encoderHandlerResult = "";
     mockClkInput = LOW;
     mockDtInput = LOW;
+
     encoder.process(); // Process internal state
 
     // Simulate the sequence for a counterclockwise turn
@@ -37,15 +35,12 @@ void test_encoder_alternative_can_be_turned_left()
     mockDtInput = HIGH;
     encoder.process(); // Process internal state
 
-    TEST_ASSERT_EQUAL_STRING("left", encoderHandlerResult.c_str()); // Verify the encoder has turned left
+    TEST_ASSERT_EQUAL_STRING("alternative encoder turn left", encoderHandlerResult.c_str()); // Verify the encoder has turned left
 }
 
 void test_encoder_alternative_can_be_turned_right()
 {
-    CtrlEnc encoder = CtrlEnc::create(
-        encoderClkSig,
-        encoderDtSig
-    );
+    CtrlEnc encoder = CtrlEnc::create(1, 2);
 
     encoder.setOnTurnLeft(onTurnLeftHandlerAlternative);
     encoder.setOnTurnRight(onTurnRighthandlerAlternative);
@@ -54,6 +49,7 @@ void test_encoder_alternative_can_be_turned_right()
     encoderHandlerResult = "";
     mockClkInput = LOW;
     mockDtInput = LOW;
+
     encoder.process(); // Process internal state
 
     // Simulate the sequence for a clockwise turn
@@ -64,5 +60,5 @@ void test_encoder_alternative_can_be_turned_right()
     mockDtInput = HIGH;
     encoder.process(); // Process internal state
 
-    TEST_ASSERT_EQUAL_STRING("right", encoderHandlerResult.c_str()); // Verify the encoder has turned right
+    TEST_ASSERT_EQUAL_STRING("alternative encoder turn right", encoderHandlerResult.c_str()); // Verify the encoder has turned right
 }
