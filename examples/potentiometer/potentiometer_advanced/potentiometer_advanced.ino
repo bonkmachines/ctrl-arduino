@@ -40,7 +40,7 @@ class CustomPot : public CtrlPotBase
 };
 
 // Instantiate a potentiometer with the pin number, max. output value & sensitivity margin (can be 0.01 to 100).
-CustomPot potentiometer(24, 100, 0.05);
+CustomPot potentiometer(24, 100, 0.5);
 
 void setup() {
   Serial.begin(9600);

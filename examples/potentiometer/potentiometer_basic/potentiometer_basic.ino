@@ -31,7 +31,7 @@ void onValueChange(int value) {
 }
 
 // Instantiate a potentiometer with the pin number, max. output value, sensitivity margin (can be 0.01 to 100) & onValueChange handler (optional).
-CtrlPot potentiometer = CtrlPot::create(24, 100, 1, onValueChange);
+CtrlPot potentiometer = CtrlPot::create(24, 100, 0.5, onValueChange);
 
 void setup() {
   Serial.begin(9600);
