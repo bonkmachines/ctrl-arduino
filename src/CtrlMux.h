@@ -29,6 +29,7 @@
 #define CTRLMUX_H
 
 #include <Arduino.h>
+#include "CtrlMuxSet.h"
 
 class CtrlMux
 {
@@ -46,6 +47,10 @@ class CtrlMux
         bool occupied = false;
         uint8_t currentPinMode = 0;
 
+        int16_t muxId = -1;
+        CtrlMuxSet* muxSet = nullptr;
+        bool belongsToMuxSet = false;
+
         void setSignalPinToDigitalIn();
         void setSignalPinToAnalogIn();
         void setChannel(uint8_t channel) const;
@@ -58,19 +63,26 @@ class CtrlMux
             uint8_t s0,
             uint8_t s1,
             uint8_t s2,
-            uint8_t s3 = UINT8_MAX // Default to a value indicating S3 is not used
+            uint8_t s3 = UINT8_MAX, // Default to a value indicating S3 is not used,
+            CtrlMuxSet* muxSet = nullptr
         );
 
-        void subscribe(uint8_t channel);
-        [[nodiscard]] bool subscribed(uint8_t channel) const;
-        [[nodiscard]] bool subscriptionComplete() const;
-        [[nodiscard]] bool subscriberIsNext(uint8_t channel) const;
         bool acquire(uint8_t channel);
         void release();
+        void incrementSubscriber();
         [[nodiscard]] uint8_t readBtnSig(uint8_t channel);
         [[nodiscard]] uint8_t readEncClk(uint8_t channel);
         [[nodiscard]] uint8_t readEncDt(uint8_t channel);
         [[nodiscard]] uint16_t readPotSig(uint8_t channel);
+        [[nodiscard]] bool subscriptionComplete() const;
+
+    protected:
+        void subscribe(uint8_t channel);
+        [[nodiscard]] bool subscribed(uint8_t channel) const;
+        [[nodiscard]] bool subscriberIsNext(uint8_t channel) const;
+        [[nodiscard]] bool canMuxSwitch() const;
+        bool acquireChannel(uint8_t channel);
+        bool acquireChannelMuxInSet(uint8_t channel);
 };
 
 #endif // CTRLMUX_H

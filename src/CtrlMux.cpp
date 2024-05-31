@@ -26,6 +26,7 @@
  */
 
 #include "CtrlBase.h"
+#include "CtrlMuxSet.h"
 #include "CtrlMux.h"
 
 CtrlMux::CtrlMux(
@@ -35,7 +36,8 @@ CtrlMux::CtrlMux(
     const uint8_t s0,
     const uint8_t s1,
     const uint8_t s2,
-    const uint8_t s3
+    const uint8_t s3,
+    CtrlMuxSet* muxSet
 ) : count(count),
     switchInterval(switchInterval),
     sig(sig),
@@ -43,7 +45,9 @@ CtrlMux::CtrlMux(
     s1(s1),
     s2(s2),
     s3(s3),
-    s3Present(s3 != UINT8_MAX)
+    s3Present(s3 != UINT8_MAX),
+    muxSet(muxSet),
+    belongsToMuxSet(muxSet != nullptr)
 {
     pinMode(this->s0, OUTPUT);
     pinMode(this->s1, OUTPUT);
@@ -106,7 +110,24 @@ bool CtrlMux::acquire(const uint8_t channel)
     if (!this->subscriptionComplete()) {
         return false;
     }
-    if (!this->occupied && this->subscriberIsNext(channel)) {
+    if (this->belongsToMuxSet && !this->muxSet->subscribed(this->muxId)) {
+        this->muxId = this->muxSet->subscribe();
+        return false;
+    }
+    if (this->belongsToMuxSet && !this->muxSet->subscriptionComplete()) {
+        return false;
+    }
+    if (this->belongsToMuxSet) {
+        return this->acquireChannelMuxInSet(channel);
+    }
+    return this->acquireChannel(channel);
+}
+
+bool CtrlMux::acquireChannel(const uint8_t channel)
+{
+    if (!this->occupied &&
+        this->subscriberIsNext(channel)
+    ) {
         this->occupied = true;
         this->previousSubscriber = channel;
         return true;
@@ -114,15 +135,38 @@ bool CtrlMux::acquire(const uint8_t channel)
     return false;
 }
 
+bool CtrlMux::acquireChannelMuxInSet(const uint8_t channel)
+{
+    if (!this->occupied &&
+        !this->muxSet->occupied &&
+        this->subscriberIsNext(channel) &&
+        this->muxSet->subscriberIsNext(this->muxId)
+    ) {
+        this->occupied = true;
+        this->muxSet->occupied = true;
+        this->previousSubscriber = channel;
+        this->muxSet->previousSubscriber = muxId;
+        return true;
+    }
+    return false;
+}
+
 bool CtrlMux::subscriberIsNext(const uint8_t channel) const
 {
-    if (this->count == 1) return true; // If we declare one possible subscriber, it's always next :)
+    if (this->count == 1) return true; // If there is only 1 subscriber, it's always next :)
     if (this->previousSubscriber == this->count - 1) return channel == 0; // We reach the final subscriber and go back to 0
     return this->previousSubscriber == channel - 1;
 }
 
+void CtrlMux::incrementSubscriber() {
+    if (this->previousSubscriber == this->count - 1) this->previousSubscriber = 0;
+    this->previousSubscriber++;
+}
+
+
 void CtrlMux::release()
 {
+    if (this->belongsToMuxSet) this->muxSet->occupied = false;
     this->occupied = false;
 }
 

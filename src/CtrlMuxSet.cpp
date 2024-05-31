@@ -1,5 +1,5 @@
 /*!
- *  @file       CtrlBase.cpp
+ *  @file       CtrlMuxSet.cpp
  *  Project     Arduino CTRL Library
  *  @brief      CTRL Library for interfacing with common controls
  *  @author     Johannes Jan Prins
@@ -25,58 +25,40 @@
  * THE SOFTWARE.
  */
 
-#include "CtrlBase.h"
+#include "CtrlMuxSet.h"
 
-Muxable::Muxable(
-    CtrlMux* mux
-) {
-    this->mux = mux;
-    this->muxed = mux != nullptr;
-}
+CtrlMuxSet::CtrlMuxSet(
+    const int16_t count
+) : count(count) { }
 
-void Muxable::enable()
+int16_t CtrlMuxSet::subscribe()
 {
-    this->enabled = true;
+    for (int16_t i = 0; i < 255; ++i) {
+        if (this->subscribers[i] == 0) {
+            this->subscribers[i] = 1;
+            return i;
+        }
+    }
+    return -1;
 }
 
-void Muxable::disable()
+bool CtrlMuxSet::subscribed(const int16_t muxId) const
 {
-    this->enabled = false;
+    if (muxId == -1) return false;
+    return this->subscribers[muxId] == 1;
 }
 
-bool Muxable::isEnabled() const
+bool CtrlMuxSet::subscriptionComplete() const
 {
-    return this->enabled;
+    for (int16_t i = 0; i < this->count; i++) {
+        if (this->subscribers[i] != 1) return false;
+    }
+    return true;
 }
 
-bool Muxable::isDisabled() const
+bool CtrlMuxSet::subscriberIsNext(const int16_t muxId) const
 {
-    return !this->isEnabled();
+    if (this->count == 1) return true; // If there is only 1 subscriber, it's always next :)
+    if (this->previousSubscriber == this->count - 1) return muxId == 0; // We reach the final subscriber and go back to 0
+    return this->previousSubscriber == muxId - 1;
 }
-
-bool Muxable::isMuxed() const
-{
-    return this->muxed;
-}
-
-void Muxable::setMultiplexer(CtrlMux &mux)
-{
-    this->mux = &mux;
-    this->muxed = true;
-}
-
-void setDelayMicroseconds(const uint64_t duration)
-{
-    const uint64_t startTime = micros();
-    const uint64_t targetTime = startTime + duration;
-    while (micros() < targetTime) { }
-}
-
-void setDelayMilliseconds(const uint64_t duration)
-{
-    const uint64_t startTime = millis();
-    const uint64_t targetTime = startTime + duration;
-    while (millis() < targetTime) { }
-}
-
-uint8_t DISCONNECTED = UINT8_MAX;

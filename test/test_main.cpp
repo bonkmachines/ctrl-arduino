@@ -39,6 +39,9 @@ extern void test_led_can_be_calibrated();
 extern void test_buttons_can_be_multiplexed();
 extern void test_potentiometers_can_be_multiplexed();
 extern void test_rotary_encoders_can_be_multiplexed();
+extern void test_buttons_can_be_multiplexed_via_mux_set();
+extern void test_potentiometers_can_be_multiplexed_via_mux_set();
+extern void test_rotary_encoders_can_be_multiplexed_via_mux_set();
 
 void setUp(void) {
     // Empty setup function
@@ -90,8 +93,11 @@ void setup()
 
     // Multiplexer tests
     RUN_TEST(test_buttons_can_be_multiplexed);
-    RUN_TEST(test_potentiometers_can_be_multiplexed);
     RUN_TEST(test_rotary_encoders_can_be_multiplexed);
+    RUN_TEST(test_potentiometers_can_be_multiplexed);
+    RUN_TEST(test_buttons_can_be_multiplexed_via_mux_set);
+    RUN_TEST(test_rotary_encoders_can_be_multiplexed_via_mux_set);
+    RUN_TEST(test_potentiometers_can_be_multiplexed_via_mux_set);
 
     UNITY_END(); // Finish Unity Testing
 }

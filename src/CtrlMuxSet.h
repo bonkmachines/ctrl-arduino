@@ -1,5 +1,5 @@
 /*!
- *  @file       CtrlBase.cpp
+ *  @file       CtrlMuxSet.h
  *  Project     Arduino CTRL Library
  *  @brief      CTRL Library for interfacing with common controls
  *  @author     Johannes Jan Prins
@@ -25,58 +25,27 @@
  * THE SOFTWARE.
  */
 
-#include "CtrlBase.h"
+#ifndef CTRLMUXSET_H
+#define CTRLMUXSET_H
 
-Muxable::Muxable(
-    CtrlMux* mux
-) {
-    this->mux = mux;
-    this->muxed = mux != nullptr;
-}
+#include <Arduino.h>
 
-void Muxable::enable()
+class CtrlMuxSet
 {
-    this->enabled = true;
-}
+    public:
+        int16_t count;
+        int16_t subscribers[255] = { }; // A maximum of 255 multiplexers can subscribe
+        int16_t previousSubscriber = 0;
+        bool occupied = false;
 
-void Muxable::disable()
-{
-    this->enabled = false;
-}
+        explicit CtrlMuxSet(
+            int16_t count
+        );
 
-bool Muxable::isEnabled() const
-{
-    return this->enabled;
-}
+        int16_t subscribe();
+        [[nodiscard]] bool subscribed(int16_t muxId) const;
+        [[nodiscard]] bool subscriptionComplete() const;
+        [[nodiscard]] bool subscriberIsNext(int16_t muxId) const;
+};
 
-bool Muxable::isDisabled() const
-{
-    return !this->isEnabled();
-}
-
-bool Muxable::isMuxed() const
-{
-    return this->muxed;
-}
-
-void Muxable::setMultiplexer(CtrlMux &mux)
-{
-    this->mux = &mux;
-    this->muxed = true;
-}
-
-void setDelayMicroseconds(const uint64_t duration)
-{
-    const uint64_t startTime = micros();
-    const uint64_t targetTime = startTime + duration;
-    while (micros() < targetTime) { }
-}
-
-void setDelayMilliseconds(const uint64_t duration)
-{
-    const uint64_t startTime = millis();
-    const uint64_t targetTime = startTime + duration;
-    while (millis() < targetTime) { }
-}
-
-uint8_t DISCONNECTED = UINT8_MAX;
+#endif // CTRLMUXSET_H

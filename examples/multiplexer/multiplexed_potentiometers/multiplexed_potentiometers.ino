@@ -5,6 +5,10 @@
   This sketch demonstrates the implementation of a multiplexer with potentiometers.
   You can hook up a multiplexer with a maximum of 16 channels.
 
+  It is not advisable (although it is possible) to put pots on the same mux
+  as buttons & rotary encoders. This has to do with performance and the
+  potential for interference. But feel free to test it out yourself.
+
   Usage:
   Create a multiplexer with reference to:
   - sig              (required) Signal pin.
@@ -20,9 +24,15 @@
 #include <CtrlMux.h>
 #include <CtrlPot.h>
 
-// Create a multiplexer object. With:
-// The amount of pins used, switchInterval (in microseconds), signal pin, s0, s1, s2 & s3 (optional).
-CtrlMux mux(2, 10, 38, 34, 35, 36, 37);
+/*
+  Create a multiplexer and provide the following parameters:
+  - count: the number of channels used on the multiplexer
+  - switchInterval: the number of microseconds the multiplexer takes to switch channels
+    (Check the datasheet of your mux, to see how long it needs to switch)
+  - signal pin
+  - s0 - s3: the channel select pins
+*/
+CtrlMux mux(2, 1, 38, 34, 35, 36, 37);
 
 // Define an onValueChange handler for pot 1
 void onValueChange1(int value) {
