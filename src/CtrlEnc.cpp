@@ -61,16 +61,10 @@ void CtrlEncBase::process()
 void CtrlEncBase::processInput()
 {
     if (this->isMuxed()) {
-        if (this->mux->acquire(this->clk)) {
-            const uint8_t clkReading = this->mux->readEncClk(this->clk);
-            this->mux->release();
-            if (clkReading) values[0] |= 0x01;
-        }
-        if (this->mux->acquire(this->dt)) {
-            const uint8_t dtReading = this->mux->readEncDt(this->dt);
-            this->mux->release();
-            if (dtReading) values[0] |= 0x02;
-        }
+        const uint8_t clkReading = this->mux->readEncClk(this->clk);
+        if (clkReading) values[0] |= 0x01;
+        const uint8_t dtReading = this->mux->readEncDt(this->dt);
+        if (dtReading) values[0] |= 0x02;
     } else {
         #ifdef UNIT_TEST
             // Simulated pin states for testing

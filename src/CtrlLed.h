@@ -38,27 +38,93 @@ class CtrlLed final
         uint8_t brightness; // Current brightness level
         uint8_t maxBrightness; // Maximum brightness value
 
+        static void processOutput(uint8_t sig, uint8_t brightness);
+
     public:
+        /**
+        * @brief Instantiate an LED object.
+        *
+        * The CtrlLed class can be instantiated to allow LED objects to be controlled.
+        *
+        * @param sig (uint8_t) The signal pin of the LED.
+        * @param maxBrightness (uint8_t) (optional) Sets the maximum brightness of the LED, for calibration purposes (0 - 255). Default is 255.
+        * @return A new instance of the CtrlLed class.
+        */
         explicit CtrlLed(
             uint8_t sig,
             uint8_t maxBrightness = 255
         );
 
-        static void processOutput(uint8_t sig, uint8_t brightness);
-        void toggle();
-        void turnOn();
-        void turnOff();
-        void setMaxBrightness(uint8_t maxBrightness);
-        void setBrightness(uint8_t percentage);
-        [[nodiscard]] uint8_t getMaxBrightness() const;
-        [[nodiscard]] uint8_t getBrightness() const;
-        [[nodiscard]] bool isOn() const;
-        [[nodiscard]] bool isOff() const;
-
+        /**
+        * @brief Create an LED object via this static method.
+        *
+        * The CtrlLed class can be created to allow LED objects to be controlled.
+        *
+        * @param sig (uint8_t) The signal pin of the LED.
+        * @param maxBrightness (uint8_t) (optional) Sets the maximum brightness of the LED, for calibration purposes (0 - 255). Default is 255.
+        * @return A new instance of the CtrlLed class.
+        */
         static CtrlLed create(
             uint8_t sig,
             uint16_t maxBrightness = 255
         );
+
+        /**
+        * @brief Toggles the LED's off/on status.
+        */
+        void toggle();
+
+        /**
+        * @brief Turns on the LED.
+        */
+        void turnOn();
+
+        /**
+        * @brief Turns off the LED.
+        */
+        void turnOff();
+
+        /**
+        * @brief Sets the maximum brightness of the LED, for calibration purposes.
+        *
+        * @param maxBrightness (uint8_t) Sets the maximum brightness of the LED, for calibration purposes (0 - 255).
+        */
+        void setMaxBrightness(uint8_t maxBrightness);
+
+        /**
+        * @brief Sets the brightness of the LED in percentages.
+        *
+        * @param percentage (uint8_t) Sets the maximum brightness. (0 - 100).
+        */
+        void setBrightness(uint8_t percentage);
+
+        /**
+        * @brief Returns the maximum brightness set for the LED.
+        *
+        * @return The maximum brightness value (0 - 255) as a `uint8_t`.
+        */
+        [[nodiscard]] uint8_t getMaxBrightness() const;
+
+        /**
+        * @brief Returns the brightness of the LED.
+        *
+        * @return The brightness perentage (0 - 100) as a `uint8_t`.
+        */
+        [[nodiscard]] uint8_t getBrightness() const;
+
+        /**
+        * @brief Checks if the LED is turned on.
+        *
+        * @return True if the LED is turned on, false otherwise.
+        */
+        [[nodiscard]] bool isOn() const;
+
+        /**
+        * @brief Checks if the LED is turned off.
+        *
+        * @return True if the LED is turned off, false otherwise.
+        */
+        [[nodiscard]] bool isOff() const;
 };
 
 #endif

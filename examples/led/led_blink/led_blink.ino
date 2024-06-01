@@ -11,7 +11,7 @@
   Available methods:
   - turnOn()           Turns on the LED.
   - turnOff()          Turns off the LED.
-  - toggle()           Switches the LED's off/on status.
+  - toggle()           Toggles the LED's off/on status.
   - setMaxBrightness() Sets the maximum brightness of the LED, for calibration purposes (0 - 255).
   - setBrightness()    Sets the brightness of the LED in percentages (0 - 100).
   - getMaxBrightness() Returns the maximum brightness set for the LED.

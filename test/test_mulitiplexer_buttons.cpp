@@ -6,15 +6,13 @@
 
 void test_buttons_can_be_multiplexed()
 {
-    CtrlMux mux(1, 10, 1, 2, 3, 4);
+    CtrlMux mux(1, 1, 2, 3, 4);
 
     CtrlBtn button = CtrlBtn::create(0, 15);
 
     button.setMultiplexer(mux);
 
     button.process();
-
-    TEST_ASSERT_TRUE(mux.subscriptionComplete());
 
     mockMuxBtnSigInput = LOW; // Simulate button press
 

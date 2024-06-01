@@ -55,14 +55,23 @@ class CtrlPotBase : public Muxable
         ~CtrlPotBase() = default;
 
         void initialize();
+        [[nodiscard]] bool isInitialized() const;
         virtual uint16_t processInput();
         virtual void onValueChange(int value);
         void setSensitivity(float sensitivity);
         void updateAlpha();
 
     public:
+        /**
+        * @brief The process method should be called within the loop method. It handles all functionality.
+        */
         void process() override;
-        [[nodiscard]] bool isInitialized() const;
+
+        /**
+        * @brief Get the current value of the shaft position.
+        *
+        * @return The value as a `uint16_t`.
+        */
         [[nodiscard]] uint16_t getValue() const;
 };
 
@@ -71,8 +80,21 @@ class CtrlPot final : public CtrlPotBase
     using CallbackFunction = void (*)(int);
     CallbackFunction onValueChangeCallback;
 
-    protected:
-        explicit CtrlPot(
+    public:
+        /**
+        * @brief Instantiate a potentiometer object.
+        *
+        * The CtrlPot class can be instantiated to allow for specific
+        * actions whenever the value of a potentiometer changes.
+        *
+        * @param sig (uint8_t) The signal pin of the potentiometer.
+        * @param maxOutputValue (int) The maximum output value of the potentiometer.
+        * @param sensitivity (float) The sensitivity factor. Decrease this for instable (jittery) pots, min: 0.01, max: 100.
+        * @param onValueChangeCallback (optional) The on value change callback handler. Default is nullptr.
+        * @param mux (CtrlMux) (optional) The multiplexer the pot is connected to. Default is nullptr.
+        * @return A new instance of the CtrlPot class.
+        */
+        CtrlPot(
             uint8_t sig,
             int maxOutputValue,
             float sensitivity,
@@ -80,7 +102,19 @@ class CtrlPot final : public CtrlPotBase
             CtrlMux* mux = nullptr
         );
 
-    public:
+        /**
+        * @brief Create a potentiometer object via this static method.
+        *
+        * The CtrlPot class can be created to allow for specific
+        * actions whenever the value of a potentiometer changes.
+        *
+        * @param sig (uint8_t) The signal pin of the potentiometer.
+        * @param maxOutputValue (int) The maximum output value of the potentiometer.
+        * @param sensitivity (float) The sensitivity factor. Decrease this for instable (jittery) pots, min: 0.01, max: 100.
+        * @param onValueChangeCallback (optional) The on value change callback handler. Default is nullptr.
+        * @param mux (CtrlMux) (optional) The multiplexer the pot is connected to. Default is nullptr.
+        * @return A new instance of the CtrlPot class.
+        */
         static CtrlPot create(
             uint8_t sig,
             int maxOutputValue,
@@ -89,6 +123,14 @@ class CtrlPot final : public CtrlPotBase
             CtrlMux* mux = nullptr
         );
 
+        /**
+        * @brief Set the on value changehandler.
+        *
+        * Pas in a handler that is called whenever the value of the
+        * potentiometer changes. In other words, when it's turned.
+        *
+        * @param callback The callback handler method.
+        */
         void setOnValueChange(CallbackFunction callback);
 
     private:
