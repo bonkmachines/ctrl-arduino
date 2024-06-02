@@ -54,8 +54,8 @@ void onValueChangeEmptyPot(int value) {
 // Create two potentiometers. With the: signal pin number (corresponds to the attached channel on the multiplexer),
 // max. output value, sensitivity margin (can be 0.01 to 100) & onValueChange handler
 // & a reference (&mux) to the multiplexer.
-CtrlPot potentiometer1 = CtrlPot::create(0, 100, 0.5, onValueChange1, &mux);
-CtrlPot potentiometer2 = CtrlPot::create(1, 100, 0.5, onValueChange2, &mux);
+CtrlPot potentiometer1(0, 100, 0.5, onValueChange1, &mux);
+CtrlPot potentiometer2(1, 100, 0.5, onValueChange2, &mux);
 
 void setup() {
     Serial.begin(9600);

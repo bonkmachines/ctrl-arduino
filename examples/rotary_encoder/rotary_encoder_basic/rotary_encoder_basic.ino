@@ -35,7 +35,7 @@ void onTurnRight() {
 }
 
 // Create a rotary encoder with the clk signal pin number, dt signal pin, onTurnleft (optional) & onTurnRight (optional) handler.
-CtrlEnc encoder = CtrlEnc::create(33, 34, onTurnleft, onTurnRight);
+CtrlEnc encoder(33, 34, onTurnleft, onTurnRight);
 
 void setup() {
   Serial.begin(9600);

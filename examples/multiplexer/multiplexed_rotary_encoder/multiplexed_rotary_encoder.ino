@@ -58,8 +58,8 @@ void onTurnRight2() {
 // clk signal pin & dt signal pin (both correspond to the attached channels on the multiplexer),
 // onTurnleft (optional) & onTurnRight (optional) handler,
 // & a reference (&mux) to the multiplexer.
-CtrlEnc encoder1 = CtrlEnc::create(0, 1, onTurnleft1, onTurnRight1, &mux);
-CtrlEnc encoder2 = CtrlEnc::create(2, 3, onTurnleft2, onTurnRight2, &mux);
+CtrlEnc encoder1(0, 1, onTurnleft1, onTurnRight1, &mux);
+CtrlEnc encoder2(2, 3, onTurnleft2, onTurnRight2, &mux);
 
 void setup() {
     Serial.begin(9600);

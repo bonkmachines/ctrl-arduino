@@ -64,8 +64,8 @@ and pass a reference of the multiplexer to them (&mux).
 #include <CtrlBtn.h>
 
 // Create a multiplexer object. With:
-// The amount of pins used, switchInterval (in microseconds), signal pin, s0, s1, s2 & s3 (optional).
-CtrlMux mux(2, 10, 9, 13, 12, 11, 10);
+// The signal pin, s0, s1, s2 & s3 (optional).
+CtrlMux mux(9, 13, 12, 11, 10);
 
 // Define an onPress handler for button 1.
 void onPress1() {
@@ -80,8 +80,8 @@ void onPress2() {
 // Create two buttons. With the: signal pin number (corresponds to the attached channel on the multiplexer),
 // the bounce duration, an onPress handler, without onRelease handler (we don't need it for this example)
 // & a reference (&mux) to the multiplexer.
-CtrlBtn button1 = CtrlBtn::create(0, 15, onPress1, nullptr, &mux);
-CtrlBtn button2 = CtrlBtn::create(1, 15, onPress2, nullptr, &mux);
+CtrlBtn button1(0, 15, onPress1, nullptr, &mux);
+CtrlBtn button2(1, 15, onPress2, nullptr, &mux);
 
 void setup() {
     Serial.begin(9600);

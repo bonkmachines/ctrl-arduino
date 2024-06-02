@@ -72,7 +72,7 @@ void onRelease() {
 
 // Create a button with the signal pin number, bounce duration,
 // onPress (optional) & onRelease (optional) handler.
-CtrlBtn button = CtrlBtn::create(10, 15, onPress, onRelease);
+CtrlBtn button(10, 15, onPress, onRelease);
 
 void setup() {
   Serial.begin(9600);

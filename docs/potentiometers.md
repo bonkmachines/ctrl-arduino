@@ -89,9 +89,9 @@ void onValueChange(int value) {
   Serial.println(value);
 }
 
-// Instantiate a potentiometer with the pin number, max. output value, 
+// Create a potentiometer with the pin number, max. output value, 
 // sensitivity margin (can be 0.01 to 100) & onValueChange handler.
-CtrlPot potentiometer = CtrlPot::create(A0, 100, 1, onValueChange);
+CtrlPot potentiometer(A0, 100, 10, onValueChange);
 
 void setup() {
   Serial.begin(9600);

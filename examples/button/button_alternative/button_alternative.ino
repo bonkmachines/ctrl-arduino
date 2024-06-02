@@ -37,7 +37,7 @@
 #include <CtrlBtn.h>
 
 // Instantiate a button with the signal pin number & bounce duration.
-CtrlBtn button = CtrlBtn::create(36, 15);
+CtrlBtn button(36, 15);
 
 // Define an onPress handler.
 void onPress() {

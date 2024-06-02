@@ -47,8 +47,8 @@ void onPress2() {
 // Create two buttons. With the: signal pin number (corresponds to the attached channel on the multiplexer),
 // the bounce duration, an onPress handler, without onRelease handler (we don't need it for this example)
 // & a reference (&mux) to the multiplexer.
-CtrlBtn button1 = CtrlBtn::create(0, 15, onPress1, nullptr, &mux);
-CtrlBtn button2 = CtrlBtn::create(1, 15, onPress2, nullptr, &mux);
+CtrlBtn button1(0, 15, onPress1, nullptr, &mux);
+CtrlBtn button2(1, 15, onPress2, nullptr, &mux);
 
 void setup() {
     Serial.begin(9600);
