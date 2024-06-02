@@ -12,8 +12,6 @@
   Usage:
   Create a multiplexer with reference to:
   - sig              (required) Signal pin.
-  - switchInterval   (required) The amount of time the multiplexer needs to switch.
-                     Try what works best for you (usually between 10 and 50 microseconds).
   - s0               (required) Select input 0 (used internally for switching channels).
   - s1               (required) Select input 1 (used internally for switching channels).
   - s2               (required) Select input 2 (used internally for switching channels).
@@ -26,11 +24,8 @@
 
 /*
   Create a multiplexer and provide the following parameters:
-  - count: the number of channels used on the multiplexer
-  - switchInterval: the number of microseconds the multiplexer takes to switch channels
-    (Check the datasheet of your mux, to see how long it needs to switch)
-  - signal pin
-  - s0 - s3: the channel select pins
+  - signal pin.
+  - s0 - s3: the channel select pins (s3 is optional).
 */
 CtrlMux mux(38, 34, 35, 36, 37);
 
