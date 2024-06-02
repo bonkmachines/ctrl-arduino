@@ -17,7 +17,7 @@ void test_buttons_can_be_multiplexed()
     mockMuxBtnSigInput = LOW; // Simulate button press
 
     // Call process multiple times
-    for (int i = 0; i < 10000; ++i) {
+    for (int i = 0; i < 20000; ++i) {
         button.process();
     }
 
@@ -26,7 +26,7 @@ void test_buttons_can_be_multiplexed()
     mockMuxBtnSigInput = HIGH; // Simulate button release
 
     // Call process multiple times
-    for (int i = 0; i < 10000; ++i) {
+    for (int i = 0; i < 20000; ++i) {
         button.process();
     }
 

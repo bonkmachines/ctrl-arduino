@@ -32,7 +32,7 @@
   - signal pin
   - s0 - s3: the channel select pins
 */
-CtrlMux mux(4, 1, 38, 34, 35, 36, 37);
+CtrlMux mux(38, 34, 35, 36, 37);
 
 // Define an onTurnleft handler for encoder 1.
 void onTurnleft1() {
@@ -54,7 +54,7 @@ void onTurnRight2() {
     Serial.println("Rotary encoder 2 turn right");
 }
 
-// Create two rotary encoders with the folllowing parameters:
+// Create two rotary encoders with the following parameters:
 // clk signal pin & dt signal pin (both correspond to the attached channels on the multiplexer),
 // onTurnleft (optional) & onTurnRight (optional) handler,
 // & a reference (&mux) to the multiplexer.

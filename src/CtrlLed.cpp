@@ -66,17 +66,18 @@ void CtrlLed::turnOff()
     processOutput(this->sig, 0);
 }
 
-void CtrlLed::setMaxBrightness(const uint8_t maxBrightness)
+void CtrlLed::setMaxBrightness(int maxBrightness)
 {
-    this->maxBrightness = (maxBrightness < 0) ? 0 : (maxBrightness > 255) ? 255 : maxBrightness;
+    if (maxBrightness > 255) maxBrightness = 255;
+    if (maxBrightness < 0) maxBrightness = 0;
+    this->maxBrightness = maxBrightness;
 }
 
-void CtrlLed::setBrightness(const uint8_t percentage)
+void CtrlLed::setBrightness(int percentage)
 {
-    const uint8_t clampedPercentage = (percentage < 0) ? 0 : (percentage > 100) ? 100 : percentage;
-
-    this->brightness = map(clampedPercentage, 0, 100, 0, this->maxBrightness);
-
+    if (percentage > 100) percentage = 100;
+    if (percentage < 0) percentage = 0;
+    this->brightness = map(percentage, 0, 100, 0, this->maxBrightness);
     if (this->on) {
         processOutput(this->sig, this->brightness);
     }

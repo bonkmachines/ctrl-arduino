@@ -87,16 +87,16 @@ class CtrlLed final
         /**
         * @brief Sets the maximum brightness of the LED, for calibration purposes.
         *
-        * @param maxBrightness (uint8_t) Sets the maximum brightness of the LED, for calibration purposes (0 - 255).
+        * @param maxBrightness (int) Sets the maximum brightness of the LED, for calibration purposes (0 - 255).
         */
-        void setMaxBrightness(uint8_t maxBrightness);
+        void setMaxBrightness(int maxBrightness);
 
         /**
         * @brief Sets the brightness of the LED in percentages.
         *
-        * @param percentage (uint8_t) Sets the maximum brightness. (0 - 100).
+        * @param percentage (int) Sets the maximum brightness. (0 - 100).
         */
-        void setBrightness(uint8_t percentage);
+        void setBrightness(int percentage);
 
         /**
         * @brief Returns the maximum brightness set for the LED.
@@ -108,7 +108,7 @@ class CtrlLed final
         /**
         * @brief Returns the brightness of the LED.
         *
-        * @return The brightness perentage (0 - 100) as a `uint8_t`.
+        * @return The brightness percentage (0 - 100) as a `uint8_t`.
         */
         [[nodiscard]] uint8_t getBrightness() const;
 

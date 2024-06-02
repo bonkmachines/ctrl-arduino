@@ -70,7 +70,7 @@ class CtrlBtnBase : public Muxable
         [[nodiscard]] bool isPressed() const;
 
         /**
-        * @brief Find out if a button is currently not being presed.
+        * @brief Find out if a button is currently not being pressed.
         *
         * @return True if button is not pressed, false otherwise.
         */

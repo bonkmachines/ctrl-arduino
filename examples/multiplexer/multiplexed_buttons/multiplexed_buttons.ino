@@ -32,7 +32,7 @@
   - signal pin
   - s0 - s3: the channel select pins
 */
-CtrlMux mux(2, 1, 38, 34, 35, 36, 37);
+CtrlMux mux(38, 34, 35, 36, 37);
 
 // Define an onPress handler for button 1.
 void onPress1() {
