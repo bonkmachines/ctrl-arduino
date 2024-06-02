@@ -78,3 +78,5 @@ void setDelayMilliseconds(const uint64_t duration)
     const uint64_t targetTime = startTime + duration;
     while (millis() < targetTime) { }
 }
+
+uint8_t DISCONNECTED = UINT8_MAX;

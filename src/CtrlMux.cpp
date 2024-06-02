@@ -29,16 +29,12 @@
 #include "CtrlMux.h"
 
 CtrlMux::CtrlMux(
-    const uint8_t count,
-    const uint8_t switchInterval,
     const uint8_t sig,
     const uint8_t s0,
     const uint8_t s1,
     const uint8_t s2,
     const uint8_t s3
-) : count(count),
-    switchInterval(switchInterval),
-    sig(sig),
+) : sig(sig),
     s0(s0),
     s1(s1),
     s2(s2),
@@ -77,53 +73,6 @@ void CtrlMux::setChannel(const uint8_t channel) const
     if (this->s3Present) {
         digitalWrite(this->s3, bitRead(channel, 3));
     }
-}
-
-void CtrlMux::subscribe(const uint8_t channel)
-{
-    this->subscribers[channel] = 1;
-}
-
-bool CtrlMux::subscribed(const uint8_t channel) const
-{
-    return this->subscribers[channel] == 1;
-}
-
-bool CtrlMux::subscriptionComplete() const
-{
-    for (uint8_t i = 0; i < this->count; i++) {
-        if (this->subscribers[i] != 1) return false;
-    }
-    return true;
-}
-
-bool CtrlMux::acquire(const uint8_t channel)
-{
-    if (!this->subscribed(channel)) {
-        this->subscribe(channel);
-        return false;
-    }
-    if (!this->subscriptionComplete()) {
-        return false;
-    }
-    if (!this->occupied && this->subscriberIsNext(channel)) {
-        this->occupied = true;
-        this->previousSubscriber = channel;
-        return true;
-    }
-    return false;
-}
-
-bool CtrlMux::subscriberIsNext(const uint8_t channel) const
-{
-    if (this->count == 1) return true; // If we declare one possible subscriber, it's always next :)
-    if (this->previousSubscriber == this->count - 1) return channel == 0; // We reach the final subscriber and go back to 0
-    return this->previousSubscriber == channel - 1;
-}
-
-void CtrlMux::release()
-{
-    this->occupied = false;
 }
 
 uint8_t CtrlMux::readBtnSig(const uint8_t channel)
@@ -196,4 +145,26 @@ uint16_t CtrlMux::readPotSig(const uint8_t channel)
         // Normal operation with real hardware
         return analogRead(this->sig);
     #endif
+}
+
+void CtrlMux::setSwitchInterval(const uint8_t interval)
+{
+    this->switchInterval = interval;
+}
+
+CtrlMux CtrlMux::create(
+    const uint8_t sig,
+    const uint8_t s0,
+    const uint8_t s1,
+    const uint8_t s2,
+    const uint8_t s3
+) {
+    const CtrlMux mux(
+        sig,
+        s0,
+        s1,
+        s2,
+        s3
+    );
+    return mux;
 }

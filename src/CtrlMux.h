@@ -33,17 +33,13 @@
 class CtrlMux
 {
     protected:
-        uint8_t count;
-        uint8_t switchInterval;
         uint8_t sig;
         uint8_t s0;
         uint8_t s1;
         uint8_t s2;
         uint8_t s3;
         bool s3Present;
-        uint8_t subscribers[16] = { };
-        uint8_t previousSubscriber = 0;
-        bool occupied = false;
+        uint8_t switchInterval = 1; // In microseconds
         uint8_t currentPinMode = 0;
 
         void setSignalPinToDigitalIn();
@@ -51,9 +47,20 @@ class CtrlMux
         void setChannel(uint8_t channel) const;
 
     public:
+        /**
+        * @brief Instantiate a Multiplexer object.
+        *
+        * The CtrlMux class can be instantiated to allow buttons,
+        * rotary encoder & potentiometers to be multiplexed.
+        *
+        * @param sig (uint8_t) The signal (SIG) pin of the multiplexer.
+        * @param s0 (uint8_t) The s0 channelselect pin.
+        * @param s1 (uint8_t) The s1 channelselect pin.
+        * @param s2 (uint8_t) The s2 channelselect pin.
+        * @param s3 (uint8_t) (optional) The s3 channel select pin. Default is UINT8_MAX.
+        * @return A new instance of the CtrlMux class.
+        */
         CtrlMux(
-            uint8_t count,
-            uint8_t switchInterval,
             uint8_t sig,
             uint8_t s0,
             uint8_t s1,
@@ -61,12 +68,41 @@ class CtrlMux
             uint8_t s3 = UINT8_MAX // Default to a value indicating S3 is not used
         );
 
-        void subscribe(uint8_t channel);
-        [[nodiscard]] bool subscribed(uint8_t channel) const;
-        [[nodiscard]] bool subscriptionComplete() const;
-        [[nodiscard]] bool subscriberIsNext(uint8_t channel) const;
-        bool acquire(uint8_t channel);
-        void release();
+        /**
+        * @brief Create a Multiplexer object via this static method.
+        *
+        * The CtrlMux class can be created to allow buttons,
+        * rotary encoder & potentiometers to be multiplexed.
+        *
+        * @param sig (uint8_t) The signal (SIG) pin of the multiplexer.
+        * @param s0 (uint8_t) The s0 channelselect pin.
+        * @param s1 (uint8_t) The s1 channelselect pin.
+        * @param s2 (uint8_t) The s2 channelselect pin.
+        * @param s3 (uint8_t) (optional) The s3 channel select pin. Default is UINT8_MAX.
+        * @return A new instance of the CtrlMux class.
+        */
+        static CtrlMux create(
+            uint8_t sig,
+            uint8_t s0,
+            uint8_t s1,
+            uint8_t s2,
+            uint8_t s3 = UINT8_MAX // Default to a value indicating S3 is not used
+        );
+
+        /**
+        * @brief Set the switch interval of the multiplexer.
+        *
+        * This is the amount of time we need to give the mux in order to
+        * complete switching a channel. Consult the datasheet of your
+        * multiplexer to check how much time it needs to switch channels.
+        * The minimum here is 1 microseconds, as the more basic microcontrollers
+        * cannot get down to nanosecond level precision. It is unlikely that
+        * you will need a switch interval of higher that 1 microsecond.
+        *
+        * @param interval (uint8_t) The switch interval (in microseconds).
+        */
+        void setSwitchInterval(uint8_t interval);
+
         [[nodiscard]] uint8_t readBtnSig(uint8_t channel);
         [[nodiscard]] uint8_t readEncClk(uint8_t channel);
         [[nodiscard]] uint8_t readEncDt(uint8_t channel);

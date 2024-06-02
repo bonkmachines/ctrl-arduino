@@ -70,12 +70,7 @@ void CtrlBtnBase::process()
 uint8_t CtrlBtnBase::processInput()
 {
     if (this->isMuxed()) {
-        if (this->mux->acquire(this->sig)) {
-            const uint8_t result = this->mux->readBtnSig(this->sig);
-            this->mux->release();
-            return result;
-        }
-        return this->lastState;
+        return  this->mux->readBtnSig(this->sig);
     }
     #ifdef UNIT_TEST
         // Simulated digitalRead testing

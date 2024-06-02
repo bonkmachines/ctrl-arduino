@@ -45,6 +45,28 @@ void test_led_can_change_brightness()
     led.setBrightness(100);
 
     TEST_ASSERT_EQUAL_INT(100, led.getBrightness());
+
+    led.setBrightness(0);
+
+    TEST_ASSERT_EQUAL_INT(0, led.getBrightness());
+}
+
+void test_led_cant_change_brightness_beyond_maximum()
+{
+    CtrlLed led(1, 15);
+
+    led.setBrightness(101);
+
+    TEST_ASSERT_EQUAL_INT(100, led.getBrightness());
+}
+
+void test_led_cant_change_brightness_beyond_minimum()
+{
+    CtrlLed led(1, 15);
+
+    led.setBrightness(-1);
+
+    TEST_ASSERT_EQUAL_INT(0, led.getBrightness());
 }
 
 void test_led_can_be_calibrated()
@@ -54,4 +76,22 @@ void test_led_can_be_calibrated()
     led.setMaxBrightness(50);
 
     TEST_ASSERT_EQUAL_INT(50, led.getMaxBrightness());
+}
+
+void test_led_cant_be_calibrated_beyond_maximum()
+{
+    CtrlLed led(1);
+
+    led.setMaxBrightness(256);
+
+    TEST_ASSERT_EQUAL_INT(255, led.getMaxBrightness());
+}
+
+void test_led_cant_be_calibrated_beyond_minimum()
+{
+    CtrlLed led(1);
+
+    led.setMaxBrightness(-1);
+
+    TEST_ASSERT_EQUAL_INT(0, led.getMaxBrightness());
 }

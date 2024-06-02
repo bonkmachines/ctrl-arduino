@@ -58,4 +58,9 @@ void setDelayMicroseconds(uint64_t duration);
 
 void setDelayMilliseconds(uint64_t duration);
 
+/**
+ * Used to indicate a pin is not connected
+ */
+extern uint8_t DISCONNECTED;
+
 #endif

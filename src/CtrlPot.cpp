@@ -51,9 +51,9 @@ void CtrlPotBase::process()
 {
     if (!this->isInitialized()) this->initialize();
     if (this->isDisabled()) return;
-    uint16_t newValue = this->processInput();
+    const uint16_t newValue = this->processInput();
     if (newValue != this->lastValue) {
-        uint16_t mappedValue = map(newValue, 0, this->analogMax, 0, this->maxOutputValue);
+        const uint16_t mappedValue = map(newValue, 0, this->analogMax, 0, this->maxOutputValue);
         if (mappedValue != this->lastMappedValue) {
             this->onValueChange(mappedValue);
             this->lastMappedValue = mappedValue;
@@ -66,12 +66,7 @@ uint16_t CtrlPotBase::processInput()
 {
     uint16_t rawValue;
     if (this->isMuxed()) {
-        if (this->mux->acquire(this->sig)) {
-            rawValue = this->mux->readPotSig(this->sig);
-            this->mux->release();
-        } else {
-            return this->lastValue;
-        }
+        rawValue = this->mux->readPotSig(this->sig);
     } else {
         #ifdef UNIT_TEST
             // Simulated analogRead for testing

@@ -39,7 +39,7 @@ class CtrlBtnBase : public Muxable
         bool currentState = HIGH;
         bool lastState = HIGH;
         unsigned long debounceStart = 0;
-        uint16_t bounceDuration;
+        uint16_t bounceDuration; // In milliseconds
         bool initialized = false;
 
         CtrlBtnBase(
@@ -51,14 +51,29 @@ class CtrlBtnBase : public Muxable
         ~CtrlBtnBase() = default;
 
         void initialize();
+        [[nodiscard]] bool isInitialized() const;
         virtual uint8_t processInput();
         virtual void onPress();
         virtual void onRelease();
 
     public:
+        /**
+        * @brief The process method should be called within the loop method. It handles all functionality.
+        */
         void process() override;
-        [[nodiscard]] bool isInitialized() const;
+
+        /**
+        * @brief Find out if a button is currently being pressed.
+        *
+        * @return True if button is being pressed, false otherwise.
+        */
         [[nodiscard]] bool isPressed() const;
+
+        /**
+        * @brief Find out if a button is currently not being presed.
+        *
+        * @return True if button is not pressed, false otherwise.
+        */
         [[nodiscard]] bool isReleased() const;
 };
 
@@ -68,7 +83,20 @@ class CtrlBtn final : public CtrlBtnBase
     CallbackFunction onPressCallback;
     CallbackFunction onReleaseCallback;
 
-    protected:
+    public:
+        /**
+        * @brief Instantiate a button object.
+        *
+        * The CtrlBtn class can be instantiated to allow for specific
+        * actions on press, on release & on delayed release.
+        *
+        * @param sig (uint8_t) The signal (SIG) pin of the button.
+        * @param bounceDuration (uint16_t) The bounce duration in milliseconds.
+        * @param onPressCallback (optional) The on press callback handler. Default is nullptr.
+        * @param onReleaseCallback (optional) The on release callback handler. Default is nullptr.
+        * @param mux (CtrlMux) (optional) The multiplexer the button is connected to. Default is nullptr.
+        * @return A new instance of the CtrlBtn class.
+        */
         CtrlBtn(
             uint8_t sig,
             uint16_t bounceDuration,
@@ -77,7 +105,19 @@ class CtrlBtn final : public CtrlBtnBase
             CtrlMux* mux = nullptr
         );
 
-    public:
+        /**
+        * @brief Create a button object via this static method.
+        *
+        * The CtrlBtn class can be created to allow for specific actions
+        * on press, on release & on delayed release.
+        *
+        * @param sig (uint8_t) The signal (SIG) pin of the button.
+        * @param bounceDuration (uint16_t) The bounce duration in milliseconds.
+        * @param onPressCallback (optional) The on press callback handler. Default is nullptr.
+        * @param onReleaseCallback (optional) The on release callback handler. Default is nullptr.
+        * @param mux (CtrlMux) (optional) The multiplexer the button is connected to. Default is nullptr.
+        * @return A new instance of the CtrlBtn class.
+        */
         static CtrlBtn create(
             uint8_t sig,
             uint16_t bounceDuration,
@@ -86,7 +126,22 @@ class CtrlBtn final : public CtrlBtnBase
             CtrlMux* mux = nullptr
         );
 
+        /**
+        * @brief Set the on press handler.
+        *
+        * Pass in a handler that is called whenever the button enters the "pressed" state.
+        *
+        * @param callback The callback handler method.
+        */
         void setOnPress(CallbackFunction callback);
+
+        /**
+        * @brief Set the on release handler.
+        *
+        * Pass in a handler that is called whenever the button enters the "released" state.
+        *
+        * @param callback The callback handler method.
+        */
         void setOnRelease(CallbackFunction callback);
 
     private:

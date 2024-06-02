@@ -6,7 +6,7 @@
 
 void test_potentiometers_can_be_multiplexed()
 {
-    CtrlMux mux(1, 10, 1, 2, 3, 4);
+    CtrlMux mux(1, 1, 2, 3, 4);
 
     CtrlPot potentiometer = CtrlPot::create(
         0,
@@ -17,8 +17,6 @@ void test_potentiometers_can_be_multiplexed()
     potentiometer.setMultiplexer(mux);
 
     potentiometer.process();
-
-    TEST_ASSERT_TRUE(mux.subscriptionComplete());
 
     mockMuxPotSigInput = 1023; // Simulate a maximum position of the pot. Range: 0 - 1023
 
