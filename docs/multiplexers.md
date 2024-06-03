@@ -36,9 +36,9 @@ Now hook up the components according to the figure below.
 As your circuit grows in complexity, adding a decoupling capacitor across the VCC
 and GND pins becomes increasingly important. This capacitor serves to stabilize
 the voltage supply, reduce noise, and improve overall performance and reliability.
-In this case you could start with a 100 nF capacitor. Put it as close as possible
+In this case you could start with a 100nF (0.1 µF) capacitor. Put it as close as possible
 to the VCC and GND pin of the multiplexer. If that is not enough you can go up to
-something like 1 µF (if you are dealing with a very noisy system). Note that going
+something like 1µF (if you are dealing with a very noisy system). Note that going
 up in capacitance comes with trade-offs such as increased component size, cost,
 and potential impact on circuit response time.
 
@@ -51,7 +51,16 @@ to a board. If not, have a look at the tutorials at: https://www.arduino.cc/guid
 
 Also make sure you have the CTRL library installed through the library manager.
 
-NOTE: Then upload the sketch to your board and open up the serial monitor.
+NOTE: Make sure to check the datasheet of your multiplexer to determine if the default
+1 microsecond switching interval is sufficient. For example, a Sparkfun CD74HC4067
+running at 5 volts will probably operate fine at a switching speed of 1 microsecond.
+However, if you run it at 3.3 volts, it will need a switching interval of around 2
+microseconds or higher. You can set this with: mux.setSwitchInterval(2).
+There are, however, more factors that determine how responsive your MUX is, such as
+signal integrity and power supply noise. Always add some decoupling capacitors to your
+MUX power supply and at any other place where noise might be created.
+
+Then upload the sketch to your board and open up the serial monitor.
 This allows you to see the output of the button presses. For some boards
 you have to set the 'USB Type' to 'Serial', in the Arduino IDE under 'Tools'.
 
@@ -85,7 +94,8 @@ CtrlBtn button2(1, 15, onPress2, nullptr, &mux);
 
 void setup() {
     Serial.begin(9600);
-}
+    mux.setSwitchInterval(2); // In microseconds.
+}o
 
 void loop() {
     // The process methods will poll the button objects and handle all their functionality.

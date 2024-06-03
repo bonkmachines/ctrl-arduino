@@ -42,6 +42,9 @@ CtrlEnc encoder2(2, 3, onTurnleft2, onTurnRight2, &mux3);
 
 void setup() {
     Serial.begin(9600);
+    mux1.setSwitchInterval(2); // In microseconds.
+    mux2.setSwitchInterval(2); // In microseconds.
+    mux3.setSwitchInterval(2); // In microseconds.
 }
 
 void loop() {
