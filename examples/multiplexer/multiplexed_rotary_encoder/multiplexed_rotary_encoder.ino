@@ -18,14 +18,14 @@
   - setSwitchInterval()  Sets the time we allow the multiplexer to switch (in microseconds)
                          The default value is 1 microsecond.
 
-    NOTE: Make sure to check the datasheet of your multiplexer to determine if the default
-    1 microsecond switching interval is sufficient. For example, a Sparkfun CD74HC4067
-    running at 5 volts will probably operate fine at a switching speed of 1 microsecond.
-    However, if you run it at 3.3 volts, it will need a switching interval of around 2
-    microseconds or higher. You can set this with: mux.setSwitchInterval(2).
-    There are, however, more factors that determine how responsive your MUX is, such as
-    signal integrity and power supply noise. Always add some decoupling capacitors to your
-    MUX power supply and at any other place where noise might be created.
+  NOTE: Make sure to check the datasheet of your multiplexer to determine if the default
+  1 microsecond switching interval is sufficient. For example, a Sparkfun CD74HC4067
+  running at 5 volts will probably operate fine at a switching speed of 1 microsecond.
+  However, if you run it at 3.3 volts, it will need a switching interval of around 2
+  microseconds or higher. You can set this with: mux.setSwitchInterval(2).
+  There are, however, more factors that determine how responsive your MUX is, such as
+  signal integrity and power supply noise. Always add some decoupling capacitors to your
+  MUX power supply and at any other place where noise might be created.
 */
 
 #include <CtrlMux.h>
