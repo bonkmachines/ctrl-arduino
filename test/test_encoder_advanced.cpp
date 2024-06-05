@@ -3,10 +3,13 @@
 #include "CtrlEnc.h"
 #include "test_globals.h"
 
-class CustomEncoder final : public CtrlEncBase
+class CustomEncoder final : public CtrlEnc
 {
     public:
-        CustomEncoder(const uint8_t clk, const uint8_t dt) : CtrlEncBase(clk, dt) { }
+        CustomEncoder(
+            const uint8_t clk,
+            const uint8_t dt
+        ) : CtrlEnc(clk, dt) { }
 
     private:
         void onTurnLeft() override

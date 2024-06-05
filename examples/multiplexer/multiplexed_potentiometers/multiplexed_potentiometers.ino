@@ -7,12 +7,12 @@
 
   Usage:
   Create a multiplexer with reference to:
-  - sig              (required) Signal pin.
-  - s0               (required) Select input 0 (used internally for switching channels).
-  - s1               (required) Select input 1 (used internally for switching channels).
-  - s2               (required) Select input 2 (used internally for switching channels).
-  - s3               (optional) Select input 3 (used internally for switching channels).
-                     Only needed if you use a 16 channel mux. Not needed for 8 channels.
+  - sig   (required) Signal pin.
+  - s0    (required) Select input 0 (used internally for switching channels).
+  - s1    (required) Select input 1 (used internally for switching channels).
+  - s2    (required) Select input 2 (used internally for switching channels).
+  - s3    (optional) Select input 3 (used internally for switching channels).
+          Only needed if you use a 16 channel mux. Not needed for 8 channels.
 
   Available methods:
   - setSwitchInterval()  Sets the time we allow the multiplexer to switch (in microseconds)
@@ -25,7 +25,7 @@
   microseconds or higher. You can set this with: mux.setSwitchInterval(2).
   There are, however, more factors that determine how responsive your MUX is, such as
   signal integrity and power supply noise. Always add some decoupling capacitors to your
-  MUX power supply and at any other place where noise might be created.
+  MUX power supply and at any other place where noise might be generated.
 */
 
 #include <CtrlMux.h>
@@ -36,7 +36,7 @@
   - signal pin.
   - s0 - s3: the channel select pins (s3 is optional).
 */
-CtrlMux mux(38, 34, 35, 36, 37);
+CtrlMux mux(A14, 33, 34, 35, 36);
 
 // Define an onValueChange handler for pot 1
 void onValueChange1(int value) {
@@ -48,11 +48,6 @@ void onValueChange1(int value) {
 void onValueChange2(int value) {
     Serial.print("Pot 2 value: ");
     Serial.println(value);
-}
-
-// Define an onValueChange handler for empty pots
-void onValueChangeEmptyPot(int value) {
-//
 }
 
 // Create two potentiometers. With the: signal pin number (corresponds to the attached channel on the multiplexer),

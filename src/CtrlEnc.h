@@ -32,45 +32,16 @@
 #include "CtrlBase.h"
 #include "CtrlMux.h"
 
-class CtrlEncBase : public Muxable
+class CtrlEnc : public Muxable
 {
     protected:
         uint8_t clk; // CLK pin
         uint8_t dt; // DT pin
         int values[2] = { 0, 0 }; // State of the encoder
         bool initialized = false;
-
-        CtrlEncBase(
-            uint8_t clk,
-            uint8_t dt,
-            CtrlMux* mux = nullptr
-        );
-
-        ~CtrlEncBase() = default;
-
-        void initialize();
-        [[nodiscard]] bool isInitialized() const;
-        virtual void processInput();
-        virtual int8_t readEncoder();
-        virtual void onTurnLeft();
-        virtual void onTurnRight();
-
-    public:
-        /**
-        * @brief The process method should be called within the loop method. It handles all functionality.
-        */
-        void process() override;
-
-        [[nodiscard]] bool isTurningLeft() const;
-
-        [[nodiscard]] bool isTurningRight() const;
-};
-
-class CtrlEnc final : public CtrlEncBase
-{
-    using CallbackFunction = void (*)();
-    CallbackFunction onTurnLeftCallback;
-    CallbackFunction onTurnRightCallback;
+        using CallbackFunction = void (*)();
+        CallbackFunction onTurnLeftCallback;
+        CallbackFunction onTurnRightCallback;
 
     public:
         /**
@@ -94,26 +65,26 @@ class CtrlEnc final : public CtrlEncBase
             CtrlMux* mux = nullptr
         );
 
+        virtual ~CtrlEnc() = default;
+
         /**
-        * @brief Create a rotary encoder object via this static method.
-        *
-        * The CtrlEnc class can be created to allow for specific
-        * actions on turnign left, & on turning right.
-        *
-        * @param clk (uint8_t) The CLK signal pin of the encoder.
-        * @param dt (uint8_t) The DT signal pin of the encoder.
-        * @param onTurnLeftCallback (optional) The on turn left callback handler. Default is nullptr.
-        * @param onTurnRightCallback (optional) The on turn right callback handler. Default is nullptr.
-        * @param mux (CtrlMux) (optional) The multiplexer the button is connected to. Default is nullptr.
-        * @return A new instance of the CtrlEnc class.
+        * @brief The process method should be called within the loop method. It handles all functionality.
         */
-        static CtrlEnc create(
-            uint8_t clk,
-            uint8_t dt,
-            CallbackFunction onTurnLeftCallback = nullptr,
-            CallbackFunction onTurnRightCallback = nullptr,
-            CtrlMux* mux = nullptr
-        );
+        void process() override;
+
+        /**
+        * @brief Find out if an encoder is currently turning left.
+        *
+        * @return True if encoder is turning left, false otherwise.
+        */
+        [[nodiscard]] bool isTurningLeft() const;
+
+        /**
+        * @brief Find out if an encoder is currently turning right.
+        *
+        * @return True if encoder is turning right, false otherwise.
+        */
+        [[nodiscard]] bool isTurningRight() const;
 
         /**
         * @brief Set the on turn left handler.
@@ -133,9 +104,13 @@ class CtrlEnc final : public CtrlEncBase
         */
         void setOnTurnRight(CallbackFunction callback);
 
-    private:
-        void onTurnLeft() override;
-        void onTurnRight() override;
+    protected:
+        void initialize();
+        [[nodiscard]] bool isInitialized() const;
+        virtual void processInput();
+        virtual int8_t readEncoder();
+        virtual void onTurnLeft();
+        virtual void onTurnRight();
 };
 
 #endif

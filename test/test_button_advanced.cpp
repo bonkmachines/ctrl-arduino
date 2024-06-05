@@ -3,10 +3,13 @@
 #include "CtrlBtn.h"
 #include "test_globals.h"
 
-class CustomButton final : public CtrlBtnBase
+class CustomButton final : public CtrlBtn
 {
     public:
-        CustomButton(const uint8_t sig, const uint8_t bounceDuration) : CtrlBtnBase(sig, bounceDuration) { }
+        CustomButton(
+            const uint8_t sig,
+            const uint8_t bounceDuration
+        ) : CtrlBtn(sig, bounceDuration) { }
 
     private:
         void onPress() override

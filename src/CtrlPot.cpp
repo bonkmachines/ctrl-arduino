@@ -27,27 +27,20 @@
 
 #include "CtrlPot.h"
 
-CtrlPotBase::CtrlPotBase(
+CtrlPot::CtrlPot(
     const uint8_t sig,
     const int maxOutputValue,
     const float sensitivity,
+    const CallbackFunction onValueChangeCallback,
     CtrlMux* mux
-) : Muxable(mux)
-{
+) : Muxable(mux) {
     this->sig = sig;
     this->maxOutputValue = maxOutputValue;
     setSensitivity(sensitivity);
+    this->onValueChangeCallback = onValueChangeCallback;
 }
 
-void CtrlPotBase::initialize()
-{
-    if (!this->isMuxed()) pinMode(sig, INPUT);
-    this->lastValue = CtrlPotBase::processInput();
-    this->smoothedValue = static_cast<float>(this->lastValue);
-    this->initialized = true;
-}
-
-void CtrlPotBase::process()
+void CtrlPot::process()
 {
     if (!this->isInitialized()) this->initialize();
     if (this->isDisabled()) return;
@@ -62,7 +55,27 @@ void CtrlPotBase::process()
     }
 }
 
-uint16_t CtrlPotBase::processInput()
+uint16_t CtrlPot::getValue() const
+{
+    return this->lastMappedValue;
+}
+
+void CtrlPot::setOnValueChange(const CallbackFunction callback)
+{
+    this->onValueChangeCallback = callback;
+}
+
+void CtrlPot::initialize()
+{
+    if (!this->isMuxed()) pinMode(sig, INPUT);
+    this->lastValue = CtrlPot::processInput();
+    this->smoothedValue = static_cast<float>(this->lastValue);
+    this->initialized = true;
+}
+
+bool CtrlPot::isInitialized() const { return this->initialized; }
+
+uint16_t CtrlPot::processInput()
 {
     uint16_t rawValue;
     if (this->isMuxed()) {
@@ -82,16 +95,14 @@ uint16_t CtrlPotBase::processInput()
     return static_cast<uint16_t>(this->smoothedValue);
 }
 
-void CtrlPotBase::onValueChange(int value) { }
-
-bool CtrlPotBase::isInitialized() const { return this->initialized; }
-
-uint16_t CtrlPotBase::getValue() const
+void CtrlPot::onValueChange(const int value)
 {
-    return this->lastMappedValue;
+    if (this->onValueChangeCallback) {
+        this->onValueChangeCallback(value);
+    }
 }
 
-void CtrlPotBase::setSensitivity(float sensitivity)
+void CtrlPot::setSensitivity(float sensitivity)
 {
     // Ensure sensitivity is within the valid range
     if (sensitivity < 0.01) sensitivity = 0.01;
@@ -101,7 +112,7 @@ void CtrlPotBase::setSensitivity(float sensitivity)
     updateAlpha();
 }
 
-void CtrlPotBase::updateAlpha()
+void CtrlPot::updateAlpha()
 {
     // Map sensitivity (0.01 - 100) to alpha (0.0001 - 1)
     constexpr float minSensitivity = 0.01;
@@ -110,40 +121,4 @@ void CtrlPotBase::updateAlpha()
     constexpr float maxAlpha = 1.0;
 
     this->alpha = ((this->sensitivity - minSensitivity) * (maxAlpha - minAlpha) / (maxSensitivity - minSensitivity)) + minAlpha;
-}
-
-CtrlPot::CtrlPot(
-    const uint8_t sig,
-    const int maxOutputValue,
-    const float sensitivity,
-    const CallbackFunction onValueChangeCallback,
-    CtrlMux* mux
-) : CtrlPotBase(sig, maxOutputValue, sensitivity, mux), onValueChangeCallback(onValueChangeCallback) { }
-
-void CtrlPot::setOnValueChange(const CallbackFunction callback)
-{
-    this->onValueChangeCallback = callback;
-}
-
-void CtrlPot::onValueChange(const int value)
-{
-    if (this->onValueChangeCallback) {
-        this->onValueChangeCallback(value);
-    }
-}
-
-CtrlPot CtrlPot::create(
-    const uint8_t sig,
-    const int maxOutputValue,
-    const float sensitivity,
-    const CallbackFunction onValueChangeCallback,
-    CtrlMux* mux
-) {
-    return CtrlPot(
-        sig,
-        maxOutputValue,
-        sensitivity,
-        onValueChangeCallback,
-        mux
-    );
 }

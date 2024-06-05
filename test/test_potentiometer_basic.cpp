@@ -5,7 +5,7 @@
 
 void test_potentiometer_basic_can_be_turned_to_minimum()
 {
-    CtrlPot potentiometer = CtrlPot::create(
+    CtrlPot potentiometer(
         1,
         100,
         0.05
@@ -25,7 +25,7 @@ void test_potentiometer_basic_can_be_turned_to_minimum()
 
 void test_potentiometer_basic_can_be_turned_to_maximum()
 {
-    CtrlPot potentiometer = CtrlPot::create(
+    CtrlPot potentiometer(
         1,
         100,
         0.05

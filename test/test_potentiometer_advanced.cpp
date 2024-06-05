@@ -3,14 +3,14 @@
 #include "CtrlPot.h"
 #include "test_globals.h"
 
-class CustomPot final : public CtrlPotBase
+class CustomPot final : public CtrlPot
 {
 public:
     CustomPot(
         const uint8_t sig,
         const uint16_t maxOutputValue,
         const float sensitivity
-    ) : CtrlPotBase(sig, maxOutputValue, sensitivity) { }
+    ) : CtrlPot(sig, maxOutputValue, sensitivity) { }
 
 private:
     void onValueChange(int value) override

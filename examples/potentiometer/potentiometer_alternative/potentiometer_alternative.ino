@@ -39,8 +39,8 @@ void onValueChange(int value) {
   Serial.println(value);
 }
 
-// Instantiate a potentiometer with the pin number, max. output value & sensitivity margin (can be 0.01 to 100).
-CtrlPot potentiometer(24, 100, 0.5);
+// Create a potentiometer with the pin number, max. output value & sensitivity margin (can be 0.01 to 100).
+CtrlPot potentiometer(24, 100, 0.05);
 
 void setup() {
   Serial.begin(9600);

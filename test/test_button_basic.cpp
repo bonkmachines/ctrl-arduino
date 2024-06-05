@@ -15,7 +15,7 @@ void onReleasehandlerBasic() {
 
 void test_button_basic_can_be_pressed_and_released()
 {
-    CtrlBtn button = CtrlBtn::create(
+    CtrlBtn button(
         1,
         15,
         onPressHandlerBasic,

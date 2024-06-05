@@ -32,7 +32,7 @@
 #include "CtrlBase.h"
 #include "CtrlMux.h"
 
-class CtrlBtnBase : public Muxable
+class CtrlBtn : public Muxable
 {
     protected:
         uint8_t sig; // Signal pin
@@ -41,24 +41,42 @@ class CtrlBtnBase : public Muxable
         unsigned long debounceStart = 0;
         uint16_t bounceDuration; // In milliseconds
         bool initialized = false;
-
-        CtrlBtnBase(
-            uint8_t sig,
-            uint16_t bounceDuration,
-            CtrlMux* mux = nullptr
-        );
-
-        ~CtrlBtnBase() = default;
-
-        void initialize();
-        [[nodiscard]] bool isInitialized() const;
-        virtual uint8_t processInput();
-        virtual void onPress();
-        virtual void onRelease();
+        unsigned long pressStartTime = 0;
+        unsigned long delayedReleaseDuration = 500; // default 500 ms
+        using CallbackFunction = void (*)();
+        CallbackFunction onPressCallback;
+        CallbackFunction onReleaseCallback;
+        CallbackFunction onDelayedReleaseCallback;
 
     public:
         /**
-        * @brief The process method should be called within the loop method. It handles all functionality.
+        * @brief Instantiate a button object.
+        *
+        * The CtrlBtn class can be instantiated to allow for specific
+        * actions on press, on release & on delayed release.
+        *
+        * @param sig (uint8_t) The signal (SIG) pin of the button.
+        * @param bounceDuration (uint16_t) The bounce duration in milliseconds.
+        * @param onPressCallback (optional) The on press callback handler. Default is nullptr.
+        * @param onReleaseCallback (optional) The on release callback handler. Default is nullptr.
+        * @param onDelayedReleaseCallback (optional) The on delayed release callback handler. Default is nullptr.
+        * @param mux (CtrlMux) (optional) The multiplexer the button is connected to. Default is nullptr.
+        * @return A new instance of the CtrlBtn class.
+        */
+        CtrlBtn(
+            uint8_t sig,
+            uint16_t bounceDuration,
+            CallbackFunction onPressCallback = nullptr,
+            CallbackFunction onReleaseCallback = nullptr,
+            CallbackFunction onDelayedReleaseCallback = nullptr,
+            CtrlMux* mux = nullptr
+        );
+
+        virtual ~CtrlBtn() = default;
+
+        /**
+        * @brief The process method should be called within the loop method.
+        * It handles all functionality.
         */
         void process() override;
 
@@ -75,56 +93,6 @@ class CtrlBtnBase : public Muxable
         * @return True if button is not pressed, false otherwise.
         */
         [[nodiscard]] bool isReleased() const;
-};
-
-class CtrlBtn final : public CtrlBtnBase
-{
-    using CallbackFunction = void (*)();
-    CallbackFunction onPressCallback;
-    CallbackFunction onReleaseCallback;
-
-    public:
-        /**
-        * @brief Instantiate a button object.
-        *
-        * The CtrlBtn class can be instantiated to allow for specific
-        * actions on press, on release & on delayed release.
-        *
-        * @param sig (uint8_t) The signal (SIG) pin of the button.
-        * @param bounceDuration (uint16_t) The bounce duration in milliseconds.
-        * @param onPressCallback (optional) The on press callback handler. Default is nullptr.
-        * @param onReleaseCallback (optional) The on release callback handler. Default is nullptr.
-        * @param mux (CtrlMux) (optional) The multiplexer the button is connected to. Default is nullptr.
-        * @return A new instance of the CtrlBtn class.
-        */
-        CtrlBtn(
-            uint8_t sig,
-            uint16_t bounceDuration,
-            CallbackFunction onPressCallback = nullptr,
-            CallbackFunction onReleaseCallback = nullptr,
-            CtrlMux* mux = nullptr
-        );
-
-        /**
-        * @brief Create a button object via this static method.
-        *
-        * The CtrlBtn class can be created to allow for specific actions
-        * on press, on release & on delayed release.
-        *
-        * @param sig (uint8_t) The signal (SIG) pin of the button.
-        * @param bounceDuration (uint16_t) The bounce duration in milliseconds.
-        * @param onPressCallback (optional) The on press callback handler. Default is nullptr.
-        * @param onReleaseCallback (optional) The on release callback handler. Default is nullptr.
-        * @param mux (CtrlMux) (optional) The multiplexer the button is connected to. Default is nullptr.
-        * @return A new instance of the CtrlBtn class.
-        */
-        static CtrlBtn create(
-            uint8_t sig,
-            uint16_t bounceDuration,
-            CallbackFunction onPressCallback = nullptr,
-            CallbackFunction onReleaseCallback = nullptr,
-            CtrlMux* mux = nullptr
-        );
 
         /**
         * @brief Set the on press handler.
@@ -144,9 +112,34 @@ class CtrlBtn final : public CtrlBtnBase
         */
         void setOnRelease(CallbackFunction callback);
 
-    private:
-        void onPress() override;
-        void onRelease() override;
+        /**
+        * @brief Set the on delayed release handler.
+        *
+        * Pass in a handler that is called whenever the button enters the "released" state,
+        * after a specified amount of time the button has been held down (default is 500ms).
+        * If onDelayedRelease is triggered, the normal onRelease is not executed.
+        *
+        * @param callback The callback handler method.
+        */
+        void setOnDelayedRelease(CallbackFunction callback);
+
+        /**
+        * @brief Set the amount of time for a delayed release.
+        *
+        * After the button enters the "pressed" state, and is being held for as long as the
+        * duration, the onDelayedRelease method will execute, the onRelease will not.
+        *
+        * @param duration The duration in milliseconds.
+        */
+        void setDelayedReleaseDuration(unsigned long duration);
+
+    protected:
+        void initialize();
+        [[nodiscard]] bool isInitialized() const;
+        virtual uint8_t processInput();
+        virtual void onPress();
+        virtual void onRelease();
+        virtual void onDelayedRelease();
 };
 
 #endif

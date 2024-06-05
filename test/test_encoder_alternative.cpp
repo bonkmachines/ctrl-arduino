@@ -15,7 +15,7 @@ void onTurnRighthandlerAlternative() {
 
 void test_encoder_alternative_can_be_turned_left()
 {
-    CtrlEnc encoder = CtrlEnc::create(1, 2);
+    CtrlEnc encoder(1, 2);
 
     encoder.setOnTurnLeft(onTurnLeftHandlerAlternative);
     encoder.setOnTurnRight(onTurnRighthandlerAlternative);
@@ -40,7 +40,7 @@ void test_encoder_alternative_can_be_turned_left()
 
 void test_encoder_alternative_can_be_turned_right()
 {
-    CtrlEnc encoder = CtrlEnc::create(1, 2);
+    CtrlEnc encoder(1, 2);
 
     encoder.setOnTurnLeft(onTurnLeftHandlerAlternative);
     encoder.setOnTurnRight(onTurnRighthandlerAlternative);

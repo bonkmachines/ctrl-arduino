@@ -18,7 +18,7 @@ void test_rotary_encoders_can_be_multiplexed()
 {
     CtrlMux mux(1, 1, 2, 3, 4);
 
-    CtrlEnc encoder = CtrlEnc::create(
+    CtrlEnc encoder(
         0,
         1,
         onTurnLeftHandlerMuxEncoder,
