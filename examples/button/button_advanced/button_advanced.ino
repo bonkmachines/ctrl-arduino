@@ -38,7 +38,7 @@ class CustomButton : public CtrlBtn
   public:
     CustomButton(uint8_t sig, uint8_t bounceDuration) : CtrlBtn(sig, bounceDuration) { }
 
-  private:
+  protected:
     void onPress() override
     {
       Serial.println("Advanced button pressed");

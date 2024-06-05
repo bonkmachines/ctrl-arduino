@@ -32,7 +32,7 @@ class CustomEncoder : public CtrlEnc
   public:
     CustomEncoder(uint8_t sig, uint8_t bounceDuration) : CtrlEnc(sig, bounceDuration) { }
 
-  private:
+  protected:
     void onTurnLeft() override
     {
       Serial.println("Advanced rotary encoder turn left");

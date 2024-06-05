@@ -32,7 +32,7 @@ class CustomPot : public CtrlPot
   public:
     CustomPot(uint8_t sig, int maxOutputValue, float sensitivity) : CtrlPot(sig, maxOutputValue, sensitivity) { }
 
-  private:
+  protected:
     void onValueChange(int value) override
     {
       Serial.print("Advanced pot value: ");

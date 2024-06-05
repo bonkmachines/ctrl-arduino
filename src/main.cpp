@@ -1,4 +1,4 @@
-// This file is used for testing all examples on an Arduino Uno.
+// This file is used for testing the examples on a physical board.
 
 // #include "../examples/button/button_basic/button_basic.ino"
 // #include "../examples/button/button_alternative/button_alternative.ino"
