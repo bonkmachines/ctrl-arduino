@@ -4,13 +4,13 @@
   Description:
   This sketch demonstrates the advanced implementation of a potentiometer.
 
-  With this approach you can extend the base class (CtrlPotBase) into your own class,
+  With this approach you can extend the base class (CtrlPot) into your own class,
   and expand on the base functionality as you please. The sky is the limit here.
   The inheriting class overrides the onValueChange method. Within this method
   you can add your desired actions.
 
   Usage:
-  Extend the CtrlPotBase class into your own custom class. Override the
+  Extend the CtrlPot class into your own custom class. Override the
   onValueChange() method and add any additional functionality that you need.
 
   Available methods:
@@ -26,10 +26,11 @@
 
 #include <CtrlPot.h>
 
-class CustomPot : public CtrlPotBase
+// Extend the CtrlPot class into a CustomPot class.
+class CustomPot : public CtrlPot
 {
   public:
-    CustomPot(uint8_t sig, int maxOutputValue, float sensitivity) : CtrlPotBase(sig, maxOutputValue, sensitivity) { }
+    CustomPot(uint8_t sig, int maxOutputValue, float sensitivity) : CtrlPot(sig, maxOutputValue, sensitivity) { }
 
   private:
     void onValueChange(int value) override
@@ -39,8 +40,8 @@ class CustomPot : public CtrlPotBase
     }
 };
 
-// Instantiate a potentiometer with the pin number, max. output value & sensitivity margin (can be 0.01 to 100).
-CustomPot potentiometer(24, 100, 0.5);
+// Create a potentiometer with the pin number, max. output value & sensitivity margin (can be 0.01 to 100).
+CustomPot potentiometer(24, 100, 0.05);
 
 void setup() {
   Serial.begin(9600);

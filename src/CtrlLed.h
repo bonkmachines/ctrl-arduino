@@ -30,15 +30,13 @@
 
 #include <Arduino.h>
 
-class CtrlLed final
+class CtrlLed
 {
     protected:
         uint8_t sig; // Signal pin connected to the LED
         bool on; // Current state of the LED
         uint8_t brightness; // Current brightness level
         uint8_t maxBrightness; // Maximum brightness value
-
-        static void processOutput(uint8_t sig, uint8_t brightness);
 
     public:
         /**
@@ -53,20 +51,6 @@ class CtrlLed final
         explicit CtrlLed(
             uint8_t sig,
             uint8_t maxBrightness = 255
-        );
-
-        /**
-        * @brief Create an LED object via this static method.
-        *
-        * The CtrlLed class can be created to allow LED objects to be controlled.
-        *
-        * @param sig (uint8_t) The signal pin of the LED.
-        * @param maxBrightness (uint8_t) (optional) Sets the maximum brightness of the LED, for calibration purposes (0 - 255). Default is 255.
-        * @return A new instance of the CtrlLed class.
-        */
-        static CtrlLed create(
-            uint8_t sig,
-            uint16_t maxBrightness = 255
         );
 
         /**
@@ -125,6 +109,9 @@ class CtrlLed final
         * @return True if the LED is turned off, false otherwise.
         */
         [[nodiscard]] bool isOff() const;
+
+    protected:
+        static void processOutput(uint8_t sig, uint8_t brightness);
 };
 
 #endif

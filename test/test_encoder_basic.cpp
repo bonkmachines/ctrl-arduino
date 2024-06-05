@@ -15,7 +15,7 @@ void onTurnRighthandlerBasic() {
 
 void test_encoder_basic_can_be_turned_left()
 {
-    CtrlEnc encoder = CtrlEnc::create(
+    CtrlEnc encoder(
         1,
         2,
         onTurnLeftHandlerBasic,
@@ -42,7 +42,7 @@ void test_encoder_basic_can_be_turned_left()
 
 void test_encoder_basic_can_be_turned_right()
 {
-    CtrlEnc encoder = CtrlEnc::create(
+    CtrlEnc encoder(
         1,
         2,
         onTurnLeftHandlerBasic,

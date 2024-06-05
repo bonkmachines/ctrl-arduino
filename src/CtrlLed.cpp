@@ -102,14 +102,3 @@ bool CtrlLed::isOff() const
 {
     return !this->on;
 }
-
-CtrlLed CtrlLed::create(
-    const uint8_t sig,
-    const uint16_t maxBrightness
-) {
-    const CtrlLed led(
-        sig,
-        maxBrightness
-    );
-    return led;
-}

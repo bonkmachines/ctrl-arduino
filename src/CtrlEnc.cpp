@@ -27,25 +27,21 @@
 
 #include "CtrlEnc.h"
 
-CtrlEncBase::CtrlEncBase(
+CtrlEnc::CtrlEnc(
     const uint8_t clk,
     const uint8_t dt,
+    const CallbackFunction onTurnLeftCallback,
+    const CallbackFunction onTurnRightCallback,
     CtrlMux* mux
 ) : Muxable(mux)
 {
     this->clk = clk;
     this->dt = dt;
-
+    this->onTurnLeftCallback = onTurnLeftCallback;
+    this->onTurnRightCallback = onTurnRightCallback;
 }
 
-void CtrlEncBase::initialize()
-{
-    if (!this->isMuxed()) pinMode(clk, INPUT);
-    if (!this->isMuxed()) pinMode(dt, INPUT);
-    this->initialized = true;
-}
-
-void CtrlEncBase::process()
+void CtrlEnc::process()
 {
     if (!this->isInitialized()) this->initialize();
     if (this->isDisabled()) return;
@@ -58,7 +54,30 @@ void CtrlEncBase::process()
     }
 }
 
-void CtrlEncBase::processInput()
+bool CtrlEnc::isTurningLeft() const { return this->values[0] == 0x0b; }
+
+bool CtrlEnc::isTurningRight() const { return this->values[0] == 0x07; }
+
+void CtrlEnc::setOnTurnLeft(const CallbackFunction callback)
+{
+    this->onTurnLeftCallback = callback;
+}
+
+void CtrlEnc::setOnTurnRight(const CallbackFunction callback)
+{
+    this->onTurnRightCallback = callback;
+}
+
+void CtrlEnc::initialize()
+{
+    if (!this->isMuxed()) pinMode(clk, INPUT);
+    if (!this->isMuxed()) pinMode(dt, INPUT);
+    this->initialized = true;
+}
+
+bool CtrlEnc::isInitialized() const { return this->initialized; }
+
+void CtrlEnc::processInput()
 {
     if (this->isMuxed()) {
         const uint8_t clkReading = this->mux->readEncClk(this->clk);
@@ -80,9 +99,9 @@ void CtrlEncBase::processInput()
     }
 }
 
-int8_t CtrlEncBase::readEncoder()
+int8_t CtrlEnc::readEncoder()
 {
-    static int8_t table[] = { 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0 };
+    const int8_t table[] = { 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0 };
     this->values[0] <<= 2;
     this->processInput();
     this->values[0] &= 0x0f;
@@ -93,36 +112,6 @@ int8_t CtrlEncBase::readEncoder()
         if ((this->values[1] & 0xff) == 0x17) return 1;
     }
     return 0;
-}
-
-bool CtrlEncBase::isInitialized() const { return this->initialized; }
-
-bool CtrlEncBase::isTurningLeft() const { return this->values[0] == 0x0b; }
-
-bool CtrlEncBase::isTurningRight() const { return this->values[0] == 0x07; }
-
-void CtrlEncBase::onTurnLeft() { }
-
-void CtrlEncBase::onTurnRight() { }
-
-CtrlEnc::CtrlEnc(
-    const uint8_t clk,
-    const uint8_t dt,
-    const CallbackFunction onTurnLeftCallback,
-    const CallbackFunction onTurnRightCallback,
-    CtrlMux* mux
-) : CtrlEncBase(clk, dt, mux),
-    onTurnLeftCallback(onTurnLeftCallback),
-    onTurnRightCallback(onTurnRightCallback) { }
-
-void CtrlEnc::setOnTurnLeft(const CallbackFunction callback)
-{
-    this->onTurnLeftCallback = callback;
-}
-
-void CtrlEnc::setOnTurnRight(const CallbackFunction callback)
-{
-    this->onTurnRightCallback = callback;
 }
 
 void CtrlEnc::onTurnLeft()
@@ -137,21 +126,4 @@ void CtrlEnc::onTurnRight()
     if (this->onTurnRightCallback) {
         this->onTurnRightCallback();
     }
-}
-
-CtrlEnc CtrlEnc::create(
-    const uint8_t clk,
-    const uint8_t dt,
-    const CallbackFunction onTurnLeftCallback,
-    const CallbackFunction onTurnRightCallback,
-    CtrlMux* mux
-) {
-    CtrlEnc encoder(
-        clk,
-        dt,
-        onTurnLeftCallback,
-        onTurnRightCallback,
-        mux
-    );
-    return encoder;
 }

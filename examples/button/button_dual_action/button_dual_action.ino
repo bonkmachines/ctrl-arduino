@@ -1,27 +1,17 @@
 /*
-  Alternative button example
+  Dual action button example
 
   Description:
-  This sketch demonstrates an alternative implementation of a button or switch,
-  with debouncing functionality for noisy buttons.
-
-  With this alternative approach you can instantiate all your objects first, while setting
-  the handlers at a later point. This is especially handy in larger projects where you have
-  to access other objects from the handlers. And you can't access an object if it hasn't 
-  been instantiated yet (and you might not want to use 'forward declaration'). To illustrate
-  this problem further, in the approach described in the basic example you will quickly run
-  into problems as you have to keep track of the order of instantiation, which can become
-  messy very quickly.
-
+  This sketch demonstrates the basic implementation of a dual action button or switch,
+  that differentiates between a short and long press.
+  
   Usage:
   Create a button with reference to:
-  - Signal pin      (required) The input pin your button is hooked up to.
-  - Bounce duration (required) In milliseconds.
-  
-  The following handler methods can then be (optionally) set for the created button object:
-  - setOnPress()
-  - setOnRelease()
-  - setOnDelayedRelease()
+  - Signal pin               (required) The input pin your button is hooked up to.
+  - Bonuce duration          (required) In milliseconds.
+  - onPress handler          (optional).
+  - onRelease handler        (optional).
+  - onDelayedRelease handler (optional).
 
   Available methods:
   - process()                   Is used to poll the button and handle all it's functionality  (used in the loop method).
@@ -41,25 +31,29 @@
 
 #include <CtrlBtn.h>
 
-// Create a button with the signal pin number & bounce duration.
-CtrlBtn button(36, 15);
-
-// Define an onPress handler.
-void onPress() {
-  Serial.println("Alternative button pressed");
-}
-
 // Define an onRelease handler.
 void onRelease() {
-  Serial.println("Alternative button released");
+  Serial.println("Short press");
 }
+
+// Define an onDelayedRelease handler.
+void onDelayedRelease() {
+  Serial.println("Long press");
+}
+
+/*
+  Create a button with:
+  - signal pin.
+  - bounce duration.
+  - empty onPress handler (nullptr).
+  - onRelease handler.
+  - onDelayedRelease handler.
+ */
+CtrlBtn button(36, 15, nullptr, onRelease, onDelayedRelease);
 
 void setup() {
   Serial.begin(9600);
-
-  // Register the handlers with the button object.
-  button.setOnPress(onPress);
-  button.setOnRelease(onRelease);
+  button.setDelayedReleaseDuration(1000); // This is optional (default is 500ms).
 }
 
 void loop() {

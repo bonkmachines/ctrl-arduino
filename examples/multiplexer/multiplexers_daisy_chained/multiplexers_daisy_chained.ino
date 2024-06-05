@@ -20,11 +20,11 @@ CtrlMux mux3(9, 2, 3, 4, 5);  // Connect to a digital pin
 
 void onPress1() { Serial.println("Button 1 pressed"); }
 void onRelease1() { Serial.println("Button 1 released"); }
-CtrlBtn button1(0, 15, onPress1, onRelease1, &mux1);
+CtrlBtn button1(0, 15, onPress1, onRelease1, nullptr, &mux1);
 
 void onPress2() { Serial.println("Button 2 pressed"); }
 void onRelease2() { Serial.println("Button 2 released"); }
-CtrlBtn button2(1, 15, onPress2, onRelease2, &mux1);
+CtrlBtn button2(1, 15, onPress2, onRelease2, nullptr, &mux1);
 
 void onValueChange1(int value) { Serial.print("Pot 1 value: "); Serial.println(value); }
 CtrlPot pot1(0, 100, 25, onValueChange1, &mux2);

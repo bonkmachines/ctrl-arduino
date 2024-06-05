@@ -8,7 +8,7 @@ void test_potentiometers_can_be_multiplexed()
 {
     CtrlMux mux(1, 1, 2, 3, 4);
 
-    CtrlPot potentiometer = CtrlPot::create(
+    CtrlPot potentiometer(
         0,
         100,
         0.05

@@ -32,53 +32,20 @@
 #include "CtrlBase.h"
 #include "CtrlMux.h"
 
-class CtrlPotBase : public Muxable
+class CtrlPot : public Muxable
 {
     protected:
         uint8_t sig; // Analog pin connected to the potentiometer.
         uint16_t lastValue = 0; // Last read value from the potentiometer.
         uint16_t lastMappedValue = 0; // Last mapped value based on a mapping to maxOutputValue.
         float smoothedValue = 0.0; // Smoothed value for the potentiometer.
-        float alpha = 0.0005; // Smoothing factor (0 < alpha <= 1)
-        float sensitivity = 0.05; // Sensitivity factor (0.01 to 100)
-        int maxOutputValue; // The maximum value at full turn
+        float alpha = 0.0005; // Smoothing factor (0.0001 - 1).
+        float sensitivity = 0.05; // Sensitivity factor (0.01 - 100).
+        int maxOutputValue; // The maximum output value at full turn.
         uint16_t analogMax = 1023; // Maximum value from analogRead().
         bool initialized = false;
-
-        explicit CtrlPotBase(
-            uint8_t sig,
-            int maxOutputValue,
-            float sensitivity,
-            CtrlMux* mux = nullptr
-        );
-
-        ~CtrlPotBase() = default;
-
-        void initialize();
-        [[nodiscard]] bool isInitialized() const;
-        virtual uint16_t processInput();
-        virtual void onValueChange(int value);
-        void setSensitivity(float sensitivity);
-        void updateAlpha();
-
-    public:
-        /**
-        * @brief The process method should be called within the loop method. It handles all functionality.
-        */
-        void process() override;
-
-        /**
-        * @brief Get the current value of the shaft position.
-        *
-        * @return The value as a `uint16_t`.
-        */
-        [[nodiscard]] uint16_t getValue() const;
-};
-
-class CtrlPot final : public CtrlPotBase
-{
-    using CallbackFunction = void (*)(int);
-    CallbackFunction onValueChangeCallback;
+        using CallbackFunction = void (*)(int);
+        CallbackFunction onValueChangeCallback;
 
     public:
         /**
@@ -102,26 +69,19 @@ class CtrlPot final : public CtrlPotBase
             CtrlMux* mux = nullptr
         );
 
+        virtual ~CtrlPot() = default;
+
         /**
-        * @brief Create a potentiometer object via this static method.
-        *
-        * The CtrlPot class can be created to allow for specific
-        * actions whenever the value of a potentiometer changes.
-        *
-        * @param sig (uint8_t) The signal pin of the potentiometer.
-        * @param maxOutputValue (int) The maximum output value of the potentiometer.
-        * @param sensitivity (float) The sensitivity factor. Decrease this for instable (jittery) pots, min: 0.01, max: 100.
-        * @param onValueChangeCallback (optional) The on value change callback handler. Default is nullptr.
-        * @param mux (CtrlMux) (optional) The multiplexer the pot is connected to. Default is nullptr.
-        * @return A new instance of the CtrlPot class.
+        * @brief The process method should be called within the loop method. It handles all functionality.
         */
-        static CtrlPot create(
-            uint8_t sig,
-            int maxOutputValue,
-            float sensitivity,
-            CallbackFunction onValueChangeCallback = nullptr,
-            CtrlMux* mux = nullptr
-        );
+        void process() override;
+
+        /**
+        * @brief Get the current value of the shaft position.
+        *
+        * @return The value as a `uint16_t`.
+        */
+        [[nodiscard]] uint16_t getValue() const;
 
         /**
         * @brief Set the on value changehandler.
@@ -133,8 +93,13 @@ class CtrlPot final : public CtrlPotBase
         */
         void setOnValueChange(CallbackFunction callback);
 
-    private:
-        void onValueChange(int value) override;
+    protected:
+        void initialize();
+        [[nodiscard]] bool isInitialized() const;
+        virtual uint16_t processInput();
+        virtual void onValueChange(int value);
+        void setSensitivity(float sensitivity);
+        void updateAlpha();
 };
 
 #endif

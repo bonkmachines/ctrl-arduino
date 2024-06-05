@@ -4,13 +4,13 @@
   Description:
   This sketch demonstrates an more advanced implementation of a rotary encoder.
 
-  With this approach you can extend the base class (CtrlEncBase) into your own class,
+  With this approach you can extend the base class (CtrlEnc) into your own class,
   and expand on the base functionality as you please. The sky is the limit here.
   The inheriting class overrides the onPress & onRelease methods. Within these
   methods you can add your desired actions.
 
   Usage:
-  Extend the CtrlEncBase class into your own custom class. Override the onTurnLeft() &
+  Extend the CtrlEnc class into your own custom class. Override the onTurnLeft() &
   onTurnRight() methods and add any additional functionality that you need.
 
   Available methods:
@@ -26,11 +26,11 @@
 
 #include <CtrlEnc.h>
 
-// Extend the CtrlEncBase class into a CustomEncoder class.
-class CustomEncoder : public CtrlEncBase
+// Extend the CtrlEnc class into a CustomEncoder class.
+class CustomEncoder : public CtrlEnc
 {
   public:
-    CustomEncoder(uint8_t sig, uint8_t bounceDuration) : CtrlEncBase(sig, bounceDuration) { }
+    CustomEncoder(uint8_t sig, uint8_t bounceDuration) : CtrlEnc(sig, bounceDuration) { }
 
   private:
     void onTurnLeft() override
@@ -44,7 +44,7 @@ class CustomEncoder : public CtrlEncBase
     }
 };
 
-// Instantiate a rotary encoder with the signal pin number & bounce duration.
+// Crete a rotary encoder with the signal pin number & bounce duration.
 CustomEncoder encoder(33, 34);
 
 void setup() {

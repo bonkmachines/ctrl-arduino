@@ -27,25 +27,23 @@
 
 #include "CtrlBtn.h"
 
-CtrlBtnBase::CtrlBtnBase(
-    const uint8_t sig, // If multiplexed, this will be the channel number on the mux
-    const uint16_t bounceDuration, // In microseconds
-    CtrlMux* mux // Instance of the multiplexer
+CtrlBtn::CtrlBtn(
+    const uint8_t sig,
+    const uint16_t bounceDuration,
+    const CallbackFunction onPressCallback,
+    const CallbackFunction onReleaseCallback,
+    const CallbackFunction onDelayedReleaseCallback,
+    CtrlMux* mux
 ) : Muxable(mux)
 {
     this->sig = sig;
     this->bounceDuration = bounceDuration;
+    this->onPressCallback = onPressCallback;
+    this->onReleaseCallback = onReleaseCallback;
+    this->onDelayedReleaseCallback = onDelayedReleaseCallback;
 }
 
-void CtrlBtnBase::initialize()
-{
-    if (!this->isMuxed()) pinMode(sig, INPUT_PULLUP);
-    this->currentState = CtrlBtnBase::processInput();
-    this->lastState = currentState;
-    this->initialized = true;
-}
-
-void CtrlBtnBase::process()
+void CtrlBtn::process()
 {
     if (!this->isInitialized()) this->initialize();
     if (this->isDisabled()) return;
@@ -59,15 +57,56 @@ void CtrlBtnBase::process()
             this->currentState = reading;
             if (this->currentState == LOW) {
                 this->onPress();
+                this->pressStartTime = millis();
             } else {
-                this->onRelease();
+                if (this->onDelayedReleaseCallback != nullptr &&
+                    millis() - this->pressStartTime >= this->delayedReleaseDuration
+                ) {
+                    this->onDelayedRelease();
+                } else {
+                    this->onRelease();
+                }
             }
         }
     }
     this->lastState = reading;
 }
 
-uint8_t CtrlBtnBase::processInput()
+bool CtrlBtn::isPressed() const { return this->currentState == LOW; }
+
+bool CtrlBtn::isReleased() const { return this->currentState == HIGH; }
+
+void CtrlBtn::setOnPress(const CallbackFunction callback)
+{
+    this->onPressCallback = callback;
+}
+
+void CtrlBtn::setOnRelease(const CallbackFunction callback)
+{
+    this->onReleaseCallback = callback;
+}
+
+void CtrlBtn::setOnDelayedRelease(const CallbackFunction callback)
+{
+    this->onDelayedReleaseCallback = callback;
+}
+
+void CtrlBtn::setDelayedReleaseDuration(const unsigned long duration)
+{
+    this->delayedReleaseDuration = duration;
+}
+
+void CtrlBtn::initialize()
+{
+    if (!this->isMuxed()) pinMode(sig, INPUT_PULLUP);
+    this->currentState = CtrlBtn::processInput();
+    this->lastState = currentState;
+    this->initialized = true;
+}
+
+bool CtrlBtn::isInitialized() const { return this->initialized; }
+
+uint8_t CtrlBtn::processInput()
 {
     if (this->isMuxed()) {
         return  this->mux->readBtnSig(this->sig);
@@ -80,36 +119,6 @@ uint8_t CtrlBtnBase::processInput()
         // Normal operation with real hardware
         return digitalRead(this->sig);
     #endif
-}
-
-bool CtrlBtnBase::isInitialized() const { return this->initialized; }
-
-bool CtrlBtnBase::isPressed() const { return this->currentState == LOW; }
-
-bool CtrlBtnBase::isReleased() const { return this->currentState == HIGH; }
-
-void CtrlBtnBase::onPress() { }
-
-void CtrlBtnBase::onRelease() { }
-
-CtrlBtn::CtrlBtn(
-    const uint8_t sig,
-    const uint16_t bounceDuration,
-    const CallbackFunction onPressCallback,
-    const CallbackFunction onReleaseCallback,
-    CtrlMux* mux
-): CtrlBtnBase(sig, bounceDuration, mux),
-    onPressCallback(onPressCallback),
-    onReleaseCallback(onReleaseCallback) { }
-
-void CtrlBtn::setOnPress(const CallbackFunction callback)
-{
-    this->onPressCallback = callback;
-}
-
-void CtrlBtn::setOnRelease(const CallbackFunction callback)
-{
-    this->onReleaseCallback = callback;
 }
 
 void CtrlBtn::onPress()
@@ -126,19 +135,9 @@ void CtrlBtn::onRelease()
     }
 }
 
-CtrlBtn CtrlBtn::create(
-    const uint8_t sig,
-    const uint16_t bounceDuration,
-    const CallbackFunction onPressCallback,
-    const CallbackFunction onReleaseCallback,
-    CtrlMux* mux
-) {
-    CtrlBtn button(
-        sig,
-        bounceDuration,
-        onPressCallback,
-        onReleaseCallback,
-        mux
-    );
-    return button;
+void CtrlBtn::onDelayedRelease()
+{
+    if (this->onDelayedReleaseCallback) {
+        this->onDelayedReleaseCallback();
+    }
 }

@@ -8,7 +8,7 @@ void test_buttons_can_be_multiplexed()
 {
     CtrlMux mux(1, 1, 2, 3, 4);
 
-    CtrlBtn button = CtrlBtn::create(0, 15);
+    CtrlBtn button = CtrlBtn(0, 15);
 
     button.setMultiplexer(mux);
 
