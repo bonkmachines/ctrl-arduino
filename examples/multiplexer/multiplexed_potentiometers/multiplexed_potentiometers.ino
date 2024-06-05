@@ -36,7 +36,7 @@
   - signal pin.
   - s0 - s3: the channel select pins (s3 is optional).
 */
-CtrlMux mux(A14, 33, 34, 35, 36);
+CtrlMux mux(38, 33, 34, 35, 36);
 
 // Define an onValueChange handler for pot 1
 void onValueChange1(int value) {

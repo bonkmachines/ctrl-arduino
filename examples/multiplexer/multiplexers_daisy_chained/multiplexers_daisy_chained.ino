@@ -19,7 +19,7 @@
 CtrlMux btnMux(28, 33, 34, 35, 36);
 
 // The potentiometer mux. Connect 'sig' to an analog pin on your board.
-CtrlMux potMux(A14, 33, 34, 35, 36);
+CtrlMux potMux(38, 33, 34, 35, 36);
 
 // The encoder mux. Connect 'sig' to a digital pin on your board.
 CtrlMux encMux(37, 33, 34, 35, 36);
