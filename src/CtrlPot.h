@@ -36,6 +36,7 @@ class CtrlPot : public Muxable
 {
     protected:
         uint8_t sig; // Analog pin connected to the potentiometer.
+        uint8_t pinModeType = INPUT;
         uint16_t lastValue = 0; // Last read value from the potentiometer.
         uint16_t lastMappedValue = 0; // Last mapped value based on a mapping to maxOutputValue.
         float smoothedValue = 0.0; // Smoothed value for the potentiometer.

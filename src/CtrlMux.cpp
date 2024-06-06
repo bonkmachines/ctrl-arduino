@@ -49,19 +49,11 @@ CtrlMux::CtrlMux(
     }
 }
 
-void CtrlMux::setSignalPinToDigitalIn()
+void CtrlMux::setPinMode(const uint8_t pinModeType)
 {
-    if (this->currentPinMode != INPUT_PULLUP) {
-        pinMode(this->sig, INPUT_PULLUP);
-        this->currentPinMode = INPUT_PULLUP;
-    }
-}
-
-void CtrlMux::setSignalPinToAnalogIn()
-{
-    if (this->currentPinMode != INPUT) {
-        pinMode(this->sig, INPUT);
-        this->currentPinMode = INPUT;
+    if (this->currentPinMode != pinModeType) {
+        pinMode(this->sig, pinModeType);
+        this->currentPinMode = pinModeType;
     }
 }
 
@@ -75,9 +67,9 @@ void CtrlMux::setChannel(const uint8_t channel) const
     }
 }
 
-uint8_t CtrlMux::readBtnSig(const uint8_t channel)
+uint8_t CtrlMux::readBtnSig(const uint8_t channel, const uint8_t pinModeType)
 {
-    this->setSignalPinToDigitalIn();
+    this->setPinMode(pinModeType);
 
     this->setChannel(channel);
 
@@ -93,9 +85,9 @@ uint8_t CtrlMux::readBtnSig(const uint8_t channel)
     #endif
 }
 
-uint8_t CtrlMux::readEncClk(const uint8_t channel)
+uint8_t CtrlMux::readEncClk(const uint8_t channel, const uint8_t pinModeType)
 {
-    this->setSignalPinToDigitalIn();
+    this->setPinMode(pinModeType);
 
     this->setChannel(channel);
 
@@ -111,9 +103,9 @@ uint8_t CtrlMux::readEncClk(const uint8_t channel)
     #endif
 }
 
-uint8_t CtrlMux::readEncDt(const uint8_t channel)
+uint8_t CtrlMux::readEncDt(const uint8_t channel, const uint8_t pinModeType)
 {
-    this->setSignalPinToDigitalIn();
+    this->setPinMode(pinModeType);
 
     this->setChannel(channel);
 
@@ -129,9 +121,9 @@ uint8_t CtrlMux::readEncDt(const uint8_t channel)
     #endif
 }
 
-uint16_t CtrlMux::readPotSig(const uint8_t channel)
+uint16_t CtrlMux::readPotSig(const uint8_t channel, const uint8_t pinModeType)
 {
-    this->setSignalPinToAnalogIn();
+    this->setPinMode(pinModeType);
 
     this->setChannel(channel);
 
@@ -150,21 +142,4 @@ uint16_t CtrlMux::readPotSig(const uint8_t channel)
 void CtrlMux::setSwitchInterval(const uint8_t interval)
 {
     this->switchInterval = interval;
-}
-
-CtrlMux CtrlMux::create(
-    const uint8_t sig,
-    const uint8_t s0,
-    const uint8_t s1,
-    const uint8_t s2,
-    const uint8_t s3
-) {
-    const CtrlMux mux(
-        sig,
-        s0,
-        s1,
-        s2,
-        s3
-    );
-    return mux;
 }

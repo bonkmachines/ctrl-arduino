@@ -58,9 +58,16 @@ void setDelayMicroseconds(uint64_t duration);
 
 void setDelayMilliseconds(uint64_t duration);
 
-/**
- * Used to indicate a pin is not connected
- */
-extern uint8_t DISCONNECTED;
+extern uint8_t DISCONNECTED; // used to indicate if a pin is not connected.
+extern uint8_t PULL_UP; // Used for indicating that an external resistor pull up is used.
+extern uint8_t PULL_DOWN; // Used for indicating that an external resistor down up is used.
+
+#ifndef INPUT_PULLUP
+    #define INPUT_PULLUP 2 // Define a placeholder value for INPUT_PULLUP
+#endif
+
+#ifndef INPUT_PULLDOWN
+    #define INPUT_PULLDOWN 3 // Define a placeholder value for INPUT_PULLDOWN
+#endif
 
 #endif

@@ -43,6 +43,31 @@ CtrlBtn::CtrlBtn(
     this->onDelayedReleaseCallback = onDelayedReleaseCallback;
 }
 
+void CtrlBtn::setPinMode(const uint8_t pinModeType, const uint8_t resistorPull)
+{
+    if (pinModeType != INPUT && pinModeType != INPUT_PULLUP && pinModeType != INPUT_PULLDOWN) {
+        return; // Invalid pinModeType, do nothing
+    }
+    this->pinModeType = pinModeType;
+    if (pinModeType == INPUT && (resistorPull == PULL_UP || resistorPull == PULL_DOWN)) {
+        this->resistorPull = resistorPull;
+        if (resistorPull == PULL_DOWN) {
+            this->currentState = LOW;
+            this->lastState = LOW;
+        }
+    }
+    if (pinModeType == INPUT_PULLUP) {
+        this->resistorPull = PULL_UP;
+        this->currentState = HIGH;
+        this->lastState = HIGH;
+    }
+    if (pinModeType == INPUT_PULLDOWN) {
+        this->resistorPull = PULL_DOWN;
+        this->currentState = LOW;
+        this->lastState = LOW;
+    }
+}
+
 void CtrlBtn::process()
 {
     if (!this->isInitialized()) this->initialize();
@@ -55,7 +80,7 @@ void CtrlBtn::process()
     if (currentTime - this->debounceStart > bounceDuration) {
         if (reading != this->currentState) {
             this->currentState = reading;
-            if (this->currentState == LOW) {
+            if (this->isPressed()) {
                 this->onPress();
                 this->pressStartTime = millis();
             } else {
@@ -72,9 +97,21 @@ void CtrlBtn::process()
     this->lastState = reading;
 }
 
-bool CtrlBtn::isPressed() const { return this->currentState == LOW; }
+bool CtrlBtn::isPressed() const
+{
+    if (this->resistorPull == PULL_UP) {
+        return this->currentState == LOW;
+    }
+    return this->currentState == HIGH;
+}
 
-bool CtrlBtn::isReleased() const { return this->currentState == HIGH; }
+bool CtrlBtn::isReleased() const
+{
+    if (this->resistorPull == PULL_UP) {
+        return this->currentState == HIGH;
+    }
+    return this->currentState == LOW;
+}
 
 void CtrlBtn::setOnPress(const CallbackFunction callback)
 {
@@ -98,7 +135,7 @@ void CtrlBtn::setDelayedReleaseDuration(const unsigned long duration)
 
 void CtrlBtn::initialize()
 {
-    if (!this->isMuxed()) pinMode(sig, INPUT_PULLUP);
+    if (!this->isMuxed()) pinMode(sig, this->pinModeType);
     this->currentState = CtrlBtn::processInput();
     this->lastState = currentState;
     this->initialized = true;
@@ -109,7 +146,7 @@ bool CtrlBtn::isInitialized() const { return this->initialized; }
 uint8_t CtrlBtn::processInput()
 {
     if (this->isMuxed()) {
-        return  this->mux->readBtnSig(this->sig);
+        return  this->mux->readBtnSig(this->sig, this->pinModeType);
     }
     #ifdef UNIT_TEST
         // Simulated digitalRead testing

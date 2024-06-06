@@ -44,6 +44,21 @@ Refer to the figure below and connect all the components as shown.
 
 ![Rotary encoder schematic](assets/button_breadboard.png)
 
+Note that this button is wired from ground to the Arduino pin. This is because by 
+default, a CtrlBtn has the pinMode configured to 'INPUT_PULLUP', meaning that an 
+internal pull-up resistor has been activated, pulling the pin HIGH when the button 
+is not pressed. Pressing the button pulls the pin to LOW. Not all boards have 
+internal pull-up or pull-down resistors, so you then want to set it to 'INPUT'
+and implement your own external pull-down or pull-up resistor. You can then 
+optionally set the second parameter to 'PULL_DOWN' or 'PULL_UP' (default is 'PULL_UP').
+
+Example:
+```c++
+void setup() {
+  button.setPinMode(INPUT, PULL_DOWN);
+}
+```
+
 ***
 
 ### Example code
