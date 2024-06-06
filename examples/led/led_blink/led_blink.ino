@@ -9,15 +9,15 @@
   - Signal pin         (required) The input pin your LED is hooked up to.
 
   Available methods:
-  - turnOn()           Turns on the LED.
-  - turnOff()          Turns off the LED.
-  - toggle()           Toggles the LED's off/on status.
-  - setMaxBrightness() Sets the maximum brightness of the LED, for calibration purposes (0 - 255).
-  - setBrightness()    Sets the brightness of the LED in percentages (0 - 100).
-  - getMaxBrightness() Returns the maximum brightness set for the LED.
-  - getBrightness()    Returns the brightness of the LED.
-  - isOn()             Checks if the LED is turned on.
-  - isOff()            Checks if the LED is turned off.
+  - turnOn()              Turns on the LED.
+  - turnOff()             Turns off the LED.
+  - toggle()              Toggles the LED's off/on status.
+  - setMaxBrightness(255) Sets the maximum brightness of the LED, for calibration purposes (0 - 255).
+  - setBrightness(100)    Sets the brightness of the LED in percentages (0 - 100).
+  - getMaxBrightness()    Returns the maximum brightness set for the LED.
+  - getBrightness()       Returns the brightness of the LED.
+  - isOn()                Checks if the LED is turned on.
+  - isOff()               Checks if the LED is turned off.
 */
 
 #include <CtrlLed.h>

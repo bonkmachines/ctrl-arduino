@@ -79,7 +79,7 @@ uint16_t CtrlPot::processInput()
 {
     uint16_t rawValue;
     if (this->isMuxed()) {
-        rawValue = this->mux->readPotSig(this->sig);
+        rawValue = this->mux->readPotSig(this->sig, this->pinModeType);
     } else {
         #ifdef UNIT_TEST
             // Simulated analogRead for testing

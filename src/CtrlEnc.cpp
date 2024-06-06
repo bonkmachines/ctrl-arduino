@@ -80,9 +80,9 @@ bool CtrlEnc::isInitialized() const { return this->initialized; }
 void CtrlEnc::processInput()
 {
     if (this->isMuxed()) {
-        const uint8_t clkReading = this->mux->readEncClk(this->clk);
+        const uint8_t clkReading = this->mux->readEncClk(this->clk, this->pinModeType);
         if (clkReading) values[0] |= 0x01;
-        const uint8_t dtReading = this->mux->readEncDt(this->dt);
+        const uint8_t dtReading = this->mux->readEncDt(this->dt, this->pinModeType);
         if (dtReading) values[0] |= 0x02;
     } else {
         #ifdef UNIT_TEST

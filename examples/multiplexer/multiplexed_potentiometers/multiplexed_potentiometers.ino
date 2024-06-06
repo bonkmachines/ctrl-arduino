@@ -15,8 +15,8 @@
           Only needed if you use a 16 channel mux. Not needed for 8 channels.
 
   Available methods:
-  - setSwitchInterval()  Sets the time we allow the multiplexer to switch (in microseconds)
-                         The default value is 1 microsecond.
+  - setSwitchInterval(5)  Sets the time we allow the multiplexer to switch (in microseconds).
+                          The default value is 1 microsecond.
 
   NOTE: Make sure to check the datasheet of your multiplexer to determine if the default
   1 microsecond switching interval is sufficient. For example, a Sparkfun CD74HC4067

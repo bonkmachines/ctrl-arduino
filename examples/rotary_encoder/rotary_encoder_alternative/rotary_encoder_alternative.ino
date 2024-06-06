@@ -21,14 +21,14 @@
   - setOnTurnRight(onTurnRight)
 
   Available methods:
-  - process()         Is used to poll the rotary encoder and handle all it's functionality (used in the loop method).
-  - setOnTurnLeft()   Sets the onTurnleft handler. Is called when you turn left.
-  - setOnTurnRight()  Sets the onTurnRight handler. Is called when you turn right.
-  - setMultiplexer()  Sets the multiplexer that the rotary encoder subscribes to.
-  - disable()         Disables the rotary encoder.
-  - enable()          Enables the rotary encoder.
-  - isEnabled()       Checks if the rotary encoder is enabled.
-  - isDisabled()      Checks if the rotary encoder is disabled.
+  - process()            Is used to poll the rotary encoder and handle all it's functionality (used in the loop method).
+  - setOnTurnLeft()      Sets the onTurnleft handler. Is called when you turn left.
+  - setOnTurnRight()     Sets the onTurnRight handler. Is called when you turn right.
+  - setMultiplexer(&mux) Sets the multiplexer that the rotary encoder subscribes to.
+  - disable()            Disables the rotary encoder.
+  - enable()             Enables the rotary encoder.
+  - isEnabled()          Checks if the rotary encoder is enabled.
+  - isDisabled()         Checks if the rotary encoder is disabled.
 */
 
 #include <CtrlEnc.h>
@@ -48,7 +48,6 @@ void onTurnRight() {
 
 void setup() {
   Serial.begin(9600);
-
   // Register the handlers with the rotary encoder object.
   encoder.setOnTurnLeft(onTurnLeft);
   encoder.setOnTurnRight(onTurnRight);

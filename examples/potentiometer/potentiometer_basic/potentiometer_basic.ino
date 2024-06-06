@@ -12,14 +12,14 @@
   - onValueChange handler  (optional) This will be called as soon as the reading of the potentiometer changes.
 
   Available methods:
-  - process()           Is used to poll the potentiometer and handle all it's functionality (used in the loop method).
-  - getValue()          Retrieves the current value of the potentiometer.
-  - setOnValueChange()  Sets the onValueChange handler. Will be called as soon as the reading of the potentiometer changes.
-  - setMultiplexer()    Sets the multiplexer that the potentiometer subscribes to.
-  - disable()           Disables the potentiometer.
-  - enable()            Enables the potentiometer.
-  - isEnabled()         Checks if the potentiometer is enabled.
-  - isDisabled()        Checks if the potentiometer is disabled.
+  - process()            Is used to poll the potentiometer and handle all it's functionality (used in the loop method).
+  - getValue()           Retrieves the current value of the potentiometer.
+  - setOnValueChange()   Sets the onValueChange handler. Will be called as soon as the reading of the potentiometer changes.
+  - setMultiplexer(&mux) Sets the multiplexer that the potentiometer subscribes to.
+  - disable()            Disables the potentiometer.
+  - enable()             Enables the potentiometer.
+  - isEnabled()          Checks if the potentiometer is enabled.
+  - isDisabled()         Checks if the potentiometer is disabled.
 */
 
 #include <CtrlPot.h>

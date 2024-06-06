@@ -37,6 +37,7 @@ class CtrlEnc : public Muxable
     protected:
         uint8_t clk; // CLK pin
         uint8_t dt; // DT pin
+        uint8_t pinModeType = INPUT;
         int values[2] = { 0, 0 }; // State of the encoder
         bool initialized = false;
         using CallbackFunction = void (*)();
