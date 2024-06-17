@@ -41,6 +41,23 @@ CtrlEnc::CtrlEnc(
     this->onTurnRightCallback = onTurnRightCallback;
 }
 
+void CtrlEnc::setPinMode(const uint8_t pinModeType, const uint8_t resistorPull)
+{
+    if (pinModeType != INPUT && pinModeType != INPUT_PULLUP && pinModeType != INPUT_PULLDOWN) {
+        return; // Invalid pinModeType, do nothing
+    }
+    this->pinModeType = pinModeType;
+    if (pinModeType == INPUT && (resistorPull == PULL_UP || resistorPull == PULL_DOWN)) {
+        this->resistorPull = resistorPull;
+    }
+    if (pinModeType == INPUT_PULLUP) {
+        this->resistorPull = PULL_UP;
+    }
+    if (pinModeType == INPUT_PULLDOWN) {
+        this->resistorPull = PULL_DOWN;
+    }
+}
+
 void CtrlEnc::process()
 {
     if (!this->isInitialized()) this->initialize();
@@ -70,8 +87,8 @@ void CtrlEnc::setOnTurnRight(const CallbackFunction callback)
 
 void CtrlEnc::initialize()
 {
-    if (!this->isMuxed()) pinMode(clk, INPUT);
-    if (!this->isMuxed()) pinMode(dt, INPUT);
+    if (!this->isMuxed()) pinMode(clk, this->pinModeType);
+    if (!this->isMuxed()) pinMode(dt, this->pinModeType);
     this->initialized = true;
 }
 
@@ -79,25 +96,33 @@ bool CtrlEnc::isInitialized() const { return this->initialized; }
 
 void CtrlEnc::processInput()
 {
+    bool clkState, dtState;
+
     if (this->isMuxed()) {
-        const uint8_t clkReading = this->mux->readEncClk(this->clk, this->pinModeType);
-        if (clkReading) values[0] |= 0x01;
-        const uint8_t dtReading = this->mux->readEncDt(this->dt, this->pinModeType);
-        if (dtReading) values[0] |= 0x02;
+        clkState = this->mux->readEncClk(this->clk, this->pinModeType);
+        dtState = this->mux->readEncDt(this->dt, this->pinModeType);
     } else {
         #ifdef UNIT_TEST
-            // Simulated pin states for testing
             extern int8_t mockClkInput;
             extern int8_t mockDtInput;
-            if (mockClkInput) this->values[0] |= 0x01;
-            if (mockDtInput) this->values[0] |= 0x02;
+            clkState = mockClkInput;
+            dtState = mockDtInput;
         #else
-        // Normal operation with real hardware
-            if (digitalRead(clk)) values[0] |= 0x01;
-            if (digitalRead(dt)) values[0] |= 0x02;
+            clkState = digitalRead(clk);
+            dtState = digitalRead(dt);
         #endif
     }
+
+    if (this->resistorPull == PULL_DOWN) {
+        // Invert the states if using external pull-down resistors
+        clkState = !clkState;
+        dtState = !dtState;
+    }
+
+    if (clkState) values[0] |= 0x01;
+    if (dtState) values[0] |= 0x02;
 }
+
 
 int8_t CtrlEnc::readEncoder()
 {

@@ -74,6 +74,14 @@ CtrlEnc encoder(9, 8, onTurnleft, onTurnRight);
 
 void setup() {
   Serial.begin(9600);
+  // Since we are using an external pull-up resistor in our example, set the pinMode accordingly:
+  encoder.setPinMode(INPUT, PULL_UP);
+  // If you use an external pull-down resistor, use this:
+  // encoder.setPinMode(INPUT, PULL_DOWN);
+  // If you have a board that has internal pull-down resistors, you can use this:
+  // encoder.setPinMode(INPUT_PULLDOWN);
+  // If you have a board that has internal pull-up resistors, and want to use those instead, you 
+  // don't need to call this method, as the encoder is set to 'INPUT_PULLUP' by default.
 }
 
 void loop() {

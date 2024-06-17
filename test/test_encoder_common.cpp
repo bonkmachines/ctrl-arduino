@@ -14,7 +14,7 @@ void test_encoder_common_initial_state()
     encoder.process(); // Process internal state
 
     TEST_ASSERT_FALSE(encoder.isTurningLeft()); // Encoder should not be turning left
-    TEST_ASSERT_FALSE(encoder.isTurningRight()); // Encoder should not be turnign right
+    TEST_ASSERT_FALSE(encoder.isTurningRight()); // Encoder should not be turning right
 }
 
 void test_encoder_common_can_be_disabled_and_enabled()
