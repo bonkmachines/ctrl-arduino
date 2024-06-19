@@ -8,7 +8,7 @@
   Usage:
   Create a button with reference to:
   - Signal pin               (required) The input pin your button is hooked up to.
-  - Bonuce duration          (required) In milliseconds.
+  - Bounce duration          (required) In milliseconds.
   - onPress handler          (optional).
   - onRelease handler        (optional).
   - onDelayedRelease handler (optional).
