@@ -13,11 +13,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # This step makes the contents of the repository available to the workflow
+      # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # For more information: https://github.com/arduino/compile-sketches#readme
+      # Set up Python (if needed for other purposes, but not for Poetry)
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.2'
+
+      # Compile sketch
       - name: Compile sketch
         uses: arduino/compile-sketches@v1
         with:
@@ -25,5 +31,4 @@ jobs:
           sketch-paths: |
             - ./examples
           libraries: |
-            # Libraries
             - source-path: ./src

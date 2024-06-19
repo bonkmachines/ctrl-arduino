@@ -48,6 +48,9 @@ void CtrlBtn::setPinMode(const uint8_t pinModeType, const uint8_t resistorPull)
     if (pinModeType != INPUT && pinModeType != INPUT_PULLUP && pinModeType != INPUT_PULLDOWN) {
         return; // Invalid pinModeType, do nothing
     }
+    if (resistorPull != PULL_DOWN && resistorPull != PULL_UP) {
+        return; // Invalid resistorPull, do nothing
+    }
     this->pinModeType = pinModeType;
     if (pinModeType == INPUT && (resistorPull == PULL_UP || resistorPull == PULL_DOWN)) {
         this->resistorPull = resistorPull;
