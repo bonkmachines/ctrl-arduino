@@ -71,7 +71,7 @@ void onRelease() {
   Serial.println("Button released");
 }
 
-CtrlBtn button = CtrlBtn::create(1, 15, onPress, onRelease);
+CtrlBtn button(1, 15, onPress, onRelease);
 
 void setup() {
   Serial.begin(9600);
