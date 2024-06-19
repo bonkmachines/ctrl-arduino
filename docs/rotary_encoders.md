@@ -27,7 +27,7 @@ a quadrature output.
 * An Arduino Uno (or any other Arduino-compatible board)
 * 1x Incremental rotary encoder (with quadrature output)
 * 2x 0.1uF (100nF) capacitors (ceramic & non polarized)
-* 4x 10 kΩ resistors
+* 2x 10 kΩ resistors
 * A solderless breadboard
 * Some jumper wires (male to male)
 
@@ -40,7 +40,7 @@ terminal B (usually the DT pin) & terminal C (normally goes to ground).
 Be sure to check the schematics of your encoder, to confirm this. Next 
 connect all wires and components as shown in the figure below.
 
-![Rotary encoder schematic](assets/rotary_encoder_breadboard.png)
+![Rotary encoder schematic](assets/rotary_encoder_breadboard_internal_pullup.png)
 
 ***
 
@@ -69,11 +69,24 @@ void onTurnRight() {
 }
 
 // Create a rotary encoder with the clk signal pin number, dt signal pin, 
-// onTurnleft (optional) & onTurnRight (optional) handler.
+// onTurnleft & onTurnRight handler.
 CtrlEnc encoder(9, 8, onTurnleft, onTurnRight);
 
 void setup() {
   Serial.begin(9600);
+  // In this example we use a board that has internal pull-up resistors (most do). So
+  // you  don't need to call the setPinMode() method, because the software is set to 
+  // 'INPUT_PULLUP' by default. However, if your board does not support this, you 
+  // can opt to use an external pull-up resistor and set the pinMode accordingly:
+  // encoder.setPinMode(INPUT, PULL_UP);
+  
+  // If you want to use a pull-down configuration and have a board that has internal 
+  // pull-down resistors, you can do this:
+  // encoder.setPinMode(INPUT_PULLDOWN);
+  
+  // If you want to use a pull-down configuration but your board does NOT have internal
+  // pull-down resistors, hook up your own resistors and use this:
+  // encoder.setPinMode(INPUT, PULL_DOWN);
 }
 
 void loop() {

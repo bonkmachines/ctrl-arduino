@@ -37,7 +37,8 @@ class CtrlEnc : public Muxable
     protected:
         uint8_t clk; // CLK pin
         uint8_t dt; // DT pin
-        uint8_t pinModeType = INPUT;
+        uint8_t pinModeType = INPUT_PULLUP;
+        uint8_t resistorPull = PULL_UP;
         int values[2] = { 0, 0 }; // State of the encoder
         bool initialized = false;
         using CallbackFunction = void (*)();
@@ -67,6 +68,17 @@ class CtrlEnc : public Muxable
         );
 
         virtual ~CtrlEnc() = default;
+
+        /**
+        * @brief Sets the pinMode.
+        *
+        * @param pinModeType Set to INPUT, INPUT_PULLUP or INPUT_PULLDOWN.
+        * @param resistorPull (optional) If pinModeType is set to INPUT,
+        * there needs to be and external pull-up or pull-down resistor
+        * implemented. Here you specify if it's configured 'PULL_UP' or 'PULL_DOWN'
+        * (default is 'PULL_UP').
+        */
+        void setPinMode(uint8_t pinModeType, uint8_t resistorPull = PULL_UP);
 
         /**
         * @brief The process method should be called within the loop method. It handles all functionality.
