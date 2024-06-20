@@ -22,9 +22,10 @@ void test_button_basic_can_be_pressed_and_released()
         onReleasehandlerBasic
     );
 
-    button.process(); // Process internal state
-
     buttonHandlerResult = ""; // Reset
+    mockButtonInput = HIGH; // Reset
+
+    button.process(); // Process internal state
 
     mockButtonInput = LOW; // Simulate button press
     button.process(); // Process internal state

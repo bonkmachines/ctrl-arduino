@@ -8,6 +8,10 @@ extern void test_button_common_can_be_pressed_and_released();
 extern void test_button_basic_can_be_pressed_and_released();
 extern void test_button_alternative_can_be_pressed_and_released();
 extern void test_button_advanced_can_be_pressed_and_released();
+extern void test_button_internal_pull_down_can_be_pressed_and_released();
+extern void test_button_external_pull_down_can_be_pressed_and_released();
+extern void test_button_internal_pull_up_can_be_pressed_and_released();
+extern void test_button_external_pull_up_can_be_pressed_and_released();
 
 // Encoder test methods
 extern void test_encoder_common_initial_state();
@@ -18,8 +22,14 @@ extern void test_encoder_alternative_can_be_turned_left();
 extern void test_encoder_alternative_can_be_turned_right();
 extern void test_encoder_advanced_can_be_turned_left();
 extern void test_encoder_advanced_can_be_turned_right();
-extern void test_encoder_pull_down_can_be_turned_left();
-extern void test_encoder_pull_down_can_be_turned_right();
+extern void test_encoder_internal_pull_down_can_be_turned_left();
+extern void test_encoder_internal_pull_down_can_be_turned_right();
+extern void test_encoder_external_pull_down_can_be_turned_left();
+extern void test_encoder_external_pull_down_can_be_turned_right();
+extern void test_encoder_internal_pull_up_can_be_turned_left();
+extern void test_encoder_internal_pull_up_can_be_turned_right();
+extern void test_encoder_external_pull_up_can_be_turned_left();
+extern void test_encoder_external_pull_up_can_be_turned_right();
 
 // Potentiometer test methods
 extern void test_potentiometer_common_can_be_disabled_and_enabled();
@@ -59,6 +69,9 @@ void setup()
 {
     delay(2000);
 
+    Serial.begin(9600);
+    while (!Serial) { }
+
     UNITY_BEGIN(); // Start Unity Testing Framework
 
     // Button tests
@@ -68,6 +81,10 @@ void setup()
     RUN_TEST(test_button_basic_can_be_pressed_and_released);
     RUN_TEST(test_button_alternative_can_be_pressed_and_released);
     RUN_TEST(test_button_advanced_can_be_pressed_and_released);
+    RUN_TEST(test_button_internal_pull_down_can_be_pressed_and_released);
+    RUN_TEST(test_button_external_pull_down_can_be_pressed_and_released);
+    RUN_TEST(test_button_internal_pull_up_can_be_pressed_and_released);
+    RUN_TEST(test_button_external_pull_up_can_be_pressed_and_released);
 
     // Encoder tests
     RUN_TEST(test_encoder_common_initial_state);
@@ -78,8 +95,14 @@ void setup()
     RUN_TEST(test_encoder_alternative_can_be_turned_right);
     RUN_TEST(test_encoder_advanced_can_be_turned_left);
     RUN_TEST(test_encoder_advanced_can_be_turned_right);
-    RUN_TEST(test_encoder_pull_down_can_be_turned_left);
-    RUN_TEST(test_encoder_pull_down_can_be_turned_right);
+    RUN_TEST(test_encoder_internal_pull_down_can_be_turned_left);
+    RUN_TEST(test_encoder_internal_pull_down_can_be_turned_right);
+    RUN_TEST(test_encoder_external_pull_down_can_be_turned_left);
+    RUN_TEST(test_encoder_external_pull_down_can_be_turned_right);
+    RUN_TEST(test_encoder_internal_pull_up_can_be_turned_left);
+    RUN_TEST(test_encoder_internal_pull_up_can_be_turned_right);
+    RUN_TEST(test_encoder_external_pull_up_can_be_turned_left);
+    RUN_TEST(test_encoder_external_pull_up_can_be_turned_right);
 
     // Potentiometer tests
     RUN_TEST(test_potentiometer_common_can_be_disabled_and_enabled);

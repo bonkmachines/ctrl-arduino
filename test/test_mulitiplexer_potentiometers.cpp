@@ -16,8 +16,6 @@ void test_potentiometers_can_be_multiplexed()
 
     potentiometer.setMultiplexer(mux);
 
-    potentiometer.process();
-
     mockMuxPotSigInput = 1023; // Simulate a maximum position of the pot. Range: 0 - 1023
 
     // Call process multiple times to allow smoothing to converge

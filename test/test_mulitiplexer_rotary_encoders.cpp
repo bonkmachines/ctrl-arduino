@@ -29,7 +29,6 @@ void test_rotary_encoders_can_be_multiplexed()
 
     // Reset the state
     encoderHandlerResult = "";
-
     mockMuxEncClkInput = LOW;
     mockMuxEncDtInput = LOW;
 

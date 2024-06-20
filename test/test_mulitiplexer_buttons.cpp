@@ -6,7 +6,7 @@
 
 void test_buttons_can_be_multiplexed()
 {
-    CtrlMux mux(1, 1, 2, 3, 4);
+    CtrlMux mux(1, 2, 3, 4, 5);
 
     CtrlBtn button = CtrlBtn(0, 15);
 

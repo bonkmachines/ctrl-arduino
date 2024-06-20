@@ -146,7 +146,7 @@ void CtrlBtn::initialize()
 
 bool CtrlBtn::isInitialized() const { return this->initialized; }
 
-uint8_t CtrlBtn::processInput()
+bool CtrlBtn::processInput()
 {
     if (this->isMuxed()) {
         return  this->mux->readBtnSig(this->sig, this->pinModeType);
