@@ -16,7 +16,7 @@ void onTurnRighthandlerMuxEncoder() {
 
 void test_rotary_encoders_can_be_multiplexed()
 {
-    CtrlMux mux(1, 1, 2, 3, 4);
+    CtrlMux mux(1, 2, 3, 4, 5);
 
     CtrlEnc encoder(
         0,
@@ -29,7 +29,6 @@ void test_rotary_encoders_can_be_multiplexed()
 
     // Reset the state
     encoderHandlerResult = "";
-
     mockMuxEncClkInput = LOW;
     mockMuxEncDtInput = LOW;
 

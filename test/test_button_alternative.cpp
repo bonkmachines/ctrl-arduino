@@ -21,9 +21,10 @@ void test_button_alternative_can_be_pressed_and_released()
     button.setOnPress(onPressHandlerAlternative);
     button.setOnRelease(onReleasehandlerAlternative);
 
-    button.process(); // Process internal state
-
     buttonHandlerResult = ""; // Reset
+    mockButtonInput = HIGH; // Reset
+
+    button.process(); // Process internal state
 
     mockButtonInput = LOW; // Simulate button press
     button.process(); // Process internal state

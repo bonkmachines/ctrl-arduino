@@ -80,5 +80,5 @@ void setDelayMilliseconds(const uint64_t duration)
 }
 
 uint8_t DISCONNECTED = UINT8_MAX;
-uint8_t PULL_UP = 1; // Used for indicating that an external resistor pull up is used
-uint8_t PULL_DOWN = 0; // Used for indicating that an external resistor down up is used
+uint8_t PULL_DOWN = 0; // External resistor is of type pull down.
+uint8_t PULL_UP = 1; // External resistor is of type pull up.

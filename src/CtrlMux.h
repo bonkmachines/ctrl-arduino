@@ -81,9 +81,9 @@ class CtrlMux
         */
         void setSwitchInterval(uint8_t interval);
 
-        [[nodiscard]] uint8_t readBtnSig(uint8_t channel, uint8_t pinModeType);
-        [[nodiscard]] uint8_t readEncClk(uint8_t channel, uint8_t pinModeType);
-        [[nodiscard]] uint8_t readEncDt(uint8_t channel, uint8_t pinModeType);
+        [[nodiscard]] bool readBtnSig(uint8_t channel, uint8_t pinModeType);
+        [[nodiscard]] bool readEncClk(uint8_t channel, uint8_t pinModeType);
+        [[nodiscard]] bool readEncDt(uint8_t channel, uint8_t pinModeType);
         [[nodiscard]] uint16_t readPotSig(uint8_t channel, uint8_t pinModeType);
 };
 

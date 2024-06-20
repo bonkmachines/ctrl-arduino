@@ -27,9 +27,10 @@ void test_button_advanced_can_be_pressed_and_released()
 {
     CustomButton button(1, 15);
 
-    button.process(); // Process internal state
-
     buttonHandlerResult = ""; // Reset
+    mockButtonInput = HIGH; // Reset
+
+    button.process(); // Process internal state
 
     mockButtonInput = LOW; // Simulate button press
     button.process(); // Process internal state

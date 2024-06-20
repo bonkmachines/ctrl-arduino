@@ -33,6 +33,9 @@ void test_button_common_can_be_pressed_and_released()
 {
     CtrlBtn button(1, 15);
 
+    mockButtonInput = HIGH; // Reset
+    button.process(); // Process internal state
+
     mockButtonInput = LOW; // Simulate button press
     button.process(); // Process internal state
     delay(15 + 1); // Wait more than the debounce duration

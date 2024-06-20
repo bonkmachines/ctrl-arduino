@@ -13,7 +13,6 @@ void test_potentiometer_common_can_be_disabled_and_enabled()
     TEST_ASSERT_TRUE(potentiometer.isDisabled()); // Potentiometer should be disabled
 
     potentiometer.enable(); // Enable the potentiometer
-    potentiometer.process(); // Process internal state
 
     TEST_ASSERT_TRUE(potentiometer.isEnabled()); // Potentiometer should be enabled
 }

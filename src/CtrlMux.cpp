@@ -67,7 +67,7 @@ void CtrlMux::setChannel(const uint8_t channel) const
     }
 }
 
-uint8_t CtrlMux::readBtnSig(const uint8_t channel, const uint8_t pinModeType)
+bool CtrlMux::readBtnSig(const uint8_t channel, const uint8_t pinModeType)
 {
     this->setPinMode(pinModeType);
 
@@ -85,7 +85,7 @@ uint8_t CtrlMux::readBtnSig(const uint8_t channel, const uint8_t pinModeType)
     #endif
 }
 
-uint8_t CtrlMux::readEncClk(const uint8_t channel, const uint8_t pinModeType)
+bool CtrlMux::readEncClk(const uint8_t channel, const uint8_t pinModeType)
 {
     this->setPinMode(pinModeType);
 
@@ -103,7 +103,7 @@ uint8_t CtrlMux::readEncClk(const uint8_t channel, const uint8_t pinModeType)
     #endif
 }
 
-uint8_t CtrlMux::readEncDt(const uint8_t channel, const uint8_t pinModeType)
+bool CtrlMux::readEncDt(const uint8_t channel, const uint8_t pinModeType)
 {
     this->setPinMode(pinModeType);
 

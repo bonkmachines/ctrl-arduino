@@ -149,7 +149,7 @@ class CtrlBtn : public Muxable
     protected:
         void initialize();
         [[nodiscard]] bool isInitialized() const;
-        virtual uint8_t processInput();
+        virtual bool processInput();
         virtual void onPress();
         virtual void onRelease();
         virtual void onDelayedRelease();
