@@ -35,7 +35,7 @@
 class CustomEncoder : public CtrlEnc
 {
   public:
-    CustomEncoder(uint8_t sig, uint8_t bounceDuration) : CtrlEnc(sig, bounceDuration) { }
+    CustomEncoder(uint8_t clk, uint8_t dt) : CtrlEnc(clk, dt) { }
 
   protected:
     void onTurnLeft() override
@@ -49,7 +49,7 @@ class CustomEncoder : public CtrlEnc
     }
 };
 
-// Crete a rotary encoder with the signal pin number & bounce duration.
+// Create a rotary encoder with the clk pin number & dt pin number.
 CustomEncoder encoder(33, 34);
 
 void setup() {

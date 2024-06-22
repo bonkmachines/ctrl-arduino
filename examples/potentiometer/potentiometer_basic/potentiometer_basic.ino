@@ -24,7 +24,7 @@
 
 #include <CtrlPot.h>
 
-// Define an onValueChange handler (optional)
+// Define an onValueChange handler
 void onValueChange(int value) {
   Serial.print("Basic pot value: ");
   Serial.println(value);

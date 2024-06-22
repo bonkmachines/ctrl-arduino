@@ -26,7 +26,7 @@ The multiplexer has 8 pins to consider:
 - VCC - the supply voltage input pin
 - GND - the ground connection pin
 - EN - pin for enabling/disabling the mux (pulling it LOW enables it / pulling it HIGH disables it)
-- S0, S1, S2, and S3 are address selection pins used to specify which input channel to connect to the output.
+- S0, S1, S2, and S3 are address selection pins used to specify which channel to connect to.
 - SIG - the signal input/output pin
 
 Now hook up the components according to the figure below.
@@ -87,7 +87,7 @@ void onPress2() {
 }
 
 // Create two buttons. With the: signal pin number (corresponds to the attached channel on the multiplexer),
-// the bounce duration, an onPress handler, without onRelease handler & without onDelayedRelease handler 
+// the bounce duration, an onPress handler, without onRelease handler, without onDelayedRelease handler 
 // (we don't need them for this example) & a reference (&mux) to the multiplexer.
 CtrlBtn button1(0, 15, onPress1, nullptr, nullptr, &mux);
 CtrlBtn button2(1, 15, onPress2, nullptr, nullptr, &mux);
