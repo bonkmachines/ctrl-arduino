@@ -42,7 +42,7 @@ Understanding these technical details helps explain why this
 approach is used. Now, let's move on to hooking up the button. 
 Refer to the figure below and connect all the components as shown.
 
-![Rotary encoder schematic](assets/button_breadboard.png)
+![Button schematic](assets/button_breadboard.png)
 
 Note that this button is wired from ground to the Arduino pin. This is because by 
 default, a CtrlBtn has the pinMode configured to 'INPUT_PULLUP', meaning that an 

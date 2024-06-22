@@ -45,7 +45,7 @@ if necessary (since there is only one input device in this circuit,
 it will not matter). However, note that higher capacitance will make 
 the potentiometer less responsive.
 
-![Rotary encoder schematic](assets/potentiometer_breadboard.png)
+![Potentiometer schematic](assets/potentiometer_breadboard.png)
 
 If you have motorized components in your circuit, they can introduce
 significant noise. To mitigate this, place capacitors across the motor’s

@@ -19,7 +19,7 @@ experienced or beginning Arduino C++ programmer. The plan is to add more objects
 in the future, so stay tuned!
 
 Before I show you some examples of how to implement this library, don't forget to 
-take a look at the [examples](examples "View the examples") & [documentation](docs "Documentation"). 
+take a look at the [examples](https://github.com/bonkmachines/ctrl-arduino/tree/main/examples "View the examples") & [documentation](https://github.com/bonkmachines/ctrl-arduino/tree/main/docs "Documentation"). 
 There you will find detailed instructions on how to use everything. 
 All right, let's get on with it!
 
@@ -35,7 +35,7 @@ Open the Arduino IDE Library manager, search for "CTRL" and hit "INSTALL".
 
 ## Manual installation
 
-If you prefer a manual installation instead, go to https://github.com/bonkmachines/ctrl-arduino/releases, and download the latest release. Next open your Arduino IDE, click on "Sketch" in the top menu, next select "Include Library" and then "Add .ZIP LIbrary". Browse to where you saved the downloaded file and import it.
+If you prefer a manual installation instead, go to [the release page](https://github.com/bonkmachines/ctrl-arduino/releases "Releases"), and download the latest release. Next open your Arduino IDE, click on "Sketch" in the top menu, next select "Include Library" and then "Add .ZIP LIbrary". Browse to where you saved the downloaded file and import it.
 
 <img src="assets/ss_add_library_manual.png" alt="add-library-manual" width="700">
 
@@ -86,9 +86,7 @@ we include the CtrlBtn header. We then create the functionality for when we pres
 down on the button by defining an onPress handler. This will execute every time the 
 button enters a 'down' state. The onRelease handler, in turn, will be triggered as 
 soon as the button is released and goes back 'up'. You can omit the onRelease if 
-you don't need it (the same goes for the onPress, by the way). 
-The [examples](https://github.com/bonkmachines/ctrl-arduino/tree/main/examples "View the examples") folder of this repository has more info 
-on why you might want to do that.
+you don't need it (the same goes for the onPress, by the way).
 
 After that, we create a button of the type CtrlBtn and pass it some data. The first 
 parameter (1) tells the software what pin the button is hooked up to (this pin will 
@@ -102,8 +100,8 @@ handlers that we defined earlier.
 Finally, all we need to do is to make sure we call the button's process method during 
 looping so that all its data readings and functionality can be continuously processed.
 
-And that's it! Have a look at the [examples](examples "View all examples") to see how to use 
+And that's it! Have a look at the [examples](https://github.com/bonkmachines/ctrl-arduino/tree/main/examples "View all examples") to see how to use 
 potentiometers, rotary encoders and LED's. For more extensive and in depth information on
-how to hook everything up please refer to the [documentation](docs "Documentation")
+how to hook everything up, please refer to the [documentation](https://github.com/bonkmachines/ctrl-arduino/tree/main/docs "Documentation").
 
 P.S. If you have ideas or suggestions, feel free to contact me at <johannesprins@knalgeel.com>

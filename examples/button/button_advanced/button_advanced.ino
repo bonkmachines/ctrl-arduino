@@ -2,7 +2,7 @@
   Advanced button example
 
   Description:
-  This sketch demonstrates an more advanced implementation of a button or switch,
+  This sketch demonstrates a more advanced implementation of a button or switch,
   with debouncing functionality for noisy buttons.
 
   With this approach you can extend the button class (CtrlBtn) into your own class,

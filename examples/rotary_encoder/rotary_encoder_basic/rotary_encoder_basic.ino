@@ -39,7 +39,8 @@ void onTurnRight() {
   Serial.println("Basic rotary encoder turn right");
 }
 
-// Create a rotary encoder with the clk signal pin number, dt signal pin, onTurnleft (optional) & onTurnRight (optional) handler.
+// Create a rotary encoder with the clk signal pin number, dt signal pin number,
+// onTurnleft & onTurnRight handler.
 CtrlEnc encoder(33, 34, onTurnleft, onTurnRight);
 
 void setup() {

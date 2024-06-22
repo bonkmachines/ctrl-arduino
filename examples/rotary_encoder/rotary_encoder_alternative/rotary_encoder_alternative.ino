@@ -38,7 +38,7 @@
 
 #include <CtrlEnc.h>
 
-// Create a rotary encoder with the signal pin number & bounce duration.
+// Create a rotary encoder with the clk pin number & dt pin number.
 CtrlEnc encoder(33, 34);
 
 // Define an onTurnLeft handler.
