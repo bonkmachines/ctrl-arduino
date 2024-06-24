@@ -20,3 +20,7 @@
 // #include "../examples/rotary_encoder/rotary_encoder_basic/rotary_encoder_basic.ino"
 // #include "../examples/rotary_encoder/rotary_encoder_alternative/rotary_encoder_alternative.ino"
 // #include "../examples/rotary_encoder/rotary_encoder_advanced/rotary_encoder_advanced.ino"
+
+#include "../examples/group/button_group/button_group.ino"
+// #include "../examples/group/rotary_encoder_group/rotary_encoder_group.ino"
+// #include "../examples/group/potentiometer_group/potentiometer_group.ino"

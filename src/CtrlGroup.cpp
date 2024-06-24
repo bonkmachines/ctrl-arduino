@@ -1,5 +1,5 @@
 /*!
- *  @file       CtrlBase.h
+ *  @file       CtrlGroup.cpp
  *  Project     Arduino CTRL Library
  *  @brief      CTRL Library for interfacing with common controls
  *  @author     Johannes Jan Prins
@@ -25,48 +25,48 @@
  * THE SOFTWARE.
  */
 
-#ifndef CTRLBASE_H
-#define CTRLBASE_H
+#include "CtrlGroup.h"
 
-#include "CtrlMux.h"
-
-class Muxable
+void CtrlGroup::addObject(Groupable* object)
 {
-    protected:
-        bool enabled = true;
-        CtrlMux* mux = nullptr;
-        bool muxed = false;
+    if (objectCount < MAX_OBJECTS) {
+        objects[objectCount++] = object;
+    }
+}
 
-        explicit Muxable(
-            CtrlMux* mux = nullptr
-        );
+void CtrlGroup::process() const
+{
+    for (int i = 0; i < objectCount; ++i) {
+        objects[i]->process();
+    }
+}
 
-        ~Muxable() = default;
+void CtrlGroup::setOnPress(void (*callback)(Groupable*))
+{
+    onPressCallback = callback;
+}
 
-    public:
-        virtual void process() = 0;
-        void enable();
-        void disable();
-        [[nodiscard]] bool isEnabled() const;
-        [[nodiscard]] bool isDisabled() const;
-        [[nodiscard]] bool isMuxed() const;
-        void setMultiplexer(CtrlMux &mux);
-};
+void CtrlGroup::setOnRelease(void (*callback)(Groupable*))
+{
+    onReleaseCallback = callback;
+}
 
-void setDelayMicroseconds(uint64_t duration);
+void CtrlGroup::setOnDelayedRelease(void (*callback)(Groupable*))
+{
+    onDelayedReleaseCallback = callback;
+}
 
-void setDelayMilliseconds(uint64_t duration);
+void CtrlGroup::setOnTurnLeft(void (*callback)(Groupable*))
+{
+    onTurnLeftCallback = callback;
+}
 
-extern uint8_t DISCONNECTED; // used to indicate if a pin is not connected.
-extern uint8_t PULL_UP; // Used for indicating that an external resistor pull up is used.
-extern uint8_t PULL_DOWN; // Used for indicating that an external resistor down up is used.
+void CtrlGroup::setOnTurnRight(void (*callback)(Groupable*))
+{
+    onTurnRightCallback = callback;
+}
 
-#ifndef INPUT_PULLUP
-    #define INPUT_PULLUP 2 // Define a placeholder value for INPUT_PULLUP
-#endif
-
-#ifndef INPUT_PULLDOWN
-    #define INPUT_PULLDOWN 3 // Define a placeholder value for INPUT_PULLDOWN
-#endif
-
-#endif
+void CtrlGroup::setOnValueChange(void (*callback)(Groupable*, int value))
+{
+    onValueChangeCallback = callback;
+}

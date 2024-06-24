@@ -1,5 +1,5 @@
 /*!
- *  @file       CtrlBase.h
+ *  @file       Groupable.h
  *  Project     Arduino CTRL Library
  *  @brief      CTRL Library for interfacing with common controls
  *  @author     Johannes Jan Prins
@@ -25,48 +25,58 @@
  * THE SOFTWARE.
  */
 
-#ifndef CTRLBASE_H
-#define CTRLBASE_H
+#ifndef GROUPABLE_H
+#define GROUPABLE_H
 
-#include "CtrlMux.h"
+#include <Arduino.h>
 
-class Muxable
+class CtrlGroup;
+
+class Groupable
 {
-    protected:
-        bool enabled = true;
-        CtrlMux* mux = nullptr;
-        bool muxed = false;
-
-        explicit Muxable(
-            CtrlMux* mux = nullptr
-        );
-
-        ~Muxable() = default;
-
     public:
-        virtual void process() = 0;
-        void enable();
-        void disable();
-        [[nodiscard]] bool isEnabled() const;
-        [[nodiscard]] bool isDisabled() const;
-        [[nodiscard]] bool isMuxed() const;
-        void setMultiplexer(CtrlMux &mux);
+        CtrlGroup* group = nullptr;
+        bool grouped = false;
+
+        struct Property
+        {
+            int intValue;
+            bool boolValue;
+            String stringValue;
+            enum { INT, BOOL, STRING } type;
+        };
+
+        struct Node
+        {
+            String key;
+            Property value;
+            Node* next;
+        };
+
+        Node* properties = nullptr;
+
+        Groupable();
+
+        virtual ~Groupable();
+
+        virtual void process();
+
+        void setGroup(CtrlGroup* group);
+
+        void setBoolean(const String& key, bool value);
+
+        void setInteger(const String& key, int value);
+
+        void setString(const String& key, const String& value);
+
+        [[nodiscard]] bool getBoolean(const String& key) const;
+
+        [[nodiscard]] int getInteger(const String& key) const;
+
+        [[nodiscard]] String getString(const String& key) const;
+
+    protected:
+        [[nodiscard]] Node* findProperty(const String& key) const;
 };
 
-void setDelayMicroseconds(uint64_t duration);
-
-void setDelayMilliseconds(uint64_t duration);
-
-extern uint8_t DISCONNECTED; // used to indicate if a pin is not connected.
-extern uint8_t PULL_UP; // Used for indicating that an external resistor pull up is used.
-extern uint8_t PULL_DOWN; // Used for indicating that an external resistor down up is used.
-
-#ifndef INPUT_PULLUP
-    #define INPUT_PULLUP 2 // Define a placeholder value for INPUT_PULLUP
-#endif
-
-#ifndef INPUT_PULLDOWN
-    #define INPUT_PULLDOWN 3 // Define a placeholder value for INPUT_PULLDOWN
-#endif
-
-#endif
+#endif // GROUPABLE_H
