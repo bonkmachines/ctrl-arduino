@@ -10,15 +10,15 @@ void test_buttons_can_be_multiplexed()
 
     CtrlBtn button = CtrlBtn(0, 15);
 
-    button.setMultiplexer(mux);
+    button.setMultiplexer(&mux);
 
-    button.process();
+    mux.process();
 
     mockMuxBtnSigInput = LOW; // Simulate button press
 
     // Call process multiple times
     for (int i = 0; i < 20000; ++i) {
-        button.process();
+        mux.process();
     }
 
     TEST_ASSERT_TRUE(button.isPressed());
@@ -27,7 +27,7 @@ void test_buttons_can_be_multiplexed()
 
     // Call process multiple times
     for (int i = 0; i < 20000; ++i) {
-        button.process();
+        mux.process();
     }
 
     TEST_ASSERT_TRUE(button.isReleased());

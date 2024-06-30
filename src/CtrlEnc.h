@@ -31,8 +31,10 @@
 #include <Arduino.h>
 #include "CtrlBase.h"
 #include "CtrlMux.h"
+#include "Groupable.h"
+#include "Muxable.h"
 
-class CtrlEnc : public Muxable
+class CtrlEnc : public CtrlBase, public Muxable, public Groupable
 {
     protected:
         uint8_t clk; // CLK pin
@@ -66,8 +68,6 @@ class CtrlEnc : public Muxable
             CallbackFunction onTurnRightCallback = nullptr,
             CtrlMux* mux = nullptr
         );
-
-        virtual ~CtrlEnc() = default;
 
         /**
         * @brief Sets the pinMode.

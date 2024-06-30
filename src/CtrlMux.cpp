@@ -27,6 +27,7 @@
 
 #include "CtrlBase.h"
 #include "CtrlMux.h"
+#include "Muxable.h"
 
 CtrlMux::CtrlMux(
     const uint8_t sig,
@@ -64,6 +65,20 @@ void CtrlMux::setChannel(const uint8_t channel) const
     digitalWrite(this->s2, bitRead(channel, 2));
     if (this->s3Present) {
         digitalWrite(this->s3, bitRead(channel, 3));
+    }
+}
+
+void CtrlMux::addObject(Muxable* object) {
+    if (this->objectCount == this->capacity) {
+        resize();
+    }
+    this->objects[this->objectCount++] = object;
+}
+
+void CtrlMux::process() const
+{
+    for (size_t i = 0; i < this->objectCount; ++i) {
+        this->objects[i]->process();
     }
 }
 
@@ -142,4 +157,15 @@ uint16_t CtrlMux::readPotSig(const uint8_t channel, const uint8_t pinModeType)
 void CtrlMux::setSwitchInterval(const uint8_t interval)
 {
     this->switchInterval = interval;
+}
+
+void CtrlMux::resize() {
+    const size_t newCapacity = this->capacity == 0 ? 10 : this->capacity * 2;
+    auto** newObjects = new Muxable*[newCapacity];
+    for (size_t i = 0; i < this->objectCount; ++i) {
+        newObjects[i] = this->objects[i];
+    }
+    delete[] this->objects;
+    this->objects = newObjects;
+    this->capacity = newCapacity;
 }

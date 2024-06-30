@@ -26,6 +26,7 @@
  */
 
 #include "CtrlPot.h"
+#include "CtrlGroup.h"
 
 CtrlPot::CtrlPot(
     const uint8_t sig,
@@ -97,6 +98,9 @@ uint16_t CtrlPot::processInput()
 
 void CtrlPot::onValueChange(const int value)
 {
+    if (this->isGrouped() && this->group->onValueChangeCallback) {
+        this->group->onValueChangeCallback(*this, value);
+    }
     if (this->onValueChangeCallback) {
         this->onValueChangeCallback(value);
     }

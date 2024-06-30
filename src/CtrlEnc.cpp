@@ -26,6 +26,7 @@
  */
 
 #include "CtrlEnc.h"
+#include "CtrlGroup.h"
 
 CtrlEnc::CtrlEnc(
     const uint8_t clk,
@@ -144,6 +145,9 @@ int8_t CtrlEnc::readEncoder()
 
 void CtrlEnc::onTurnLeft()
 {
+    if (this->isGrouped() && this->group->onTurnLeftCallback) {
+        this->group->onTurnLeftCallback(*this);
+    }
     if (this->onTurnLeftCallback) {
         this->onTurnLeftCallback();
     }
@@ -151,6 +155,9 @@ void CtrlEnc::onTurnLeft()
 
 void CtrlEnc::onTurnRight()
 {
+    if (this->isGrouped() && this->group->onTurnRightCallback) {
+        this->group->onTurnRightCallback(*this);
+    }
     if (this->onTurnRightCallback) {
         this->onTurnRightCallback();
     }

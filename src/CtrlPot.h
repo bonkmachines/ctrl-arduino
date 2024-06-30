@@ -31,8 +31,10 @@
 #include <Arduino.h>
 #include "CtrlBase.h"
 #include "CtrlMux.h"
+#include "Groupable.h"
+#include "Muxable.h"
 
-class CtrlPot : public Muxable
+class CtrlPot : public CtrlBase, public Muxable, public Groupable
 {
     protected:
         uint8_t sig; // Analog pin connected to the potentiometer.
@@ -69,8 +71,6 @@ class CtrlPot : public Muxable
             CallbackFunction onValueChangeCallback = nullptr,
             CtrlMux* mux = nullptr
         );
-
-        virtual ~CtrlPot() = default;
 
         /**
         * @brief The process method should be called within the loop method. It handles all functionality.

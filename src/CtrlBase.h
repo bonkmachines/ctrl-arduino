@@ -25,33 +25,24 @@
  * THE SOFTWARE.
  */
 
-#ifndef CtrlBase_h
-#define CtrlBase_h
+#ifndef CTRLBASE_H
+#define CTRLBASE_H
 
-#include "CtrlMux.h"
+#include <Arduino.h>
 
-class Muxable
+class CtrlBase
 {
     protected:
         bool enabled = true;
-        CtrlMux* mux = nullptr;
-        bool muxed = false;
-
-        explicit Muxable(
-            CtrlMux* mux = nullptr
-        );
-
-        ~Muxable() = default;
 
     public:
-
-        virtual void process() = 0;
         void enable();
+
         void disable();
+
         [[nodiscard]] bool isEnabled() const;
+
         [[nodiscard]] bool isDisabled() const;
-        [[nodiscard]] bool isMuxed() const;
-        void setMultiplexer(CtrlMux &mux);
 };
 
 void setDelayMicroseconds(uint64_t duration);

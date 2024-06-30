@@ -25,7 +25,7 @@ void test_rotary_encoders_can_be_multiplexed()
         onTurnRighthandlerMuxEncoder
     );
 
-    encoder.setMultiplexer(mux);
+    encoder.setMultiplexer(&mux);
 
     // Reset the state
     encoderHandlerResult = "";
@@ -34,7 +34,7 @@ void test_rotary_encoders_can_be_multiplexed()
 
     // Call process multiple times to allow for processing
     for (int i = 0; i < 10000; ++i) {
-        encoder.process();
+        mux.process();
     }
 
     // Simulate the sequence for a counterclockwise turn
@@ -43,7 +43,7 @@ void test_rotary_encoders_can_be_multiplexed()
 
     // Call process multiple times to allow for processing
     for (int i = 0; i < 10000; ++i) {
-        encoder.process();
+        mux.process();
     }
 
     mockMuxEncClkInput = HIGH;
@@ -51,7 +51,7 @@ void test_rotary_encoders_can_be_multiplexed()
 
     // Call process multiple times to allow for processing
     for (int i = 0; i < 10000; ++i) {
-        encoder.process();
+        mux.process();
     }
 
     TEST_ASSERT_EQUAL_STRING("mux encoder turn left", encoderHandlerResult.c_str()); // Verify the encoder has turned left

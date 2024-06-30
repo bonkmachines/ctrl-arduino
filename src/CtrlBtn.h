@@ -31,8 +31,10 @@
 #include <Arduino.h>
 #include "CtrlBase.h"
 #include "CtrlMux.h"
+#include "Groupable.h"
+#include "Muxable.h"
 
-class CtrlBtn : public Muxable
+class CtrlBtn : public CtrlBase, public Muxable, public Groupable
 {
     protected:
         uint8_t sig; // Signal pin
@@ -73,8 +75,6 @@ class CtrlBtn : public Muxable
             CallbackFunction onDelayedReleaseCallback = nullptr,
             CtrlMux* mux = nullptr
         );
-
-        virtual ~CtrlBtn() = default;
 
         /**
         * @brief Sets the pinMode.
