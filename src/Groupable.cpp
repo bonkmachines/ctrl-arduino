@@ -56,7 +56,7 @@ void Groupable::setBoolean(const String& key, const bool value)
 {
     Node* prop = findProperty(key);
     if (prop == nullptr) {
-        prop = new Node{key, Property{.boolValue = value, .type = Property::BOOL}, properties};
+        prop = new Node{key, Property{0, value, "", Property::BOOL}, properties};
         properties = prop;
     } else {
         prop->value.boolValue = value;
@@ -68,7 +68,7 @@ void Groupable::setInteger(const String& key, const int value)
 {
     Node* prop = findProperty(key);
     if (prop == nullptr) {
-        prop = new Node{key, Property{.intValue = value, .type = Property::INT}, properties};
+        prop = new Node{key, Property{value, false, "", Property::INT}, properties};
         properties = prop;
     } else {
         prop->value.intValue = value;
@@ -80,7 +80,7 @@ void Groupable::setString(const String& key, const String& value)
 {
     Node* prop = findProperty(key);
     if (prop == nullptr) {
-        prop = new Node{key, Property{.stringValue = value, .type = Property::STRING}, properties};
+        prop = new Node{key, Property{0, false, value, Property::STRING}, properties};
         properties = prop;
     } else {
         prop->value.stringValue = value;
