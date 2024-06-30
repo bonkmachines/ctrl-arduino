@@ -29,7 +29,6 @@
 #define CTRLMUX_H
 
 #include <Arduino.h>
-#include <cstddef>
 
 class Muxable;
 
@@ -83,7 +82,7 @@ class CtrlMux
 
         /**
         * @brief The process method should be called within the loop method.
-        * It handles all functionality of all added objects.
+        * It handles the functionality of all added objects.
         */
         void process() const;
 

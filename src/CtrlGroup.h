@@ -29,7 +29,6 @@
 #define CTRLGROUP_H
 
 #include "Groupable.h"
-#include <cstddef>
 
 class CtrlGroup final
 {
@@ -57,7 +56,7 @@ class CtrlGroup final
 
         /**
         * @brief The process method should be called within the loop method.
-        * It handles all functionality of all aded objects.
+        * It handles the functionality of all added objects.
         */
         void process() const;
 

@@ -10,7 +10,7 @@
 
 // #include "../examples/multiplexers/multiplexed_buttons/multiplexed_buttons.ino"
 // #include "../examples/multiplexers/multiplexed_potentiometers/multiplexed_potentiometers.ino"
-#include "../examples/multiplexers/multiplexed_rotary_encoder/multiplexed_rotary_encoder.ino"
+// #include "../examples/multiplexers/multiplexed_rotary_encoder/multiplexed_rotary_encoder.ino"
 // #include "../examples/multiplexers/multiplexers_daisy_chained/multiplexers_daisy_chained.ino"
 
 // #include "../examples/potentiometers/potentiometer_basic/potentiometer_basic.ino"
