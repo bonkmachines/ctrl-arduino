@@ -29,33 +29,35 @@
 #define CTRLGROUP_H
 
 #include "Groupable.h"
-
-#define MAX_OBJECTS 10
+#include <cstddef>
 
 class CtrlGroup final
 {
     public:
-        Groupable* objects[MAX_OBJECTS]{};
-        int objectCount = 0;
-        void (*onPressCallback)(Groupable*) = nullptr; // For buttons
-        void (*onReleaseCallback)(Groupable*) = nullptr; // For buttons
-        void (*onDelayedReleaseCallback)(Groupable*) = nullptr; // For buttons
-        void (*onTurnLeftCallback)(Groupable*) = nullptr; // For rotary encoders
-        void (*onTurnRightCallback)(Groupable*) = nullptr; // For rotary encoders
-        void (*onValueChangeCallback)(Groupable*, int value) = nullptr; // For potentiometers
+        Groupable** objects = nullptr;
+        size_t objectCount = 0;
+        size_t capacity = 0;
+        void (*onPressCallback)(Groupable&) = nullptr; // For buttons
+        void (*onReleaseCallback)(Groupable&) = nullptr; // For buttons
+        void (*onDelayedReleaseCallback)(Groupable&) = nullptr; // For buttons
+        void (*onTurnLeftCallback)(Groupable&) = nullptr; // For rotary encoders
+        void (*onTurnRightCallback)(Groupable&) = nullptr; // For rotary encoders
+        void (*onValueChangeCallback)(Groupable&, int value) = nullptr; // For potentiometers
 
-        ~CtrlGroup() = default;
+        CtrlGroup();
+
+        ~CtrlGroup();
 
         /**
         * @brief Add an object to the group.
         *
-        * @param object Add an object to the group.
+        * @param object Object to be added to the group.
         */
         void addObject(Groupable* object);
 
         /**
         * @brief The process method should be called within the loop method.
-        * It handles all functionality.
+        * It handles all functionality of all aded objects.
         */
         void process() const;
 
@@ -66,7 +68,7 @@ class CtrlGroup final
         *
         * @param callback The callback handler method.
         */
-        void setOnPress(void (*callback)(Groupable*));
+        void setOnPress(void (*callback)(Groupable&));
 
         /**
         * @brief Set the on release handler (for buttons).
@@ -75,7 +77,7 @@ class CtrlGroup final
         *
         * @param callback The callback handler method.
         */
-        void setOnRelease(void (*callback)(Groupable*));
+        void setOnRelease(void (*callback)(Groupable&));
 
         /**
         * @brief Set the on delayed release handler (for buttons).
@@ -86,7 +88,7 @@ class CtrlGroup final
         *
         * @param callback The callback handler method.
         */
-        void setOnDelayedRelease(void (*callback)(Groupable*));
+        void setOnDelayedRelease(void (*callback)(Groupable&));
 
         /**
         * @brief Set the on turn left handler (for rotary encoders).
@@ -95,7 +97,7 @@ class CtrlGroup final
         *
         * @param callback The callback handler method.
         */
-        void setOnTurnLeft(void (*callback)(Groupable*));
+        void setOnTurnLeft(void (*callback)(Groupable&));
 
         /**
         * @brief Set the on turn right handler (for rotary encoders).
@@ -104,7 +106,7 @@ class CtrlGroup final
         *
         * @param callback The callback handler method.
         */
-        void setOnTurnRight(void (*callback)(Groupable*));
+        void setOnTurnRight(void (*callback)(Groupable&));
 
         /**
         * @brief Set the on value change handler (for potentiometers).
@@ -113,7 +115,10 @@ class CtrlGroup final
         *
         * @param callback The callback handler method.
         */
-        void setOnValueChange(void (*callback)(Groupable*, int value));
+        void setOnValueChange(void (*callback)(Groupable&, int value));
+
+    private:
+        void resize();
 };
 
 #endif // CTRLGROUP_H

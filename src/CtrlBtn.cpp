@@ -164,8 +164,8 @@ bool CtrlBtn::processInput()
 
 void CtrlBtn::onPress()
 {
-    if (this->grouped && this->group->onPressCallback) {
-        this->group->onPressCallback(this);
+    if (this->isGrouped() && this->group->onPressCallback) {
+        this->group->onPressCallback(*this);
     }
     if (this->onPressCallback) {
         this->onPressCallback();
@@ -174,8 +174,8 @@ void CtrlBtn::onPress()
 
 void CtrlBtn::onRelease()
 {
-    if (this->grouped && this->group->onReleaseCallback) {
-        this->group->onReleaseCallback(this);
+    if (this->isGrouped() && this->group->onReleaseCallback) {
+        this->group->onReleaseCallback(*this);
     }
     if (this->onReleaseCallback) {
         this->onReleaseCallback();
@@ -184,8 +184,8 @@ void CtrlBtn::onRelease()
 
 void CtrlBtn::onDelayedRelease()
 {
-    if (this->grouped && this->group->onDelayedReleaseCallback) {
-        this->group->onDelayedReleaseCallback(this);
+    if (this->isGrouped() && this->group->onDelayedReleaseCallback) {
+        this->group->onDelayedReleaseCallback(*this);
     }
     if (this->onDelayedReleaseCallback) {
         this->onDelayedReleaseCallback();

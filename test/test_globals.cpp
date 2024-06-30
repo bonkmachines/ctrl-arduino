@@ -13,6 +13,7 @@ std::string encoderHandlerResult;
 // Global potentiometer variable definitions
 uint16_t mockPotentiometerInput = 0; // 0 - 1023
 int potentiometerHandlerResult;
+std::string groupedPotentiometerHandlerResult;
 
 // Global multiplexer variable definitions
 uint8_t mockMuxBtnSigInput = HIGH;

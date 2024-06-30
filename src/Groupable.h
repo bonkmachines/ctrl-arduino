@@ -34,7 +34,7 @@ class CtrlGroup;
 
 class Groupable
 {
-    public:
+    protected:
         CtrlGroup* group = nullptr;
         bool grouped = false;
 
@@ -55,25 +55,80 @@ class Groupable
 
         Node* properties = nullptr;
 
-        Groupable();
-
+    public:
         virtual ~Groupable();
 
-        virtual void process();
+        /**
+        * @brief The process method should be called within the loop method.
+        * It handles all functionality.
+        */
+        virtual void process() = 0;
 
+        /**
+        * @brief Find out if an object is currently added to a group.
+        *
+        * @return True if objected is added, false otherwise.
+        */
+        [[nodiscard]] bool isGrouped() const;
+
+        /**
+        * @brief Set the group on an object.
+        *
+        * @param group reference to the group object.
+        */
         void setGroup(CtrlGroup* group);
 
+        /**
+         * @brief Set a boolean on an object.
+         *
+         * @param key Reference to the name of the boolean.
+         * @param value The value of the boolean.
+         * @note If the key does not exist, a new boolean property will be added to the object.
+         */
         void setBoolean(const String& key, bool value);
 
-        void setInteger(const String& key, int value);
+        /**
+         * @brief Set an integer on an object.
+         *
+         * @param key Reference to the name of the integer.
+         * @param value The value of the integer.
+         * @note If the key does not exist, a new integer property will be added to the object.
+         */
+        void setInteger(const String& key, const int value);
 
+        /**
+         * @brief Set a string on an object.
+         *
+         * @param key Reference to the name of the string.
+         * @param value The value of the string.
+         * @note If the key does not exist, a new string property will be added to the object.
+         */
         void setString(const String& key, const String& value);
 
+        /**
+         * @brief Get a boolean from an object.
+         *
+         * @param key Reference to the name of the boolean.
+         * @return The value of the boolean, or false if the key does not exist or is not a boolean.
+         */
         [[nodiscard]] bool getBoolean(const String& key) const;
 
+        /**
+         * @brief Get an integer from an object.
+         *
+         * @param key Reference to the name of the integer.
+         * @return The value of the integer, or 0 if the key does not exist or is not an integer.
+         */
         [[nodiscard]] int getInteger(const String& key) const;
 
+        /**
+         * @brief Get a string from an object.
+         *
+         * @param key Reference to the name of the string.
+         * @return The value of the string, or an empty string if the key does not exist or is not a string.
+         */
         [[nodiscard]] String getString(const String& key) const;
+
 
     protected:
         [[nodiscard]] Node* findProperty(const String& key) const;

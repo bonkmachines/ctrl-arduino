@@ -27,46 +27,63 @@
 
 #include "CtrlGroup.h"
 
-void CtrlGroup::addObject(Groupable* object)
-{
-    if (objectCount < MAX_OBJECTS) {
-        objects[objectCount++] = object;
+CtrlGroup::CtrlGroup() = default;
+
+CtrlGroup::~CtrlGroup() {
+    delete[] this->objects;
+}
+
+void CtrlGroup::addObject(Groupable* object) {
+    if (this->objectCount == this->capacity) {
+        resize();
     }
+    this->objects[this->objectCount++] = object;
 }
 
 void CtrlGroup::process() const
 {
-    for (int i = 0; i < objectCount; ++i) {
-        objects[i]->process();
+    for (size_t i = 0; i < this->objectCount; ++i) {
+        this->objects[i]->process();
     }
 }
 
-void CtrlGroup::setOnPress(void (*callback)(Groupable*))
+void CtrlGroup::setOnPress(void (*callback)(Groupable&))
 {
-    onPressCallback = callback;
+    this->onPressCallback = callback;
 }
 
-void CtrlGroup::setOnRelease(void (*callback)(Groupable*))
+void CtrlGroup::setOnRelease(void (*callback)(Groupable&))
 {
-    onReleaseCallback = callback;
+    this->onReleaseCallback = callback;
 }
 
-void CtrlGroup::setOnDelayedRelease(void (*callback)(Groupable*))
+void CtrlGroup::setOnDelayedRelease(void (*callback)(Groupable&))
 {
-    onDelayedReleaseCallback = callback;
+    this->onDelayedReleaseCallback = callback;
 }
 
-void CtrlGroup::setOnTurnLeft(void (*callback)(Groupable*))
+void CtrlGroup::setOnTurnLeft(void (*callback)(Groupable&))
 {
-    onTurnLeftCallback = callback;
+    this->onTurnLeftCallback = callback;
 }
 
-void CtrlGroup::setOnTurnRight(void (*callback)(Groupable*))
+void CtrlGroup::setOnTurnRight(void (*callback)(Groupable&))
 {
-    onTurnRightCallback = callback;
+    this->onTurnRightCallback = callback;
 }
 
-void CtrlGroup::setOnValueChange(void (*callback)(Groupable*, int value))
+void CtrlGroup::setOnValueChange(void (*callback)(Groupable&, int value))
 {
-    onValueChangeCallback = callback;
+    this->onValueChangeCallback = callback;
+}
+
+void CtrlGroup::resize() {
+    const size_t newCapacity = this->capacity == 0 ? 10 : this->capacity * 2;
+    auto** newObjects = new Groupable*[newCapacity];
+    for (size_t i = 0; i < this->objectCount; ++i) {
+        newObjects[i] = this->objects[i];
+    }
+    delete[] objects;
+    this->objects = newObjects;
+    this->capacity = newCapacity;
 }

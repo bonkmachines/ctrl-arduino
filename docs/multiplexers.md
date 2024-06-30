@@ -64,7 +64,7 @@ Then upload the sketch to your board and open up the serial monitor.
 This allows you to see the output of the button presses. For some boards
 you have to set the 'USB Type' to 'Serial', in the Arduino IDE under 'Tools'.
 
-P.S.You can easily adapt this guide to work for potentiometers and rotary encoders.
+P.S. You can easily adapt this guide to work for potentiometers and rotary encoders.
 Just create a bunch of [potentiometers](potentiometers.md) or [rotary encoders](rotary_encoders.md) 
 and pass a reference of the multiplexer to them (&mux).
 
@@ -99,7 +99,6 @@ void setup() {
 
 void loop() {
     // The process methods will poll the button objects and handle all their functionality.
-    button1.process();
-    button2.process();
+    mux.process();
 }
 ```

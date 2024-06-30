@@ -16,6 +16,7 @@ extern std::string encoderHandlerResult;
 // Potentiometer variables
 extern uint16_t mockPotentiometerInput;
 extern int potentiometerHandlerResult;
+extern std::string groupedPotentiometerHandlerResult;
 
 // Multiplexer variables
 extern uint8_t mockMuxBtnSigInput;

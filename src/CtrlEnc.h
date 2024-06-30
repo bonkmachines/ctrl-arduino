@@ -32,8 +32,9 @@
 #include "CtrlBase.h"
 #include "CtrlMux.h"
 #include "Groupable.h"
+#include "Muxable.h"
 
-class CtrlEnc : public Muxable, public Groupable
+class CtrlEnc : public CtrlBase, public Muxable, public Groupable
 {
     protected:
         uint8_t clk; // CLK pin

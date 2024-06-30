@@ -28,53 +28,49 @@
 #include "Groupable.h"
 #include "CtrlGroup.h"
 
-Groupable::Groupable() = default;
-
 Groupable::~Groupable()
 {
     const Node* current = properties;
-    while (current != nullptr)
-    {
+    while (current != nullptr) {
         const Node* toDelete = current;
         current = current->next;
         delete toDelete;
     }
 }
 
+void Groupable::process() { }
+
+bool Groupable::isGrouped() const
+{
+    return this->grouped;
+}
+
 void Groupable::setGroup(CtrlGroup* group)
 {
     this->group = group;
     this->grouped = true;
-    group->addObject(this);
+    this->group->addObject(this);
 }
 
-void Groupable::process() { }
-
-void Groupable::setBoolean(const String& key, bool value)
+void Groupable::setBoolean(const String& key, const bool value)
 {
     Node* prop = findProperty(key);
-    if (prop == nullptr)
-    {
+    if (prop == nullptr) {
         prop = new Node{key, Property{.boolValue = value, .type = Property::BOOL}, properties};
         properties = prop;
-    }
-    else
-    {
+    } else {
         prop->value.boolValue = value;
         prop->value.type = Property::BOOL;
     }
 }
 
-void Groupable::setInteger(const String& key, int value)
+void Groupable::setInteger(const String& key, const int value)
 {
     Node* prop = findProperty(key);
-    if (prop == nullptr)
-    {
+    if (prop == nullptr) {
         prop = new Node{key, Property{.intValue = value, .type = Property::INT}, properties};
         properties = prop;
-    }
-    else
-    {
+    } else {
         prop->value.intValue = value;
         prop->value.type = Property::INT;
     }
@@ -83,13 +79,10 @@ void Groupable::setInteger(const String& key, int value)
 void Groupable::setString(const String& key, const String& value)
 {
     Node* prop = findProperty(key);
-    if (prop == nullptr)
-    {
+    if (prop == nullptr) {
         prop = new Node{key, Property{.stringValue = value, .type = Property::STRING}, properties};
         properties = prop;
-    }
-    else
-    {
+    } else {
         prop->value.stringValue = value;
         prop->value.type = Property::STRING;
     }
@@ -98,8 +91,7 @@ void Groupable::setString(const String& key, const String& value)
 bool Groupable::getBoolean(const String& key) const
 {
     Node* prop = findProperty(key);
-    if (prop != nullptr && prop->value.type == Property::BOOL)
-    {
+    if (prop != nullptr && prop->value.type == Property::BOOL) {
         return prop->value.boolValue;
     }
     return false;
@@ -108,8 +100,7 @@ bool Groupable::getBoolean(const String& key) const
 int Groupable::getInteger(const String& key) const
 {
     Node* prop = findProperty(key);
-    if (prop != nullptr && prop->value.type == Property::INT)
-    {
+    if (prop != nullptr && prop->value.type == Property::INT) {
         return prop->value.intValue;
     }
     return 0;
@@ -118,8 +109,7 @@ int Groupable::getInteger(const String& key) const
 String Groupable::getString(const String& key) const
 {
     Node* prop = findProperty(key);
-    if (prop != nullptr && prop->value.type == Property::STRING)
-    {
+    if (prop != nullptr && prop->value.type == Property::STRING) {
         return prop->value.stringValue;
     }
     return "";
@@ -128,10 +118,8 @@ String Groupable::getString(const String& key) const
 Groupable::Node* Groupable::findProperty(const String& key) const
 {
     Node* current = properties;
-    while (current != nullptr)
-    {
-        if (current->key == key)
-        {
+    while (current != nullptr) {
+        if (current->key == key) {
             return current;
         }
         current = current->next;

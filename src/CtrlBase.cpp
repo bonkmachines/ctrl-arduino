@@ -27,42 +27,24 @@
 
 #include "CtrlBase.h"
 
-Muxable::Muxable(
-    CtrlMux* mux
-) {
-    this->mux = mux;
-    this->muxed = mux != nullptr;
-}
-
-void Muxable::enable()
+void CtrlBase::enable()
 {
     this->enabled = true;
 }
 
-void Muxable::disable()
+void CtrlBase::disable()
 {
     this->enabled = false;
 }
 
-bool Muxable::isEnabled() const
+bool CtrlBase::isEnabled() const
 {
     return this->enabled;
 }
 
-bool Muxable::isDisabled() const
+bool CtrlBase::isDisabled() const
 {
     return !this->isEnabled();
-}
-
-bool Muxable::isMuxed() const
-{
-    return this->muxed;
-}
-
-void Muxable::setMultiplexer(CtrlMux &mux)
-{
-    this->mux = &mux;
-    this->muxed = true;
 }
 
 void setDelayMicroseconds(const uint64_t duration)
@@ -80,5 +62,5 @@ void setDelayMilliseconds(const uint64_t duration)
 }
 
 uint8_t DISCONNECTED = UINT8_MAX;
-uint8_t PULL_DOWN = 0; // External resistor is of type pull down.
-uint8_t PULL_UP = 1; // External resistor is of type pull up.
+uint8_t PULL_DOWN = 0;
+uint8_t PULL_UP = 1;

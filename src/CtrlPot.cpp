@@ -98,8 +98,8 @@ uint16_t CtrlPot::processInput()
 
 void CtrlPot::onValueChange(const int value)
 {
-    if (this->grouped && this->group->onValueChangeCallback) {
-        this->group->onValueChangeCallback(this, value);
+    if (this->isGrouped() && this->group->onValueChangeCallback) {
+        this->group->onValueChangeCallback(*this, value);
     }
     if (this->onValueChangeCallback) {
         this->onValueChangeCallback(value);

@@ -32,8 +32,9 @@
 #include "CtrlBase.h"
 #include "CtrlMux.h"
 #include "Groupable.h"
+#include "Muxable.h"
 
-class CtrlPot : public Muxable, public Groupable
+class CtrlPot : public CtrlBase, public Muxable, public Groupable
 {
     protected:
         uint8_t sig; // Analog pin connected to the potentiometer.

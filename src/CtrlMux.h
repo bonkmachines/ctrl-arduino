@@ -29,6 +29,9 @@
 #define CTRLMUX_H
 
 #include <Arduino.h>
+#include <cstddef>
+
+class Muxable;
 
 class CtrlMux
 {
@@ -41,8 +44,12 @@ class CtrlMux
         bool s3Present;
         uint8_t switchInterval = 1; // In microseconds
         uint8_t currentPinMode = 0;
+        Muxable** objects = nullptr;
+        size_t objectCount = 0;
+        size_t capacity = 0;
 
         void setPinMode(uint8_t pinModeType);
+
         void setChannel(uint8_t channel) const;
 
     public:
@@ -68,6 +75,19 @@ class CtrlMux
         );
 
         /**
+        * @brief Add an object to the mux.
+        *
+        * @param object Object to be added to the mux.
+        */
+        void addObject(Muxable* object);
+
+        /**
+        * @brief The process method should be called within the loop method.
+        * It handles all functionality of all added objects.
+        */
+        void process() const;
+
+        /**
         * @brief Set the switch interval of the multiplexer.
         *
         * This is the amount of time we need to give the mux in order to
@@ -85,6 +105,9 @@ class CtrlMux
         [[nodiscard]] bool readEncClk(uint8_t channel, uint8_t pinModeType);
         [[nodiscard]] bool readEncDt(uint8_t channel, uint8_t pinModeType);
         [[nodiscard]] uint16_t readPotSig(uint8_t channel, uint8_t pinModeType);
+
+    private:
+        void resize();
 };
 
 #endif // CTRLMUX_H

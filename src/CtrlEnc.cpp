@@ -145,8 +145,8 @@ int8_t CtrlEnc::readEncoder()
 
 void CtrlEnc::onTurnLeft()
 {
-    if (this->grouped && this->group->onTurnLeftCallback) {
-        this->group->onTurnLeftCallback(this);
+    if (this->isGrouped() && this->group->onTurnLeftCallback) {
+        this->group->onTurnLeftCallback(*this);
     }
     if (this->onTurnLeftCallback) {
         this->onTurnLeftCallback();
@@ -155,8 +155,8 @@ void CtrlEnc::onTurnLeft()
 
 void CtrlEnc::onTurnRight()
 {
-    if (this->grouped && this->group->onTurnRightCallback) {
-        this->group->onTurnRightCallback(this);
+    if (this->isGrouped() && this->group->onTurnRightCallback) {
+        this->group->onTurnRightCallback(*this);
     }
     if (this->onTurnRightCallback) {
         this->onTurnRightCallback();

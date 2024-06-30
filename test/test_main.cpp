@@ -56,6 +56,10 @@ extern void test_buttons_can_be_multiplexed();
 extern void test_potentiometers_can_be_multiplexed();
 extern void test_rotary_encoders_can_be_multiplexed();
 
+// Multiplexer test methods
+extern void test_button_can_be_grouped();
+extern void test_potentiometer_can_be_grouped();
+extern void test_rotary_encoder_can_be_grouped();
 
 void setUp(void) {
     // Empty setup function
@@ -128,6 +132,11 @@ void setup()
     RUN_TEST(test_buttons_can_be_multiplexed);
     RUN_TEST(test_rotary_encoders_can_be_multiplexed);
     RUN_TEST(test_potentiometers_can_be_multiplexed);
+
+    // Groupo tests
+    RUN_TEST(test_button_can_be_grouped);
+    RUN_TEST(test_potentiometer_can_be_grouped);
+    RUN_TEST(test_rotary_encoder_can_be_grouped);
 
     UNITY_END(); // Finish Unity Testing
 }
