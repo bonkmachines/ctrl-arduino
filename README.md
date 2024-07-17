@@ -19,7 +19,7 @@ experienced or beginning Arduino C++ programmer. The plan is to add more objects
 in the future, so stay tuned!
 
 Before I show you some examples of how to implement this library, don't forget to 
-take a look at the [examples](examples "View the examples") & [documentation](docs "Documentation"). 
+take a look at the [examples](https://github.com/bonkmachines/ctrl-arduino/tree/main/examples "View the examples") & [documentation](https://github.com/bonkmachines/ctrl-arduino/tree/main/docs "Documentation"). 
 There you will find detailed instructions on how to use everything. 
 All right, let's get on with it!
 
@@ -29,7 +29,7 @@ All right, let's get on with it!
 
 Open the Arduino IDE Library manager, search for "CTRL" and hit "INSTALL".
 
-![Add library](assets/ss_add_library.png)
+![Add library](https://raw.githubusercontent.com/bonkmachines/ctrl-arduino/main/assets/ss_add_library.png)
 
 ***
 
@@ -37,7 +37,7 @@ Open the Arduino IDE Library manager, search for "CTRL" and hit "INSTALL".
 
 If you prefer a manual installation instead, go to [the release page](https://github.com/bonkmachines/ctrl-arduino/releases "Releases"), and download the latest release. Next open your Arduino IDE, click on "Sketch" in the top menu, next select "Include Library" and then "Add .ZIP LIbrary". Browse to where you saved the downloaded file and import it.
 
-![Add library manual](assets/ss_add_library_manual.png)
+![Add library manually](https://raw.githubusercontent.com/bonkmachines/ctrl-arduino/main/assets/ss_add_library_manual.png)
 
 ***
 
@@ -100,8 +100,8 @@ handlers that we defined earlier.
 Finally, all we need to do is to make sure we call the button's process method during 
 looping so that all its data readings and functionality can be continuously processed.
 
-And that's it! Have a look at the [examples](examples "View all examples") to see how to use 
+And that's it! Have a look at the [examples](https://github.com/bonkmachines/ctrl-arduino/tree/main/examples "View all examples") to see how to use 
 potentiometers, rotary encoders and LED's. For more extensive and in depth information on
-how to hook everything up, please refer to the [documentation](docs "Documentation").
+how to hook everything up, please refer to the [documentation](https://github.com/bonkmachines/ctrl-arduino/tree/main/docs "Documentation").
 
 P.S. If you have ideas or suggestions, feel free to contact me at <johannesprins@knalgeel.com>
