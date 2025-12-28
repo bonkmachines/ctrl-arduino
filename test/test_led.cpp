@@ -71,7 +71,7 @@ void test_led_cant_change_brightness_beyond_minimum()
 
 void test_led_can_be_calibrated()
 {
-    CtrlLed led(1);
+    CtrlLed led(1, 255);
 
     led.setMaxBrightness(50);
 
@@ -80,7 +80,7 @@ void test_led_can_be_calibrated()
 
 void test_led_cant_be_calibrated_beyond_maximum()
 {
-    CtrlLed led(1);
+    CtrlLed led(1, 255);
 
     led.setMaxBrightness(256);
 

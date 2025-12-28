@@ -35,23 +35,36 @@ class CtrlLed
     protected:
         uint8_t sig; // Signal pin connected to the LED
         bool on; // Current state of the LED
-        uint8_t brightness; // Current brightness level
-        uint8_t maxBrightness; // Maximum brightness value
+        uint8_t brightness; // Current brightness level (PWM mode only)
+        uint8_t maxBrightness; // Maximum brightness value (PWM mode only)
+        bool pwmMode; // True if LED is on a PWM-capable pin, false for digital pins
 
     public:
         /**
-        * @brief Instantiate an LED object.
+        * @brief Instantiate an LED object for a PWM-capable pin.
         *
         * The CtrlLed class can be instantiated to allow LED objects to be controlled.
+        * When maxBrightness is provided, PWM mode is enabled for brightness control.
         *
         * @param sig (uint8_t) The signal pin of the LED.
-        * @param maxBrightness (uint8_t) (optional) Sets the maximum brightness of the LED, for calibration purposes (0 - 255). Default is 255.
-        * @return A new instance of the CtrlLed class.
+        * @param maxBrightness (uint8_t) Sets the maximum brightness of the LED, for calibration purposes (0 - 255). PWM mode enabled.
+        * @return A new instance of the CtrlLed class in PWM mode.
         */
         explicit CtrlLed(
             uint8_t sig,
-            uint8_t maxBrightness = 255
+            uint8_t maxBrightness
         );
+
+        /**
+        * @brief Instantiate an LED object for a digital (non-PWM) pin.
+        *
+        * The CtrlLed class can be instantiated to allow LED objects to be controlled.
+        * When maxBrightness is omitted, digital mode is enabled for on/off control only.
+        *
+        * @param sig (uint8_t) The signal pin of the LED.
+        * @return A new instance of the CtrlLed class in digital mode.
+        */
+        explicit CtrlLed(uint8_t sig);
 
         /**
         * @brief Toggles the LED's off/on status.
@@ -69,16 +82,22 @@ class CtrlLed
         void turnOff();
 
         /**
-        * @brief Sets the maximum brightness of the LED, for calibration purposes.
+        * @brief Sets the maximum brightness of the LED, for calibration purposes (PWM mode only).
+        *
+        * This method is only available when the LED is connected to a PWM-capable pin.
+        * In digital mode, this method is ignored.
         *
         * @param maxBrightness (int) Sets the maximum brightness of the LED, for calibration purposes (0 - 255).
         */
         void setMaxBrightness(int maxBrightness);
 
         /**
-        * @brief Sets the brightness of the LED in percentages.
+        * @brief Sets the brightness of the LED in percentages (PWM mode only).
         *
-        * @param percentage (int) Sets the maximum brightness. (0 - 100).
+        * This method is only available when the LED is connected to a PWM-capable pin.
+        * In digital mode, this method is ignored.
+        *
+        * @param percentage (int) Sets the brightness. (0 - 100).
         */
         void setBrightness(int percentage);
 
@@ -109,6 +128,13 @@ class CtrlLed
         * @return True if the LED is turned off, false otherwise.
         */
         [[nodiscard]] bool isOff() const;
+
+        /**
+        * @brief Checks if the LED is in PWM mode.
+        *
+        * @return True if the LED is connected to a PWM-capable pin, false if in digital mode.
+        */
+        [[nodiscard]] bool isPwmMode() const;
 
     protected:
         static void processOutput(uint8_t sig, uint8_t brightness);

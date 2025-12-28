@@ -35,8 +35,19 @@ CtrlLed::CtrlLed(
     this->on = false;
     this->brightness = maxBrightness;
     this->maxBrightness = maxBrightness;
+    this->pwmMode = true;
     pinMode(sig, OUTPUT);
-    analogWrite(sig, 0); // Ensure LED is off initially
+    analogWrite(sig, 0);
+}
+
+CtrlLed::CtrlLed(const uint8_t sig) {
+    this->sig = sig;
+    this->on = false;
+    this->brightness = 0;
+    this->maxBrightness = 0;
+    this->pwmMode = false;
+    pinMode(sig, OUTPUT);
+    digitalWrite(sig, LOW);
 }
 
 void CtrlLed::processOutput(const uint8_t sig, const uint8_t brightness)
@@ -47,27 +58,40 @@ void CtrlLed::processOutput(const uint8_t sig, const uint8_t brightness)
 void CtrlLed::toggle()
 {
     this->on = !this->on;
-    if (this->on) {
-        processOutput(sig, brightness);
+    if (this->pwmMode) {
+        if (this->on) {
+            processOutput(sig, brightness);
+        } else {
+            processOutput(sig, 0);
+        }
     } else {
-        processOutput(sig, 0);
+        digitalWrite(sig, this->on ? HIGH : LOW);
     }
 }
 
 void CtrlLed::turnOn()
 {
     this->on = true;
-    processOutput(this->sig, this->brightness);
+    if (this->pwmMode) {
+        processOutput(this->sig, this->brightness);
+    } else {
+        digitalWrite(this->sig, HIGH);
+    }
 }
 
 void CtrlLed::turnOff()
 {
     this->on = false;
-    processOutput(this->sig, 0);
+    if (this->pwmMode) {
+        processOutput(this->sig, 0);
+    } else {
+        digitalWrite(this->sig, LOW);
+    }
 }
 
 void CtrlLed::setMaxBrightness(int maxBrightness)
 {
+    if (!this->pwmMode) return;
     if (maxBrightness > 255) maxBrightness = 255;
     if (maxBrightness < 0) maxBrightness = 0;
     this->maxBrightness = maxBrightness;
@@ -75,6 +99,7 @@ void CtrlLed::setMaxBrightness(int maxBrightness)
 
 void CtrlLed::setBrightness(int percentage)
 {
+    if (!this->pwmMode) return;
     if (percentage > 100) percentage = 100;
     if (percentage < 0) percentage = 0;
     this->brightness = map(percentage, 0, 100, 0, this->maxBrightness);
@@ -101,4 +126,9 @@ bool CtrlLed::isOn() const
 bool CtrlLed::isOff() const
 {
     return !this->on;
+}
+
+bool CtrlLed::isPwmMode() const
+{
+    return this->pwmMode;
 }

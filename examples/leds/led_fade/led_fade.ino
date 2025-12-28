@@ -3,29 +3,37 @@
 
   Description:
   This sketch demonstrates the basic implementation of how to setup and control a fading LED.
+  This example requires a PWM-capable pin for brightness control.
   
   Usage:
-  Create a button with reference to:
-  - Signal pin         (required) The pin your LED is hooked up to.
+  Create an LED with reference to:
+  - Signal pin (required) - The pin your LED is hooked up to (must be PWM-capable).
+
+  For PWM-capable pins (brightness control):
+  - CtrlLed led(pin, maxBrightness);  // Enable PWM mode with brightness control
+
+  For non-PWM pins (simple on/off):
+  - CtrlLed led(pin);                 // Enable digital mode, on/off only
 
   Available methods:
   - turnOn()              Turns on the LED.
   - turnOff()             Turns off the LED.
   - toggle()              Toggles the LED's off/on status.
-  - setMaxBrightness(255) Sets the maximum brightness of the LED, for calibration purposes (0 - 255).
-  - setBrightness(100)    Sets the brightness of the LED in percentages (0 - 100).
+  - setMaxBrightness(255) Sets the maximum brightness (PWM mode only).
+  - setBrightness(100)    Sets the brightness in percentages (PWM mode only).
   - getMaxBrightness()    Returns the maximum brightness set for the LED.
   - getBrightness()       Returns the brightness of the LED.
   - isOn()                Checks if the LED is turned on.
   - isOff()               Checks if the LED is turned off.
+  - isPwmMode()           Checks if the LED is in PWM mode.
 */
 
 #include <CtrlLed.h>
 
-/* Create an LED with the pin number, and maximum brightness.
-   The maximum brightness can be used to calibrate an LED in case
-   you are using LED's that have a different maximum brightness.
-*/
+// PWM mode example (PWM-capable pin with brightness control):
+// This assumes you have connected your LED to a pin with PWM capabilities:
+// The maximum brightness (second parameter) can be used to calibrate an LED,
+// in case you are using multiple LEDs that have different maximum brightness.
 CtrlLed led(LED_BUILTIN, 50);
 
 void setup()

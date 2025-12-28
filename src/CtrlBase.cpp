@@ -49,16 +49,16 @@ bool CtrlBase::isDisabled() const
 
 void setDelayMicroseconds(const uint64_t duration)
 {
-    const uint64_t startTime = micros();
-    const uint64_t targetTime = startTime + duration;
-    while (micros() < targetTime) { }
+    const unsigned long startTime = micros();
+
+    while (micros() - startTime < duration) { }
 }
 
 void setDelayMilliseconds(const uint64_t duration)
 {
-    const uint64_t startTime = millis();
-    const uint64_t targetTime = startTime + duration;
-    while (millis() < targetTime) { }
+    const unsigned long startTime = millis();
+
+    while (millis() - startTime < duration) { }
 }
 
 uint8_t DISCONNECTED = UINT8_MAX;
