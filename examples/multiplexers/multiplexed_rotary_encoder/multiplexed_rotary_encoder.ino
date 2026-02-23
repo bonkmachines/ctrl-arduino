@@ -38,8 +38,8 @@
 */
 CtrlMux mux(1, 2, 3, 4, 5);
 
-// Define an onTurnleft handler for encoder 1.
-void onTurnleft1() {
+// Define an onTurnLeft handler for encoder 1.
+void onTurnLeft1() {
     Serial.println("Rotary encoder 1 turn left");
 }
 
@@ -48,8 +48,8 @@ void onTurnRight1() {
     Serial.println("Rotary encoder 1 turn right");
 }
 
-// Define an onTurnleft handler for encoder 2.
-void onTurnleft2() {
+// Define an onTurnLeft handler for encoder 2.
+void onTurnLeft2() {
     Serial.println("Rotary encoder 2 turn left");
 }
 
@@ -60,10 +60,10 @@ void onTurnRight2() {
 
 // Create two rotary encoders with the following parameters:
 // clk signal pin & dt signal pin (both correspond to the attached channels on the multiplexer),
-// onTurnleft (optional) & onTurnRight (optional) handler,
+// onTurnLeft (optional) & onTurnRight (optional) handler,
 // & a reference (&mux) to the multiplexer.
-CtrlEnc encoder1(0, 1, onTurnleft1, onTurnRight1, &mux);
-CtrlEnc encoder2(2, 3, onTurnleft2, onTurnRight2, &mux);
+CtrlEnc encoder1(0, 1, onTurnLeft1, onTurnRight1, &mux);
+CtrlEnc encoder2(2, 3, onTurnLeft2, onTurnRight2, &mux);
 
 void setup() {
     Serial.begin(9600);

@@ -30,6 +30,9 @@
 
 Groupable::~Groupable()
 {
+    if (this->group != nullptr) {
+        this->group->removeObject(this);
+    }
     const Node* current = properties;
     while (current != nullptr) {
         const Node* toDelete = current;
@@ -38,8 +41,6 @@ Groupable::~Groupable()
     }
 }
 
-void Groupable::process() { }
-
 bool Groupable::isGrouped() const
 {
     return this->grouped;
@@ -47,9 +48,12 @@ bool Groupable::isGrouped() const
 
 void Groupable::setGroup(CtrlGroup* group)
 {
+    if (this->group != nullptr) {
+        this->group->removeObject(this);
+    }
     this->group = group;
-    this->grouped = true;
-    this->group->addObject(this);
+    this->grouped = group != nullptr;
+    if (this->grouped) this->group->addObject(this);
 }
 
 void Groupable::setBoolean(const String& key, const bool value)

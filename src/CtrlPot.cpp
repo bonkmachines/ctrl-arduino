@@ -43,17 +43,36 @@ CtrlPot::CtrlPot(
 
 void CtrlPot::process()
 {
-    if (!this->isInitialized()) this->initialize();
-    if (this->isDisabled()) return;
-    const uint16_t newValue = this->processInput();
-    if (newValue != this->lastValue) {
-        const uint16_t mappedValue = map(newValue, 0, this->analogMax, 0, this->maxOutputValue);
-        if (mappedValue != this->lastMappedValue) {
-            this->onValueChange(mappedValue);
-            this->lastMappedValue = mappedValue;
+    if (this->isrValuePending) {
+        if (!this->initialized) {
+            this->smoothedValue_q16 = 0;
+            this->initialized = true;
         }
-        this->lastValue = newValue;
+        if (this->isDisabled()) return;
+        const uint16_t raw = this->isrRawValue;
+        this->isrValuePending = false;
+        this->processSmoothedValue(this->applySmoothing(raw));
+    } else {
+        if (!this->isInitialized()) this->initialize();
+        if (this->isDisabled()) return;
+        this->processSmoothedValue(this->processInput());
     }
+}
+
+void CtrlPot::setRawValue(const uint16_t rawValue)
+{
+    if (!this->initialized) {
+        this->smoothedValue_q16 = 0;
+        this->initialized = true;
+    }
+    if (this->isDisabled()) return;
+    this->processSmoothedValue(this->applySmoothing(rawValue));
+}
+
+void CtrlPot::storeRaw(const uint16_t rawValue)
+{
+    this->isrRawValue = rawValue;
+    this->isrValuePending = true;
 }
 
 uint16_t CtrlPot::getValue() const
@@ -70,7 +89,7 @@ void CtrlPot::initialize()
 {
     if (!this->isMuxed()) pinMode(sig, INPUT);
     this->lastValue = CtrlPot::processInput();
-    this->smoothedValue = static_cast<float>(this->lastValue);
+    this->smoothedValue_q16 = static_cast<int32_t>(this->lastValue) << 16;
     this->initialized = true;
 }
 
@@ -82,18 +101,30 @@ uint16_t CtrlPot::processInput()
     if (this->isMuxed()) {
         rawValue = this->mux->readPotSig(this->sig, this->pinModeType);
     } else {
-        #ifdef UNIT_TEST
-            // Simulated analogRead for testing
-            extern uint16_t mockPotentiometerInput;
-            rawValue = mockPotentiometerInput;
-        #else
-            rawValue = analogRead(this->sig);
-        #endif
+        rawValue = analogRead(this->sig);
     }
+    return this->applySmoothing(rawValue);
+}
 
-    // Apply exponential smoothing
-    this->smoothedValue = this->smoothedValue + this->alpha * (static_cast<float>(rawValue) - this->smoothedValue);
-    return static_cast<uint16_t>(this->smoothedValue);
+uint16_t CtrlPot::applySmoothing(const uint16_t rawValue)
+{
+    const int32_t raw_q16 = static_cast<int32_t>(rawValue) << 16;
+    const int32_t diff = raw_q16 - this->smoothedValue_q16;
+    this->smoothedValue_q16 += static_cast<int32_t>((static_cast<int64_t>(this->alpha_q16) * diff) >> 16);
+    if (this->smoothedValue_q16 < 0) this->smoothedValue_q16 = 0;
+    return static_cast<uint16_t>((this->smoothedValue_q16 + (1 << 15)) >> 16);
+}
+
+void CtrlPot::processSmoothedValue(const uint16_t newValue)
+{
+    if (newValue != this->lastValue) {
+        const uint16_t mappedValue = map(newValue, 0, this->analogMax, 0, this->maxOutputValue);
+        if (mappedValue != this->lastMappedValue) {
+            this->onValueChange(mappedValue);
+            this->lastMappedValue = mappedValue;
+        }
+        this->lastValue = newValue;
+    }
 }
 
 void CtrlPot::onValueChange(const int value)
@@ -118,11 +149,12 @@ void CtrlPot::setSensitivity(float sensitivity)
 
 void CtrlPot::updateAlpha()
 {
-    // Map sensitivity (0.01 - 100) to alpha (0.0001 - 1)
-    constexpr float minSensitivity = 0.01;
-    constexpr float maxSensitivity = 100.0;
-    constexpr float minAlpha = 0.0001;
-    constexpr float maxAlpha = 1.0;
+    constexpr float minSensitivity = 0.01f;
+    constexpr float maxSensitivity = 100.0f;
+    constexpr float minAlpha = 0.0001f;
+    constexpr float maxAlpha = 1.0f;
 
-    this->alpha = ((this->sensitivity - minSensitivity) * (maxAlpha - minAlpha) / (maxSensitivity - minSensitivity)) + minAlpha;
+    const float alpha = ((this->sensitivity - minSensitivity) * (maxAlpha - minAlpha) / (maxSensitivity - minSensitivity)) + minAlpha;
+    this->alpha_q16 = static_cast<uint32_t>(alpha * 65536.0f);
+    if (this->alpha_q16 == 0) this->alpha_q16 = 1;
 }

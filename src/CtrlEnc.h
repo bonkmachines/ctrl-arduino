@@ -41,7 +41,7 @@ class CtrlEnc : public CtrlBase, public Muxable, public Groupable
         uint8_t dt; // DT pin
         uint8_t pinModeType = INPUT_PULLUP;
         uint8_t resistorPull = PULL_UP;
-        int values[2] = { 0, 0 }; // State of the encoder
+        uint8_t values[2] = { 0, 0 };
         bool initialized = false;
         using CallbackFunction = void (*)();
         CallbackFunction onTurnLeftCallback;
@@ -52,13 +52,13 @@ class CtrlEnc : public CtrlBase, public Muxable, public Groupable
         * @brief Instantiate a rotary encoder object.
         *
         * The CtrlEnc class can be instantiated to allow for specific
-        * actions on turnign left, & on turning right.
+        * actions on turning left, & on turning right.
         *
         * @param clk (uint8_t) The CLK signal pin of the encoder.
         * @param dt (uint8_t) The DT signal pin of the encoder.
         * @param onTurnLeftCallback (optional) The on turn left callback handler. Default is nullptr.
         * @param onTurnRightCallback (optional) The on turn right callback handler. Default is nullptr.
-        * @param mux (CtrlMux) (optional) The multiplexer the button is connected to. Default is nullptr.
+        * @param mux (CtrlMux) (optional) The multiplexer the encoder is connected to. Default is nullptr.
         * @return A new instance of the CtrlEnc class.
         */
         CtrlEnc(
@@ -74,7 +74,7 @@ class CtrlEnc : public CtrlBase, public Muxable, public Groupable
         *
         * @param pinModeType Set to INPUT, INPUT_PULLUP or INPUT_PULLDOWN.
         * @param resistorPull (optional) If pinModeType is set to INPUT,
-        * there needs to be and external pull-up or pull-down resistor
+        * there needs to be an external pull-up or pull-down resistor
         * implemented. Here you specify if it's configured 'PULL_UP' or 'PULL_DOWN'
         * (default is 'PULL_UP').
         */

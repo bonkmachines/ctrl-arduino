@@ -36,7 +36,12 @@ Muxable::Muxable(
     if (this->isMuxed()) this->mux->addObject(this);
 }
 
-void Muxable::process() { }
+Muxable::~Muxable()
+{
+    if (this->mux != nullptr) {
+        this->mux->removeObject(this);
+    }
+}
 
 bool Muxable::isMuxed() const
 {
@@ -45,7 +50,10 @@ bool Muxable::isMuxed() const
 
 void Muxable::setMultiplexer(CtrlMux* mux)
 {
+    if (this->mux != nullptr) {
+        this->mux->removeObject(this);
+    }
     this->mux = mux;
-    this->muxed = true;
-    this->mux->addObject(this);
+    this->muxed = mux != nullptr;
+    if (this->muxed) this->mux->addObject(this);
 }

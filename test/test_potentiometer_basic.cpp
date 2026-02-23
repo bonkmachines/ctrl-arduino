@@ -3,40 +3,36 @@
 #include "CtrlPot.h"
 #include "test_globals.h"
 
-void test_potentiometer_basic_can_be_turned_to_minimum()
+static void test_potentiometer_basic_can_be_turned_to_minimum()
 {
-    CtrlPot potentiometer(
-        1,
-        100,
-        0.05
+    CtrlPot potentiometer(POT_PIN, 100, TEST_SENSITIVITY);
+
+    converge(
+        [&]{ potentiometer.process(); },
+        [&]{ return (int)potentiometer.getValue(); },
+        0
     );
 
-    potentiometerHandlerResult = -1; // Reset
-
-    mockPotentiometerInput = 0; // Simulate a minimum position of the pot. Range: 0 - 1023
-
-    // Call process multiple times to allow smoothing to converge
-    for (int i = 0; i < 10000; ++i) {
-        potentiometer.process();
-    }
-
-    TEST_ASSERT_EQUAL_INT(0, potentiometer.getValue()); // Expected value, considering maxOutPutValue
+    TEST_ASSERT_EQUAL_INT(0, potentiometer.getValue());
 }
 
-void test_potentiometer_basic_can_be_turned_to_maximum()
+static void test_potentiometer_basic_can_be_turned_to_maximum()
 {
-    CtrlPot potentiometer(
-        1,
-        100,
-        0.05
+    CtrlPot potentiometer(POT_PIN, 100, TEST_SENSITIVITY);
+
+    _mock_analog_pins()[POT_PIN] = 1023;
+
+    converge(
+        [&]{ potentiometer.process(); },
+        [&]{ return (int)potentiometer.getValue(); },
+        100
     );
 
-    mockPotentiometerInput = 1023; // Simulate a maximum position of the pot. Range: 0 - 1023
+    TEST_ASSERT_EQUAL_INT(100, potentiometer.getValue());
+}
 
-    // Call process multiple times to allow smoothing to converge
-    for (int i = 0; i < 20000; ++i) {
-        potentiometer.process();
-    }
-
-    TEST_ASSERT_EQUAL_INT(100, potentiometer.getValue()); // Expected value, considering maxOutPutValue
+void run_potentiometer_basic_tests()
+{
+    RUN_TEST(test_potentiometer_basic_can_be_turned_to_minimum);
+    RUN_TEST(test_potentiometer_basic_can_be_turned_to_maximum);
 }

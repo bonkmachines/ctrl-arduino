@@ -3,64 +3,55 @@
 #include "CtrlPot.h"
 #include "test_globals.h"
 
-// Define an onChange handler
-void onChangeHandlerAlternative(int value)
+static void test_potentiometer_alternative_can_be_turned_to_minimum()
 {
-    potentiometerHandlerResult = value;
-}
+    CtrlPot potentiometer(POT_PIN, 100, TEST_SENSITIVITY);
+    potentiometer.setOnValueChange([](int val){ tracker.recordValueChange(val); });
 
-void test_potentiometer_alternative_can_be_turned_to_minimum()
-{
-    CtrlPot potentiometer(
-        1,
-        100,
-        0.05
+    _mock_analog_pins()[POT_PIN] = 1023;
+    converge(
+        [&]{ potentiometer.process(); },
+        [&]{ return (int)potentiometer.getValue(); },
+        100
+    );
+    tracker.reset();
+
+    _mock_analog_pins()[POT_PIN] = 0;
+
+    converge(
+        [&]{ potentiometer.process(); },
+        [&]{ return (int)potentiometer.getValue(); },
+        0
     );
 
-    // Register the handler
-    potentiometer.setOnValueChange(onChangeHandlerAlternative);
-
-    // Call process multiple times to allow updating
-    for (int i = 0; i < 10000; ++i) {
-        potentiometer.process();
-    }
-
-    potentiometerHandlerResult = -1; // Reset
-
-    mockPotentiometerInput = 0; // Simulate a minimum position of the pot. Range: 0 - 1023
-
-    // Call process multiple times to allow smoothing to converge
-    for (int i = 0; i < 20000; ++i) {
-        potentiometer.process();
-    }
-
-    TEST_ASSERT_EQUAL(0, potentiometerHandlerResult); // Expected value, considering maxOutPutValue
+    TEST_ASSERT_EQUAL_INT(0, tracker.lastValue);
 }
 
-void test_potentiometer_alternative_can_be_turned_to_maximum()
+static void test_potentiometer_alternative_can_be_turned_to_maximum()
 {
-    CtrlPot potentiometer(
-        1,
-        100,
-        0.05
+    CtrlPot potentiometer(POT_PIN, 100, TEST_SENSITIVITY);
+    potentiometer.setOnValueChange([](int val){ tracker.recordValueChange(val); });
+
+    converge(
+        [&]{ potentiometer.process(); },
+        [&]{ return (int)potentiometer.getValue(); },
+        0
+    );
+    tracker.reset();
+
+    _mock_analog_pins()[POT_PIN] = 1023;
+
+    converge(
+        [&]{ potentiometer.process(); },
+        [&]{ return (int)potentiometer.getValue(); },
+        100
     );
 
-    // Register the handler
-    potentiometer.setOnValueChange(onChangeHandlerAlternative);
+    TEST_ASSERT_EQUAL_INT(100, tracker.lastValue);
+}
 
-    // Call process multiple times to allow updating
-    for (int i = 0; i < 10000; ++i) {
-        potentiometer.process();
-    }
-
-    potentiometerHandlerResult = -1; // Reset
-
-    mockPotentiometerInput = 1023; // Simulate a maximum position of the pot. Range: 0 - 1023
-
-    // Call process multiple times to allow smoothing to converge
-    for (int i = 0; i < 20000; ++i) {
-        potentiometer.process();
-    }
-
-    TEST_ASSERT_EQUAL(100, potentiometerHandlerResult); // Expected value, considering maxOutPutValue
+void run_potentiometer_alternative_tests()
+{
+    RUN_TEST(test_potentiometer_alternative_can_be_turned_to_minimum);
+    RUN_TEST(test_potentiometer_alternative_can_be_turned_to_maximum);
 }

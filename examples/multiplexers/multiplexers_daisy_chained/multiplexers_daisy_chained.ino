@@ -1,8 +1,8 @@
 /*
-  Multiplexers daisy chained
+  Multiplexers daisy-chained
 
   Description:
-  This sketch demonstrates the implementation of 3 daisy chained multiplexers.
+  This sketch demonstrates the implementation of 3 daisy-chained multiplexers.
   One multiplexer has buttons, the other has rotary encoders & the third has pots.
 */
 
@@ -38,13 +38,13 @@ CtrlPot pot1(0, 100, 0.05, onValueChange1, &potMux);
 void onValueChange2(int value) { Serial.print("Pot 2 value: "); Serial.println(value); }
 CtrlPot pot2(1, 100, 25, onValueChange2, &potMux);
 
-void onTurnleft1() { Serial.println("Encoder 1 turn left"); }
+void onTurnLeft1() { Serial.println("Encoder 1 turn left"); }
 void onTurnRight1() { Serial.println("Encoder 1 turn right"); }
-CtrlEnc encoder1(0, 1, onTurnleft1, onTurnRight1, &encMux);
+CtrlEnc encoder1(0, 1, onTurnLeft1, onTurnRight1, &encMux);
 
-void onTurnleft2() { Serial.println("Encoder 2 turn left"); }
+void onTurnLeft2() { Serial.println("Encoder 2 turn left"); }
 void onTurnRight2() { Serial.println("Encoder 2 turn right"); }
-CtrlEnc encoder2(2, 3, onTurnleft2, onTurnRight2, &encMux);
+CtrlEnc encoder2(2, 3, onTurnLeft2, onTurnRight2, &encMux);
 
 void setup() {
     Serial.begin(9600);

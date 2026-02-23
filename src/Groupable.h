@@ -34,6 +34,8 @@ class CtrlGroup;
 
 class Groupable
 {
+    friend class CtrlGroup;
+
     protected:
         CtrlGroup* group = nullptr;
         bool grouped = false;
@@ -67,7 +69,7 @@ class Groupable
         /**
         * @brief Find out if an object is currently added to a group.
         *
-        * @return True if objected is added, false otherwise.
+        * @return True if object is added, false otherwise.
         */
         [[nodiscard]] bool isGrouped() const;
 

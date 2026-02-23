@@ -46,6 +46,7 @@ class CtrlMux
         Muxable** objects = nullptr;
         size_t objectCount = 0;
         size_t capacity = 0;
+        size_t nextIndex = 0;
 
         void setPinMode(uint8_t pinModeType);
 
@@ -73,6 +74,13 @@ class CtrlMux
             uint8_t s3 = UINT8_MAX // Default to a value indicating S3 is not used
         );
 
+        ~CtrlMux();
+
+        CtrlMux(const CtrlMux&) = delete;
+        CtrlMux& operator=(const CtrlMux&) = delete;
+        CtrlMux(CtrlMux&&) = delete;
+        CtrlMux& operator=(CtrlMux&&) = delete;
+
         /**
         * @brief Add an object to the mux.
         *
@@ -80,11 +88,27 @@ class CtrlMux
         */
         void addObject(Muxable* object);
 
+        void removeObject(Muxable* object);
+
+        /**
+        * @brief Pre-allocate capacity for a known number of objects.
+        *
+        * Call this before adding objects to avoid heap allocations during runtime.
+        *
+        * @param capacity The number of objects to pre-allocate space for.
+        */
+        void reserve(size_t capacity);
+
         /**
         * @brief The process method should be called within the loop method.
         * It handles the functionality of all added objects.
+        *
+        * @param count (optional) The number of objects to process per call.
+        * When 0 (default), all objects are processed. When > 0, objects are
+        * processed in round-robin order for time-sliced control processing
+        * in audio applications.
         */
-        void process() const;
+        void process(uint8_t count = 0);
 
         /**
         * @brief Set the switch interval of the multiplexer.

@@ -30,8 +30,20 @@
 CtrlGroup::CtrlGroup() = default;
 
 CtrlGroup::~CtrlGroup() {
+    for (size_t i = 0; i < this->objectCount; ++i) {
+        this->objects[i]->group = nullptr;
+        this->objects[i]->grouped = false;
+    }
     delete[] this->objects;
 }
+
+void CtrlGroup::enable() { this->enabled = true; }
+
+void CtrlGroup::disable() { this->enabled = false; }
+
+bool CtrlGroup::isEnabled() const { return this->enabled; }
+
+bool CtrlGroup::isDisabled() const { return !this->enabled; }
 
 void CtrlGroup::addObject(Groupable* object) {
     if (this->objectCount == this->capacity) {
@@ -40,10 +52,45 @@ void CtrlGroup::addObject(Groupable* object) {
     this->objects[this->objectCount++] = object;
 }
 
-void CtrlGroup::process() const
-{
+void CtrlGroup::removeObject(Groupable* object) {
     for (size_t i = 0; i < this->objectCount; ++i) {
-        this->objects[i]->process();
+        if (this->objects[i] == object) {
+            for (size_t j = i; j < this->objectCount - 1; ++j) {
+                this->objects[j] = this->objects[j + 1];
+            }
+            --this->objectCount;
+            if (this->nextIndex >= this->objectCount && this->objectCount > 0) {
+                this->nextIndex = 0;
+            }
+            return;
+        }
+    }
+}
+
+void CtrlGroup::reserve(const size_t capacity) {
+    if (capacity <= this->capacity) return;
+    auto** newObjects = new Groupable*[capacity];
+    for (size_t i = 0; i < this->objectCount; ++i) {
+        newObjects[i] = this->objects[i];
+    }
+    delete[] this->objects;
+    this->objects = newObjects;
+    this->capacity = capacity;
+}
+
+void CtrlGroup::process(const uint8_t count)
+{
+    if (!this->enabled || this->objectCount == 0) return;
+    if (count == 0) {
+        for (size_t i = 0; i < this->objectCount; ++i) {
+            this->objects[i]->process();
+        }
+    } else {
+        const uint8_t n = count > this->objectCount ? static_cast<uint8_t>(this->objectCount) : count;
+        for (uint8_t i = 0; i < n; ++i) {
+            this->objects[this->nextIndex]->process();
+            this->nextIndex = (this->nextIndex + 1) % this->objectCount;
+        }
     }
 }
 
@@ -78,7 +125,7 @@ void CtrlGroup::setOnValueChange(void (*callback)(Groupable&, int value))
 }
 
 void CtrlGroup::resize() {
-    const size_t newCapacity = this->capacity == 0 ? 10 : this->capacity * 2;
+    const size_t newCapacity = this->capacity == 0 ? 4 : this->capacity * 2;
     auto** newObjects = new Groupable*[newCapacity];
     for (size_t i = 0; i < this->objectCount; ++i) {
         newObjects[i] = this->objects[i];

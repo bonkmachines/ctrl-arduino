@@ -61,6 +61,6 @@ void setDelayMilliseconds(const uint64_t duration)
     while (millis() - startTime < duration) { }
 }
 
-uint8_t DISCONNECTED = UINT8_MAX;
-uint8_t PULL_DOWN = 0;
-uint8_t PULL_UP = 1;
+const uint8_t DISCONNECTED = UINT8_MAX;
+const uint8_t PULL_DOWN = 0;
+const uint8_t PULL_UP = 1;

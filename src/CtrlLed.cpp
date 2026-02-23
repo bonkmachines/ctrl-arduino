@@ -36,8 +36,6 @@ CtrlLed::CtrlLed(
     this->brightness = maxBrightness;
     this->maxBrightness = maxBrightness;
     this->pwmMode = true;
-    pinMode(sig, OUTPUT);
-    analogWrite(sig, 0);
 }
 
 CtrlLed::CtrlLed(const uint8_t sig) {
@@ -46,8 +44,18 @@ CtrlLed::CtrlLed(const uint8_t sig) {
     this->brightness = 0;
     this->maxBrightness = 0;
     this->pwmMode = false;
-    pinMode(sig, OUTPUT);
-    digitalWrite(sig, LOW);
+}
+
+void CtrlLed::initialize()
+{
+    if (this->initialized) return;
+    pinMode(this->sig, OUTPUT);
+    if (this->pwmMode) {
+        analogWrite(this->sig, 0);
+    } else {
+        digitalWrite(this->sig, LOW);
+    }
+    this->initialized = true;
 }
 
 void CtrlLed::processOutput(const uint8_t sig, const uint8_t brightness)
@@ -57,6 +65,8 @@ void CtrlLed::processOutput(const uint8_t sig, const uint8_t brightness)
 
 void CtrlLed::toggle()
 {
+    if (this->isDisabled()) return;
+    this->initialize();
     this->on = !this->on;
     if (this->pwmMode) {
         if (this->on) {
@@ -71,6 +81,8 @@ void CtrlLed::toggle()
 
 void CtrlLed::turnOn()
 {
+    if (this->isDisabled()) return;
+    this->initialize();
     this->on = true;
     if (this->pwmMode) {
         processOutput(this->sig, this->brightness);
@@ -81,6 +93,8 @@ void CtrlLed::turnOn()
 
 void CtrlLed::turnOff()
 {
+    if (this->isDisabled()) return;
+    this->initialize();
     this->on = false;
     if (this->pwmMode) {
         processOutput(this->sig, 0);
@@ -95,10 +109,15 @@ void CtrlLed::setMaxBrightness(int maxBrightness)
     if (maxBrightness > 255) maxBrightness = 255;
     if (maxBrightness < 0) maxBrightness = 0;
     this->maxBrightness = maxBrightness;
+    if (this->brightness > this->maxBrightness) {
+        this->brightness = this->maxBrightness;
+    }
 }
 
 void CtrlLed::setBrightness(int percentage)
 {
+    if (this->isDisabled()) return;
+    this->initialize();
     if (!this->pwmMode) return;
     if (percentage > 100) percentage = 100;
     if (percentage < 0) percentage = 0;
@@ -115,6 +134,7 @@ uint8_t CtrlLed::getMaxBrightness() const
 
 uint8_t CtrlLed::getBrightness() const
 {
+    if (this->maxBrightness == 0) return 0;
     return map(this->brightness, 0, this->maxBrightness, 0, 100);
 }
 

@@ -3,66 +3,38 @@
 #include "CtrlEnc.h"
 #include "test_globals.h"
 
-// Define an onTurnLeft handler
-void onTurnLeftHandlerBasic() {
-    encoderHandlerResult = "basic encoder turn left";
-}
-
-// Define an onTurnRight handler
-void onTurnRighthandlerBasic() {
-    encoderHandlerResult = "basic encoder turn right";
-}
-
-void test_encoder_basic_can_be_turned_left()
+static void test_encoder_basic_can_be_turned_left()
 {
-    CtrlEnc encoder(
-        1,
-        2,
-        onTurnLeftHandlerBasic,
-        onTurnRighthandlerBasic
-    );
+    CtrlEnc encoder(ENC_CLK_PIN, ENC_DT_PIN, []{ tracker.recordTurnLeft(); }, []{ tracker.recordTurnRight(); });
 
-    // Reset the state
-    encoderHandlerResult = "";
-    mockClkInput = LOW;
-    mockDtInput = LOW;
+    encoder.process();
 
-    encoder.process(); // Process internal state
+    _mock_digital_pins()[ENC_DT_PIN] = HIGH;
+    encoder.process();
+    _mock_digital_pins()[ENC_CLK_PIN] = HIGH;
+    encoder.process();
 
-    // Simulate the sequence for a counterclockwise turn
-    mockClkInput = LOW;
-    mockDtInput = HIGH;
-    encoder.process(); // Process internal state
-    mockClkInput = HIGH;
-    mockDtInput = HIGH;
-    encoder.process(); // Process internal state
-
-    TEST_ASSERT_EQUAL_STRING("basic encoder turn left", encoderHandlerResult.c_str()); // Verify the encoder has turned left
+    TEST_ASSERT_EQUAL(TestEvent::EncoderTurnedLeft, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.turnLeftCount);
 }
 
-void test_encoder_basic_can_be_turned_right()
+static void test_encoder_basic_can_be_turned_right()
 {
-    CtrlEnc encoder(
-        1,
-        2,
-        onTurnLeftHandlerBasic,
-        onTurnRighthandlerBasic
-    );
+    CtrlEnc encoder(ENC_CLK_PIN, ENC_DT_PIN, []{ tracker.recordTurnLeft(); }, []{ tracker.recordTurnRight(); });
 
-    // Reset the state
-    encoderHandlerResult = "";
-    mockClkInput = LOW;
-    mockDtInput = LOW;
+    encoder.process();
 
-    encoder.process(); // Process internal state
+    _mock_digital_pins()[ENC_CLK_PIN] = HIGH;
+    encoder.process();
+    _mock_digital_pins()[ENC_DT_PIN] = HIGH;
+    encoder.process();
 
-    // Simulate the sequence for a clockwise turn
-    mockClkInput = HIGH;
-    mockDtInput = LOW;
-    encoder.process(); // Process internal state
-    mockClkInput = HIGH;
-    mockDtInput = HIGH;
-    encoder.process(); // Process internal state
+    TEST_ASSERT_EQUAL(TestEvent::EncoderTurnedRight, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.turnRightCount);
+}
 
-    TEST_ASSERT_EQUAL_STRING("basic encoder turn right", encoderHandlerResult.c_str()); // Verify the encoder has turned right
+void run_encoder_basic_tests()
+{
+    RUN_TEST(test_encoder_basic_can_be_turned_left);
+    RUN_TEST(test_encoder_basic_can_be_turned_right);
 }

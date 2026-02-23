@@ -3,46 +3,41 @@
 #include "CtrlBtn.h"
 #include "test_globals.h"
 
-class CustomButton final : public CtrlBtn
+class TestButton final : public CtrlBtn
 {
     public:
-        CustomButton(
-            const uint8_t sig,
-            const uint8_t bounceDuration
-        ) : CtrlBtn(sig, bounceDuration) { }
+        TestButton(uint8_t sig, uint16_t bounceDuration)
+            : CtrlBtn(sig, bounceDuration) {}
 
     private:
-        void onPress() override
-        {
-            buttonHandlerResult = "advanced button pressed";
-        }
-
-        void onRelease() override
-        {
-            buttonHandlerResult = "advanced button released";
-        }
+        void onPress() override { tracker.recordPress(); }
+        void onRelease() override { tracker.recordRelease(); }
 };
 
-void test_button_advanced_can_be_pressed_and_released()
+static void test_button_advanced_can_be_pressed_and_released()
 {
-    CustomButton button(1, 15);
+    TestButton button(BTN_PIN, TEST_DEBOUNCE);
 
-    buttonHandlerResult = ""; // Reset
-    mockButtonInput = HIGH; // Reset
+    button.process();
 
-    button.process(); // Process internal state
+    _mock_digital_pins()[BTN_PIN] = LOW;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
 
-    mockButtonInput = LOW; // Simulate button press
-    button.process(); // Process internal state
-    delay(15 + 1); // Wait more than the debounce duration
-    button.process(); // Second call to ensure debounce logic has completed
+    TEST_ASSERT_EQUAL(TestEvent::ButtonPressed, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.pressCount);
 
-    TEST_ASSERT_EQUAL_STRING("advanced button pressed", buttonHandlerResult.c_str()); // Verify the button's on press handler has been called
+    _mock_digital_pins()[BTN_PIN] = HIGH;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
 
-    mockButtonInput = HIGH; // Simulate button release
-    button.process(); // Process internal state
-    delay(15 + 1); // Ensure debounce time has passed
-    button.process(); // Second call to complete debounce logic
+    TEST_ASSERT_EQUAL(TestEvent::ButtonReleased, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.releaseCount);
+}
 
-    TEST_ASSERT_EQUAL_STRING("advanced button released", buttonHandlerResult.c_str()); // Verify the button's on release handler has been called
+void run_button_advanced_tests()
+{
+    RUN_TEST(test_button_advanced_can_be_pressed_and_released);
 }

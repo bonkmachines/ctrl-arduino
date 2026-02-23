@@ -3,31 +3,103 @@
 #include "CtrlEnc.h"
 #include "test_globals.h"
 
-void test_encoder_common_initial_state()
+static void test_encoder_common_initial_state()
 {
-    CtrlEnc encoder(1, 2);
+    CtrlEnc encoder(ENC_CLK_PIN, ENC_DT_PIN);
 
-    // Reset the state
-    mockClkInput = LOW;
-    mockDtInput = LOW;
+    encoder.process();
 
-    encoder.process(); // Process internal state
-
-    TEST_ASSERT_FALSE(encoder.isTurningLeft()); // Encoder should not be turning left
-    TEST_ASSERT_FALSE(encoder.isTurningRight()); // Encoder should not be turning right
+    TEST_ASSERT_FALSE(encoder.isTurningLeft());
+    TEST_ASSERT_FALSE(encoder.isTurningRight());
 }
 
-void test_encoder_common_can_be_disabled_and_enabled()
+static void test_encoder_common_can_be_disabled_and_enabled()
 {
-    CtrlEnc encoder(1, 2);
+    CtrlEnc encoder(ENC_CLK_PIN, ENC_DT_PIN);
 
-    encoder.disable(); // Disable the encoder
-    encoder.process(); // Process internal state
+    encoder.disable();
+    encoder.process();
+    TEST_ASSERT_TRUE(encoder.isDisabled());
 
-    TEST_ASSERT_TRUE(encoder.isDisabled()); // Encoder should be disabled
+    encoder.enable();
+    encoder.process();
+    TEST_ASSERT_TRUE(encoder.isEnabled());
+}
 
-    encoder.enable(); // Enable the encoder
-    encoder.process(); // Process internal state
+static void test_encoder_disabled_ignores_input()
+{
+    CtrlEnc encoder(ENC_CLK_PIN, ENC_DT_PIN, []{ tracker.recordTurnLeft(); }, []{ tracker.recordTurnRight(); });
 
-    TEST_ASSERT_TRUE(encoder.isEnabled()); // Encoder should be enabled
+    encoder.process();
+    encoder.disable();
+
+    _mock_digital_pins()[ENC_DT_PIN] = HIGH;
+    encoder.process();
+    _mock_digital_pins()[ENC_CLK_PIN] = HIGH;
+    encoder.process();
+
+    TEST_ASSERT_EQUAL_INT(0, tracker.turnLeftCount);
+    TEST_ASSERT_EQUAL_INT(0, tracker.eventCount);
+}
+
+static void test_encoder_rapid_turn_cycles()
+{
+    CtrlEnc encoder(ENC_CLK_PIN, ENC_DT_PIN, []{ tracker.recordTurnLeft(); }, []{ tracker.recordTurnRight(); });
+
+    encoder.process();
+
+    for (int cycle = 0; cycle < 100; ++cycle) {
+        _mock_digital_pins()[ENC_DT_PIN] = HIGH;
+        encoder.process();
+        _mock_digital_pins()[ENC_CLK_PIN] = HIGH;
+        encoder.process();
+
+        _mock_digital_pins()[ENC_CLK_PIN] = LOW;
+        _mock_digital_pins()[ENC_DT_PIN] = LOW;
+        encoder.process();
+    }
+
+    TEST_ASSERT_EQUAL_INT(100, tracker.turnLeftCount);
+}
+
+static void test_encoder_set_pin_mode_invalid_type_ignored()
+{
+    CtrlEnc encoder(ENC_CLK_PIN, ENC_DT_PIN, []{ tracker.recordTurnLeft(); }, []{ tracker.recordTurnRight(); });
+
+    encoder.setPinMode(99);
+
+    encoder.process();
+
+    _mock_digital_pins()[ENC_DT_PIN] = HIGH;
+    encoder.process();
+    _mock_digital_pins()[ENC_CLK_PIN] = HIGH;
+    encoder.process();
+
+    TEST_ASSERT_EQUAL_INT(1, tracker.turnLeftCount);
+}
+
+static void test_encoder_set_pin_mode_invalid_resistor_ignored()
+{
+    CtrlEnc encoder(ENC_CLK_PIN, ENC_DT_PIN, []{ tracker.recordTurnLeft(); }, []{ tracker.recordTurnRight(); });
+
+    encoder.setPinMode(INPUT, 99);
+
+    encoder.process();
+
+    _mock_digital_pins()[ENC_DT_PIN] = HIGH;
+    encoder.process();
+    _mock_digital_pins()[ENC_CLK_PIN] = HIGH;
+    encoder.process();
+
+    TEST_ASSERT_EQUAL_INT(1, tracker.turnLeftCount);
+}
+
+void run_encoder_common_tests()
+{
+    RUN_TEST(test_encoder_common_initial_state);
+    RUN_TEST(test_encoder_common_can_be_disabled_and_enabled);
+    RUN_TEST(test_encoder_disabled_ignores_input);
+    RUN_TEST(test_encoder_rapid_turn_cycles);
+    RUN_TEST(test_encoder_set_pin_mode_invalid_type_ignored);
+    RUN_TEST(test_encoder_set_pin_mode_invalid_resistor_ignored);
 }

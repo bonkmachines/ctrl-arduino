@@ -14,7 +14,7 @@
   Usage:
   Create a rotary encoder with reference to:
   - CLK signal pin    (required) The clk input pin your rotary encoder is hooked up to.
-  - DT signal pint    (required) The dt input pin your rotary encoder is hooked up to.
+  - DT signal pin     (required) The dt input pin your rotary encoder is hooked up to.
   
   The following handler methods can then be (optionally) set for the created rotary encoder object:
   - setOnTurnLeft(onTurnLeft)
@@ -27,14 +27,14 @@
                                  set to 'INPUT', you will have to implement an external pull-down or pull-up
                                  resistor. You should then set the second parameter to 'PULL_DOWN' or 'PULL_UP'.
   - process()                    Is used to poll the rotary encoder and handle all it's functionality (used in the loop method).
-  - setOnTurnLeft()              Sets the onTurnleft handler. Is called when you turn left.
+  - setOnTurnLeft()              Sets the onTurnLeft handler. Is called when you turn left.
   - setOnTurnRight()             Sets the onTurnRight handler. Is called when you turn right.
   - setMultiplexer(&mux)         Sets the multiplexer that the rotary encoder subscribes to.
   - disable()                    Disables the rotary encoder.
   - enable()                     Enables the rotary encoder.
   - isEnabled()                  Checks if the rotary encoder is enabled.
   - isDisabled()                 Checks if the rotary encoder is disabled.
-  - setGroup(&group)             Register the potentiometer to a group.
+  - setGroup(&group)             Register the encoder to a group.
   - setInteger("id", 0)          Define an integer. First parameter is the name of the variable, second parameter is the value.
   - setString("name", "Button")  Define a string. First parameter is the name of the variable, second parameter is the value.
   - setBoolean("active", true)   Define a boolean. First parameter is the name of the variable, second parameter is the value.

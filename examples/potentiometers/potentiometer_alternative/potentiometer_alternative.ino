@@ -18,7 +18,7 @@
   - Sensitivity margin  (required) Decrease this for instable (jittery) pots, min: 0.01, max: 100.
 
   The following handler method can then be (optionally) set for the created potentiometer object:
-  - setOnValueChange(onPress)
+  - setOnValueChange(onValueChange)
 
   Available methods:
   - process()                    Is used to poll the potentiometer and handle all it's functionality (used in the loop method).

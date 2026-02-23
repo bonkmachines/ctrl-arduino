@@ -36,6 +36,8 @@ class CtrlBase
         bool enabled = true;
 
     public:
+        virtual ~CtrlBase() = default;
+
         void enable();
 
         void disable();
@@ -45,13 +47,15 @@ class CtrlBase
         [[nodiscard]] bool isDisabled() const;
 };
 
+[[deprecated("Use delayMicroseconds() instead")]]
 void setDelayMicroseconds(uint64_t duration);
 
+[[deprecated("Use delay() instead")]]
 void setDelayMilliseconds(uint64_t duration);
 
-extern uint8_t DISCONNECTED; // used to indicate if a pin is not connected.
-extern uint8_t PULL_UP; // Used for indicating that an external resistor pull up is used.
-extern uint8_t PULL_DOWN; // Used for indicating that an external resistor down up is used.
+extern const uint8_t DISCONNECTED;
+extern const uint8_t PULL_UP;
+extern const uint8_t PULL_DOWN;
 
 #ifndef INPUT_PULLUP
     #define INPUT_PULLUP 2 // Define a placeholder value for INPUT_PULLUP

@@ -106,15 +106,8 @@ void CtrlEnc::processInput()
         clkState = this->mux->readEncClk(this->clk, this->pinModeType);
         dtState = this->mux->readEncDt(this->dt, this->pinModeType);
     } else {
-        #ifdef UNIT_TEST
-            extern int8_t mockClkInput;
-            extern int8_t mockDtInput;
-            clkState = mockClkInput;
-            dtState = mockDtInput;
-        #else
-            clkState = digitalRead(clk);
-            dtState = digitalRead(dt);
-        #endif
+        clkState = digitalRead(clk);
+        dtState = digitalRead(dt);
     }
 
     if (this->resistorPull == PULL_DOWN) {
@@ -130,7 +123,7 @@ void CtrlEnc::processInput()
 
 int8_t CtrlEnc::readEncoder()
 {
-    const int8_t table[] = { 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0 };
+    static constexpr int8_t table[] = { 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0 };
     this->values[0] <<= 2;
     this->processInput();
     this->values[0] &= 0x0f;

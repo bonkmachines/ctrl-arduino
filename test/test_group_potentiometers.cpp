@@ -4,39 +4,35 @@
 #include "CtrlPot.h"
 #include "test_globals.h"
 
-void onValueChange(Groupable& potentiometer, int value) {
-    const int integer = potentiometer.getInteger("integer");
-    const String string = potentiometer.getString("string");
-    const bool boolean = potentiometer.getBoolean("boolean");
-    if (boolean) {
-        potentiometerHandlerResult = value;
-        groupedPotentiometerHandlerResult = "Rotated: " + std::to_string(integer) + " " + string.c_str();
-    }
+static void test_potentiometer_can_be_grouped()
+{
+    CtrlGroup potGroup;
+    CtrlPot potentiometer(POT_PIN, 100, TEST_SENSITIVITY);
+
+    potGroup.setOnValueChange([](Groupable& pot, int value) {
+        TEST_ASSERT_TRUE(pot.getBoolean("active"));
+        TEST_ASSERT_EQUAL_INT(10, pot.getInteger("id"));
+        tracker.recordValueChange(value);
+    });
+
+    potentiometer.setGroup(&potGroup);
+    potentiometer.setInteger("id", 10);
+    potentiometer.setString("name", "testPot");
+    potentiometer.setBoolean("active", true);
+
+    _mock_analog_pins()[POT_PIN] = 1023;
+
+    converge(
+        [&]{ potGroup.process(); },
+        [&]{ return (int)potentiometer.getValue(); },
+        100
+    );
+
+    TEST_ASSERT_EQUAL_INT(100, tracker.lastValue);
+    TEST_ASSERT_TRUE(tracker.valueChangeCount > 0);
 }
 
-void test_potentiometer_can_be_grouped()
+void run_group_potentiometer_tests()
 {
-    CtrlGroup potentiometerGroup;
-
-    CtrlPot potentiometer(1, 100, 0.05);
-
-    potentiometerGroup.setOnValueChange(onValueChange);
-
-    potentiometer.setGroup(&potentiometerGroup);
-
-    potentiometer.setInteger("integer", 10);
-    potentiometer.setString("string", "Four");
-    potentiometer.setBoolean("boolean", true);
-
-    potentiometerHandlerResult = -1; // Reset
-    groupedPotentiometerHandlerResult = ""; // Reset
-    mockPotentiometerInput = 1023;
-
-    // Call process multiple times to allow smoothing to converge
-    for (int i = 0; i < 20000; ++i) {
-        potentiometerGroup.process();
-    }
-
-    TEST_ASSERT_EQUAL_INT(100, potentiometerHandlerResult); // Expected value, considering maxOutPutValue
-    TEST_ASSERT_EQUAL_STRING("Rotated: 10 Four", groupedPotentiometerHandlerResult.c_str()); // Verify the potentiometer's on press handler has been called
+    RUN_TEST(test_potentiometer_can_be_grouped);
 }

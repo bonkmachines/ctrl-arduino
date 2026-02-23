@@ -50,6 +50,14 @@ CtrlMux::CtrlMux(
     }
 }
 
+CtrlMux::~CtrlMux() {
+    for (size_t i = 0; i < this->objectCount; ++i) {
+        this->objects[i]->mux = nullptr;
+        this->objects[i]->muxed = false;
+    }
+    delete[] this->objects;
+}
+
 void CtrlMux::setPinMode(const uint8_t pinModeType)
 {
     if (this->currentPinMode != pinModeType) {
@@ -75,10 +83,34 @@ void CtrlMux::addObject(Muxable* object) {
     this->objects[this->objectCount++] = object;
 }
 
-void CtrlMux::process() const
-{
+void CtrlMux::removeObject(Muxable* object) {
     for (size_t i = 0; i < this->objectCount; ++i) {
-        this->objects[i]->process();
+        if (this->objects[i] == object) {
+            for (size_t j = i; j < this->objectCount - 1; ++j) {
+                this->objects[j] = this->objects[j + 1];
+            }
+            --this->objectCount;
+            if (this->nextIndex >= this->objectCount && this->objectCount > 0) {
+                this->nextIndex = 0;
+            }
+            return;
+        }
+    }
+}
+
+void CtrlMux::process(const uint8_t count)
+{
+    if (this->objectCount == 0) return;
+    if (count == 0) {
+        for (size_t i = 0; i < this->objectCount; ++i) {
+            this->objects[i]->process();
+        }
+    } else {
+        const uint8_t n = count > this->objectCount ? static_cast<uint8_t>(this->objectCount) : count;
+        for (uint8_t i = 0; i < n; ++i) {
+            this->objects[this->nextIndex]->process();
+            this->nextIndex = (this->nextIndex + 1) % this->objectCount;
+        }
     }
 }
 
@@ -88,16 +120,9 @@ bool CtrlMux::readBtnSig(const uint8_t channel, const uint8_t pinModeType)
 
     this->setChannel(channel);
 
-    setDelayMicroseconds(this->switchInterval);
+    delayMicroseconds(this->switchInterval);
 
-    #ifdef UNIT_TEST
-        // Simulated digitalRead testing
-        extern uint8_t mockMuxBtnSigInput;
-        return mockMuxBtnSigInput;
-    #else
-        // Normal operation with real hardware
-        return digitalRead(this->sig);
-    #endif
+    return digitalRead(this->sig);
 }
 
 bool CtrlMux::readEncClk(const uint8_t channel, const uint8_t pinModeType)
@@ -106,16 +131,9 @@ bool CtrlMux::readEncClk(const uint8_t channel, const uint8_t pinModeType)
 
     this->setChannel(channel);
 
-    setDelayMicroseconds(this->switchInterval);
+    delayMicroseconds(this->switchInterval);
 
-    #ifdef UNIT_TEST
-        // Simulated digitalRead testing
-        extern uint8_t mockMuxEncClkInput;
-        return mockMuxEncClkInput;
-    #else
-        // Normal operation with real hardware
-        return digitalRead(this->sig);
-    #endif
+    return digitalRead(this->sig);
 }
 
 bool CtrlMux::readEncDt(const uint8_t channel, const uint8_t pinModeType)
@@ -124,16 +142,9 @@ bool CtrlMux::readEncDt(const uint8_t channel, const uint8_t pinModeType)
 
     this->setChannel(channel);
 
-    setDelayMicroseconds(this->switchInterval);
+    delayMicroseconds(this->switchInterval);
 
-    #ifdef UNIT_TEST
-        // Simulated digitalRead testing
-        extern uint8_t mockMuxEncDtInput;
-        return mockMuxEncDtInput;
-    #else
-        // Normal operation with real hardware
-        return digitalRead(this->sig);
-    #endif
+    return digitalRead(this->sig);
 }
 
 uint16_t CtrlMux::readPotSig(const uint8_t channel, const uint8_t pinModeType)
@@ -142,16 +153,9 @@ uint16_t CtrlMux::readPotSig(const uint8_t channel, const uint8_t pinModeType)
 
     this->setChannel(channel);
 
-    setDelayMicroseconds(this->switchInterval);
+    delayMicroseconds(this->switchInterval);
 
-    #ifdef UNIT_TEST
-        // Simulated analogRead testing
-        extern uint16_t mockMuxPotSigInput;
-        return mockMuxPotSigInput;
-    #else
-        // Normal operation with real hardware
-        return analogRead(this->sig);
-    #endif
+    return analogRead(this->sig);
 }
 
 void CtrlMux::setSwitchInterval(const uint8_t interval)
@@ -159,8 +163,19 @@ void CtrlMux::setSwitchInterval(const uint8_t interval)
     this->switchInterval = interval;
 }
 
+void CtrlMux::reserve(const size_t capacity) {
+    if (capacity <= this->capacity) return;
+    auto** newObjects = new Muxable*[capacity];
+    for (size_t i = 0; i < this->objectCount; ++i) {
+        newObjects[i] = this->objects[i];
+    }
+    delete[] this->objects;
+    this->objects = newObjects;
+    this->capacity = capacity;
+}
+
 void CtrlMux::resize() {
-    const size_t newCapacity = this->capacity == 0 ? 10 : this->capacity * 2;
+    const size_t newCapacity = this->capacity == 0 ? 4 : this->capacity * 2;
     auto** newObjects = new Muxable*[newCapacity];
     for (size_t i = 0; i < this->objectCount; ++i) {
         newObjects[i] = this->objects[i];

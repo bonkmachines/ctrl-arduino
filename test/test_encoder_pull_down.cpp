@@ -3,128 +3,84 @@
 #include "CtrlEnc.h"
 #include "test_globals.h"
 
-// Define an onTurnLeft handler
-void onTurnLeftHandlerPullDown() {
-    encoderHandlerResult = "pull down encoder turn left";
-}
-
-// Define an onTurnRight handler
-void onTurnRighthandlerPullDown() {
-    encoderHandlerResult = "pull down encoder turn right";
-}
-
-void test_encoder_internal_pull_down_can_be_turned_left()
+static void test_encoder_internal_pull_down_can_be_turned_left()
 {
-    CtrlEnc encoder(
-        1,
-        2,
-        onTurnLeftHandlerPullDown,
-        onTurnRighthandlerPullDown
-    );
-
+    CtrlEnc encoder(ENC_CLK_PIN, ENC_DT_PIN, []{ tracker.recordTurnLeft(); }, []{ tracker.recordTurnRight(); });
     encoder.setPinMode(INPUT_PULLDOWN);
 
-    // Reset the state
-    encoderHandlerResult = "";
-    mockClkInput = HIGH;
-    mockDtInput = HIGH;
+    _mock_digital_pins()[ENC_CLK_PIN] = HIGH;
+    _mock_digital_pins()[ENC_DT_PIN] = HIGH;
+    encoder.process();
 
-    encoder.process(); // Process internal state
+    _mock_digital_pins()[ENC_DT_PIN] = LOW;
+    encoder.process();
+    _mock_digital_pins()[ENC_CLK_PIN] = LOW;
+    encoder.process();
 
-    // Simulate the sequence for a counterclockwise turn
-    mockClkInput = HIGH;
-    mockDtInput = LOW;
-    encoder.process(); // Process internal state
-    mockClkInput = LOW;
-    mockDtInput = LOW;
-    encoder.process(); // Process internal state
-
-    TEST_ASSERT_EQUAL_STRING("pull down encoder turn left", encoderHandlerResult.c_str()); // Verify the encoder has turned left
+    TEST_ASSERT_EQUAL(TestEvent::EncoderTurnedLeft, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.turnLeftCount);
 }
 
-void test_encoder_internal_pull_down_can_be_turned_right()
+static void test_encoder_internal_pull_down_can_be_turned_right()
 {
-    CtrlEnc encoder(
-        1,
-        2,
-        onTurnLeftHandlerPullDown,
-        onTurnRighthandlerPullDown
-    );
-
+    CtrlEnc encoder(ENC_CLK_PIN, ENC_DT_PIN, []{ tracker.recordTurnLeft(); }, []{ tracker.recordTurnRight(); });
     encoder.setPinMode(INPUT_PULLDOWN);
 
-    // Reset the state
-    encoderHandlerResult = "";
-    mockClkInput = HIGH;
-    mockDtInput = HIGH;
+    _mock_digital_pins()[ENC_CLK_PIN] = HIGH;
+    _mock_digital_pins()[ENC_DT_PIN] = HIGH;
+    encoder.process();
 
-    encoder.process(); // Process internal state
+    _mock_digital_pins()[ENC_CLK_PIN] = LOW;
+    encoder.process();
+    _mock_digital_pins()[ENC_CLK_PIN] = LOW;
+    _mock_digital_pins()[ENC_DT_PIN] = LOW;
+    encoder.process();
 
-    // Simulate the sequence for a clockwise turn
-    mockClkInput = LOW;
-    mockDtInput = HIGH;
-    encoder.process(); // Process internal state
-    mockClkInput = LOW;
-    mockDtInput = LOW;
-    encoder.process(); // Process internal state
-
-    TEST_ASSERT_EQUAL_STRING("pull down encoder turn right", encoderHandlerResult.c_str()); // Verify the encoder has turned right
+    TEST_ASSERT_EQUAL(TestEvent::EncoderTurnedRight, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.turnRightCount);
 }
 
-void test_encoder_external_pull_down_can_be_turned_left()
+static void test_encoder_external_pull_down_can_be_turned_left()
 {
-    CtrlEnc encoder(
-        1,
-        2,
-        onTurnLeftHandlerPullDown,
-        onTurnRighthandlerPullDown
-    );
-
+    CtrlEnc encoder(ENC_CLK_PIN, ENC_DT_PIN, []{ tracker.recordTurnLeft(); }, []{ tracker.recordTurnRight(); });
     encoder.setPinMode(INPUT, PULL_DOWN);
 
-    // Reset the state
-    encoderHandlerResult = "";
-    mockClkInput = HIGH;
-    mockDtInput = HIGH;
+    _mock_digital_pins()[ENC_CLK_PIN] = HIGH;
+    _mock_digital_pins()[ENC_DT_PIN] = HIGH;
+    encoder.process();
 
-    encoder.process(); // Process internal state
+    _mock_digital_pins()[ENC_DT_PIN] = LOW;
+    encoder.process();
+    _mock_digital_pins()[ENC_CLK_PIN] = LOW;
+    encoder.process();
 
-    // Simulate the sequence for a counterclockwise turn
-    mockClkInput = HIGH;
-    mockDtInput = LOW;
-    encoder.process(); // Process internal state
-    mockClkInput = LOW;
-    mockDtInput = LOW;
-    encoder.process(); // Process internal state
-
-    TEST_ASSERT_EQUAL_STRING("pull down encoder turn left", encoderHandlerResult.c_str()); // Verify the encoder has turned left
+    TEST_ASSERT_EQUAL(TestEvent::EncoderTurnedLeft, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.turnLeftCount);
 }
 
-void test_encoder_external_pull_down_can_be_turned_right()
+static void test_encoder_external_pull_down_can_be_turned_right()
 {
-    CtrlEnc encoder(
-        1,
-        2,
-        onTurnLeftHandlerPullDown,
-        onTurnRighthandlerPullDown
-    );
-
+    CtrlEnc encoder(ENC_CLK_PIN, ENC_DT_PIN, []{ tracker.recordTurnLeft(); }, []{ tracker.recordTurnRight(); });
     encoder.setPinMode(INPUT, PULL_DOWN);
 
-    // Reset the state
-    encoderHandlerResult = "";
-    mockClkInput = HIGH;
-    mockDtInput = HIGH;
+    _mock_digital_pins()[ENC_CLK_PIN] = HIGH;
+    _mock_digital_pins()[ENC_DT_PIN] = HIGH;
+    encoder.process();
 
-    encoder.process(); // Process internal state
+    _mock_digital_pins()[ENC_CLK_PIN] = LOW;
+    encoder.process();
+    _mock_digital_pins()[ENC_CLK_PIN] = LOW;
+    _mock_digital_pins()[ENC_DT_PIN] = LOW;
+    encoder.process();
 
-    // Simulate the sequence for a clockwise turn
-    mockClkInput = LOW;
-    mockDtInput = HIGH;
-    encoder.process(); // Process internal state
-    mockClkInput = LOW;
-    mockDtInput = LOW;
-    encoder.process(); // Process internal state
+    TEST_ASSERT_EQUAL(TestEvent::EncoderTurnedRight, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.turnRightCount);
+}
 
-    TEST_ASSERT_EQUAL_STRING("pull down encoder turn right", encoderHandlerResult.c_str()); // Verify the encoder has turned right
+void run_encoder_pull_down_tests()
+{
+    RUN_TEST(test_encoder_internal_pull_down_can_be_turned_left);
+    RUN_TEST(test_encoder_internal_pull_down_can_be_turned_right);
+    RUN_TEST(test_encoder_external_pull_down_can_be_turned_left);
+    RUN_TEST(test_encoder_external_pull_down_can_be_turned_right);
 }

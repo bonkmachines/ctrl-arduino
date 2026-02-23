@@ -13,7 +13,7 @@
 // #include "../examples/multiplexers/multiplexed_rotary_encoder/multiplexed_rotary_encoder.ino"
 // #include "../examples/multiplexers/multiplexers_daisy_chained/multiplexers_daisy_chained.ino"
 
-// #include "../examples/potentiometers/potentiometer_basic/potentiometer_basic.ino"
+#include "../examples/potentiometers/potentiometer_basic/potentiometer_basic.ino"
 // #include "../examples/potentiometers/potentiometer_alternative/potentiometer_alternative.ino"
 // #include "../examples/potentiometers/potentiometer_advanced/potentiometer_advanced.ino"
 
@@ -22,5 +22,19 @@
 // #include "../examples/rotary_encoders/rotary_encoder_advanced/rotary_encoder_advanced.ino"
 
 // #include "../examples/groups/button_group/button_group.ino"
-// #include "../examples/grousp/rotary_encoder_group/rotary_encoder_group.ino"
+// #include "../examples/groups/rotary_encoder_group/rotary_encoder_group.ino"
 // #include "../examples/groups/potentiometer_group/potentiometer_group.ino"
+// #include "../examples/groups/group_switching/group_switching.ino"
+
+// #include "../examples/dsp/time_sliced_processing/time_sliced_processing.ino"
+// #include "../examples/dsp/external_adc/external_adc.ino"
+
+
+// LED pin:         23/A9
+// BTN1 LED pin:    37
+// BTN1 pin:        16
+// BTN2 pin:        36
+// ENC BTN pin:     35
+// ENC DT pin:      34
+// ENC CLK pin:     33
+// POT pin:         25

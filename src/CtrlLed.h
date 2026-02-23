@@ -29,8 +29,9 @@
 #define CtrlLed_h
 
 #include <Arduino.h>
+#include "CtrlBase.h"
 
-class CtrlLed
+class CtrlLed : public CtrlBase
 {
     protected:
         uint8_t sig; // Signal pin connected to the LED
@@ -137,6 +138,8 @@ class CtrlLed
         [[nodiscard]] bool isPwmMode() const;
 
     protected:
+        bool initialized = false;
+        void initialize();
         static void processOutput(uint8_t sig, uint8_t brightness);
 };
 

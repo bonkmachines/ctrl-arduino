@@ -40,7 +40,7 @@ class CtrlBtn : public CtrlBase, public Muxable, public Groupable
         uint8_t sig; // Signal pin
         uint8_t pinModeType = INPUT_PULLUP;
         uint8_t resistorPull = PULL_UP;
-        bool currentState = HIGH;
+        volatile bool currentState = HIGH;
         bool lastState = HIGH;
         unsigned long debounceStart = 0;
         uint16_t bounceDuration; // In milliseconds
@@ -81,7 +81,7 @@ class CtrlBtn : public CtrlBase, public Muxable, public Groupable
         *
         * @param pinModeType Set to INPUT, INPUT_PULLUP or INPUT_PULLDOWN.
         * @param resistorPull (optional) If pinModeType is set to INPUT,
-        * there needs to be and external pull-up or pull-down resistor
+        * there needs to be an external pull-up or pull-down resistor
         * implemented. Here you specify if it's configured 'PULL_UP' or 'PULL_DOWN'
         * (default is 'PULL_UP').
         */

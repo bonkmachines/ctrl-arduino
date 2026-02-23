@@ -3,72 +3,56 @@
 #include "CtrlBtn.h"
 #include "test_globals.h"
 
-// Define an onPress handler
-void onPressHandlerPullUp() {
-    buttonHandlerResult = "pull up button pressed";
-}
-
-// Define an onRelease handler
-void onReleasehandlerPullUp() {
-    buttonHandlerResult = "pull up button released";
-}
-
-void test_button_internal_pull_up_can_be_pressed_and_released()
+static void test_button_internal_pull_up_can_be_pressed_and_released()
 {
-    CtrlBtn button(
-        1,
-        15,
-        onPressHandlerPullUp,
-        onReleasehandlerPullUp
-    );
-
+    CtrlBtn button(BTN_PIN, TEST_DEBOUNCE, []{ tracker.recordPress(); }, []{ tracker.recordRelease(); });
     button.setPinMode(INPUT_PULLUP);
 
-    buttonHandlerResult = ""; // Reset
-    mockButtonInput = HIGH; // Reset
-    button.process(); // Process internal state
+    button.process();
 
-    mockButtonInput = LOW; // Simulate button press
-    button.process(); // Process internal state
-    delay(15 + 1); // Wait more than the debounce duration
-    button.process(); // Second call to ensure debounce logic has completed
+    _mock_digital_pins()[BTN_PIN] = LOW;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
 
-    TEST_ASSERT_EQUAL_STRING("pull up button pressed", buttonHandlerResult.c_str()); // Verify the button's on press handler has been called
+    TEST_ASSERT_EQUAL(TestEvent::ButtonPressed, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.pressCount);
 
-    mockButtonInput = HIGH; // Simulate button release
-    button.process(); // Process internal state
-    delay(15 + 1); // Ensure debounce time has passed
-    button.process(); // Second call to complete debounce logic
+    _mock_digital_pins()[BTN_PIN] = HIGH;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
 
-    TEST_ASSERT_EQUAL_STRING("pull up button released", buttonHandlerResult.c_str()); // Verify the button's on release handler has been called
+    TEST_ASSERT_EQUAL(TestEvent::ButtonReleased, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.releaseCount);
 }
 
-void test_button_external_pull_up_can_be_pressed_and_released()
+static void test_button_external_pull_up_can_be_pressed_and_released()
 {
-    CtrlBtn button(
-        1,
-        15,
-        onPressHandlerPullUp,
-        onReleasehandlerPullUp
-    );
-
+    CtrlBtn button(BTN_PIN, TEST_DEBOUNCE, []{ tracker.recordPress(); }, []{ tracker.recordRelease(); });
     button.setPinMode(INPUT, PULL_UP);
 
-    buttonHandlerResult = ""; // Reset
-    mockButtonInput = HIGH; // Reset
-    button.process(); // Process internal state
+    button.process();
 
-    mockButtonInput = LOW; // Simulate button press
-    button.process(); // Process internal state
-    delay(15 + 1); // Wait more than the debounce duration
-    button.process(); // Second call to ensure debounce logic has completed
+    _mock_digital_pins()[BTN_PIN] = LOW;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
 
-    TEST_ASSERT_EQUAL_STRING("pull up button pressed", buttonHandlerResult.c_str()); // Verify the button's on press handler has been called
+    TEST_ASSERT_EQUAL(TestEvent::ButtonPressed, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.pressCount);
 
-    mockButtonInput = HIGH; // Simulate button release
-    button.process(); // Process internal state
-    delay(15 + 1); // Ensure debounce time has passed
-    button.process(); // Second call to complete debounce logic
+    _mock_digital_pins()[BTN_PIN] = HIGH;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
 
-    TEST_ASSERT_EQUAL_STRING("pull up button released", buttonHandlerResult.c_str()); // Verify the button's on release handler has been called
+    TEST_ASSERT_EQUAL(TestEvent::ButtonReleased, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.releaseCount);
+}
+
+void run_button_pull_up_tests()
+{
+    RUN_TEST(test_button_internal_pull_up_can_be_pressed_and_released);
+    RUN_TEST(test_button_external_pull_up_can_be_pressed_and_released);
 }

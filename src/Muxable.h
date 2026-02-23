@@ -32,6 +32,8 @@ class CtrlMux;
 
 class Muxable
 {
+    friend class CtrlMux;
+
     protected:
         CtrlMux* mux = nullptr;
         bool muxed = false;
@@ -41,7 +43,7 @@ class Muxable
             CtrlMux* mux = nullptr
         );
 
-        virtual ~Muxable() = default;
+        virtual ~Muxable();
 
         /**
         * @brief The process method should be called within the loop method.
@@ -52,14 +54,14 @@ class Muxable
         /**
         * @brief Find out if an object is currently added to a multiplexer.
         *
-        * @return True if objected is added, false otherwise.
+        * @return True if object is added, false otherwise.
         */
         [[nodiscard]] bool isMuxed() const;
 
         /**
         * @brief Set the multiplexer on an object.
         *
-        * @param mux reference to the multipelxer object.
+        * @param mux reference to the multiplexer object.
         */
         void setMultiplexer(CtrlMux* mux);
 };

@@ -1,22 +1,14 @@
 #include "test_globals.h"
-#include <core_pins.h>
 
-// Global button variable definitions
-uint8_t mockButtonInput = HIGH; // HIGH or LOW
-std::string buttonHandlerResult;
+TestTracker tracker;
 
-// Global encoder variable definitions
-uint8_t mockClkInput = LOW; // HIGH or LOW
-uint8_t mockDtInput = LOW; // HIGH or LOW
-std::string encoderHandlerResult;
-
-// Global potentiometer variable definitions
-uint16_t mockPotentiometerInput = 0; // 0 - 1023
-int potentiometerHandlerResult;
-std::string groupedPotentiometerHandlerResult;
-
-// Global multiplexer variable definitions
-uint8_t mockMuxBtnSigInput = HIGH;
-uint8_t mockMuxEncClkInput = LOW;
-uint8_t mockMuxEncDtInput = LOW;
-uint16_t mockMuxPotSigInput = 0;
+void resetAllMocks()
+{
+    tracker.reset();
+    _mock_millis_ref() = 0;
+    _mock_micros_ref() = 0;
+    _mock_reset_pins();
+    _mock_digital_pins()[BTN_PIN] = HIGH;
+    _mock_digital_pins()[ENC_CLK_PIN] = LOW;
+    _mock_digital_pins()[ENC_DT_PIN] = LOW;
+}
