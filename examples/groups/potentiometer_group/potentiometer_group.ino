@@ -27,6 +27,9 @@
   - getInteger("id")              Get the value of an integer.
   - getString("name")             Get the value of a string.
   - getBoolean("active")          Get the value of a boolean.
+
+  Note: setInteger/setString/setBoolean use fixed-size memory (max 8
+  properties per object, 'name' up to 15 chars, 'value' up to 20 chars).
 */
 
 #include <CtrlGroup.h>
