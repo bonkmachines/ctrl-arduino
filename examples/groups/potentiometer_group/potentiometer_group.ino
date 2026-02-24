@@ -26,6 +26,7 @@
 
   CtrlPot methods:
   - setGroup(&group)              Register the potentiometer to a group.
+  - isGrouped()                   Checks if the potentiometer is registered to a group.
   - setInteger("id", 0)           Define an integer. First parameter is the name of the variable, second parameter is the value.
   - setString("name", "Button")   Define a string. First parameter is the name of the variable, second parameter is the value.
   - setBoolean("active", true)    Define a boolean. First parameter is the name of the variable, second parameter is the value.

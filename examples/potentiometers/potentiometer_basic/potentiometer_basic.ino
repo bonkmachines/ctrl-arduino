@@ -11,7 +11,7 @@
   - Sensitivity margin     (required) Decrease this for instable (jittery) pots, min: 0.01, max: 100.
   - onValueChange handler  (optional) This will be called as soon as the reading of the potentiometer changes.
 
-Available methods:
+  Available methods:
   - process()                    Is used to poll the potentiometer and handle all it's functionality (used in the loop method).
   - getValue()                   Retrieves the current value of the potentiometer.
   - setOnValueChange()           Sets the onValueChange handler. Will be called as soon as the reading of the potentiometer changes.
