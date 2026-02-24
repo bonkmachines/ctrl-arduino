@@ -25,6 +25,10 @@
   - isOn()                Checks if the LED is turned on.
   - isOff()               Checks if the LED is turned off.
   - isPwmMode()           Checks if the LED is in PWM mode.
+  - enable()              Enables the LED.
+  - disable()             Disables the LED.
+  - isEnabled()           Checks if the LED is enabled.
+  - isDisabled()          Checks if the LED is disabled.
 */
 
 #include <CtrlLed.h>

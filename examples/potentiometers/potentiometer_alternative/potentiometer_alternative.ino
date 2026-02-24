@@ -24,12 +24,18 @@
   - process()                    Is used to poll the potentiometer and handle all it's functionality (used in the loop method).
   - getValue()                   Retrieves the current value of the potentiometer.
   - setOnValueChange()           Sets the onValueChange handler. Will be called as soon as the reading of the potentiometer changes.
-  - setMultiplexer(&mux)         Sets the multiplexer that the potentiometer subscribes to.
+  - setAnalogMax(1023)           Sets the maximum value returned by analogRead() (default 1023, use 4095 for 12-bit ADCs).
+  - getAnalogMax()               Returns the maximum ADC value.
+  - setRawValue(raw)             Provide an externally-read raw ADC value (smoothing and change detection still apply).
+  - storeRaw(raw)                Store a raw ADC value from an ISR or DMA callback.
   - disable()                    Disables the potentiometer.
   - enable()                     Enables the potentiometer.
   - isEnabled()                  Checks if the potentiometer is enabled.
   - isDisabled()                 Checks if the potentiometer is disabled.
   - setGroup(&group)             Register the potentiometer to a group.
+  - isGrouped()                  Checks if the potentiometer is registered to a group.
+  - setMultiplexer(&mux)         Sets the multiplexer that the potentiometer subscribes to.
+  - isMuxed()                    Checks if the potentiometer is connected to a multiplexer.
   - setInteger("id", 0)          Define an integer. First parameter is the name of the variable, second parameter is the value.
   - setString("name", "Button")  Define a string. First parameter is the name of the variable, second parameter is the value.
   - setBoolean("active", true)   Define a boolean. First parameter is the name of the variable, second parameter is the value.

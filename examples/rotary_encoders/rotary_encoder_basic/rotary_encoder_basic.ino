@@ -8,8 +8,8 @@
   Create a rotary encoder with reference to:
   - CLK signal pin    (required) The clk input pin your rotary encoder is hooked up to.
   - DT signal pin     (required) The dt input pin your rotary encoder is hooked up to.
-  - onPress handler   (optional)
-  - onRelease handler (optional)
+  - onTurnLeft handler  (optional)
+  - onTurnRight handler (optional)
 
   Available methods:
   - setPinMode(INPUT, PULL_UP)   The first parameter can be set to 'INPUT', 'INPUT_PULLUP' or 'INPUT_PULLDOWN'.
@@ -20,12 +20,17 @@
   - process()                    Is used to poll the rotary encoder and handle all it's functionality (used in the loop method).
   - setOnTurnLeft()              Sets the onTurnLeft handler. Is called when you turn left.
   - setOnTurnRight()             Sets the onTurnRight handler. Is called when you turn right.
-  - setMultiplexer(&mux)         Sets the multiplexer that the rotary encoder subscribes to.
+  - isTurningLeft()              Checks if the encoder is currently turning left.
+  - isTurningRight()             Checks if the encoder is currently turning right.
+  - storePinStates(clk, dt)     Store pin states from an ISR or interrupt handler.
   - disable()                    Disables the rotary encoder.
   - enable()                     Enables the rotary encoder.
   - isEnabled()                  Checks if the rotary encoder is enabled.
   - isDisabled()                 Checks if the rotary encoder is disabled.
   - setGroup(&group)             Register the encoder to a group.
+  - isGrouped()                  Checks if the encoder is registered to a group.
+  - setMultiplexer(&mux)         Sets the multiplexer that the rotary encoder subscribes to.
+  - isMuxed()                    Checks if the encoder is connected to a multiplexer.
   - setInteger("id", 0)          Define an integer. First parameter is the name of the variable, second parameter is the value.
   - setString("name", "Button")  Define a string. First parameter is the name of the variable, second parameter is the value.
   - setBoolean("active", true)   Define a boolean. First parameter is the name of the variable, second parameter is the value.

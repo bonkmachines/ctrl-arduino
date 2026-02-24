@@ -26,14 +26,17 @@
   - setOnDelayedRelease(handler)    Sets the onDelayedRelease handler. Is called when the button is
                                     released after a certain amount of time (The default is 500ms).
   - setDelayedReleaseDuration(500)  Sets the amount of time for a delayed release (in milliseconds).
-  - setMultiplexer(&mux)            Sets the multiplexer that the button subscribes to.
   - disable()                       Disables the button.
   - enable()                        Enables the button.
   - isEnabled()                     Checks if the button is enabled.
   - isDisabled()                    Checks if the button is disabled.
   - isPressed()                     Checks if the button is currently being pressed.
   - isReleased()                    Checks if the button is currently not being pressed.
+  - storePinState(state)            Store a pin state from an ISR or interrupt handler.
   - setGroup(&group)                Register the button to a group.
+  - isGrouped()                     Checks if the button is registered to a group.
+  - setMultiplexer(&mux)            Sets the multiplexer that the button subscribes to.
+  - isMuxed()                       Checks if the button is connected to a multiplexer.
   - setInteger("id", 0)             Define an integer. First parameter is the name of the variable, second parameter is the value.
   - setString("name", "Button")     Define a string. First parameter is the name of the variable, second parameter is the value.
   - setBoolean("active", true)      Define a boolean. First parameter is the name of the variable, second parameter is the value.
@@ -48,7 +51,7 @@
 class CustomButton : public CtrlBtn
 {
   public:
-    CustomButton(uint8_t sig, uint8_t bounceDuration) : CtrlBtn(sig, bounceDuration) { }
+    CustomButton(uint8_t sig, uint16_t bounceDuration) : CtrlBtn(sig, bounceDuration) { }
 
   protected:
     void onPress() override

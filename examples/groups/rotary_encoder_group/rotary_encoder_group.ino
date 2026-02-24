@@ -16,8 +16,13 @@
   - setOnTurnLeft(handler)        Set the on turn left handler (for rotary encoders).
   - setOnTurnRight(handler)       Set the on turn right handler (for rotary encoders).
   - setOnValueChange(handler)     Set the on value change handler (for potentiometers).
-  - process()                     Is used to poll all objects registered to the group.
-                                  (used in the loop method).
+  - process()                     Is used to poll all objects registered to the group (used in the loop method).
+  - process(count)                Process 'count' objects per call (round-robin).
+  - reserve(n)                    Pre-allocate capacity for n objects.
+  - enable()                      Enable the group.
+  - disable()                     Disable the group.
+  - isEnabled()                   Check if the group is enabled.
+  - isDisabled()                  Check if the group is disabled.
 
   CtrlEnc methods:
   - setGroup(&group)              Register the rotary encoder to a group.

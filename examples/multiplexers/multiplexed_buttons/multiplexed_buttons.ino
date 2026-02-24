@@ -17,8 +17,9 @@
   Available methods:
   - setSwitchInterval(5)  Sets the time we allow the multiplexer to switch (in microseconds).
                           The default value is 1 microsecond.
-  - process()             Is used to poll all objects registered to the multiplexer.
-                          (used in the loop method).
+  - process()             Is used to poll all objects registered to the multiplexer (used in the loop method).
+  - process(count)        Process 'count' objects per call (round-robin).
+  - reserve(n)            Pre-allocate capacity for n objects.
 
   NOTE: Make sure to check the datasheet of your multiplexer to determine if the default
   1 microsecond switching interval is sufficient. For example, a Sparkfun CD74HC4067
