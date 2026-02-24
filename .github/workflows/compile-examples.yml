@@ -20,23 +20,38 @@ jobs:
   compile-sketch:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        include:
+          - fqbn: "arduino:avr:uno"
+            sketch-paths: |
+              - ./examples/buttons
+              - ./examples/groups
+              - ./examples/leds
+              - ./examples/multiplexers/multiplexed_buttons
+              - ./examples/multiplexers/multiplexed_potentiometers
+              - ./examples/multiplexers/multiplexed_rotary_encoder
+              - ./examples/potentiometers
+              - ./examples/real-time/external_adc
+              - ./examples/rotary_encoders
+          - fqbn: "arduino:avr:mega:cpu=atmega2560"
+            sketch-paths: |
+              - ./examples/multiplexers/multiplexers_daisy_chained
+              - ./examples/real-time/time_sliced_processing
+
     steps:
-      # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up Python (if needed for other purposes, but not for Poetry)
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11.2'
 
-      # Compile sketch
       - name: Compile sketch
         uses: arduino/compile-sketches@v1
         with:
-          fqbn: "arduino:avr:uno"
-          sketch-paths: |
-            - ./examples
+          fqbn: ${{ matrix.fqbn }}
+          sketch-paths: ${{ matrix.sketch-paths }}
           libraries: |
             - source-path: ./src
