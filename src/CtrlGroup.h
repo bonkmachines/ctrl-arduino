@@ -79,7 +79,7 @@ class CtrlGroup final
         *
         * @param object Object to be added to the group.
         */
-        void addObject(Groupable* object);
+        bool addObject(Groupable* object);
 
         void removeObject(Groupable* object);
 

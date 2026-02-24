@@ -140,7 +140,7 @@ class CtrlLed : public CtrlBase
     protected:
         bool initialized = false;
         void initialize();
-        static void processOutput(uint8_t sig, uint8_t brightness);
+        void processOutput() const;
 };
 
 #endif

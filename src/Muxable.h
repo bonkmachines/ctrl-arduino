@@ -63,7 +63,7 @@ class Muxable
         *
         * @param mux reference to the multiplexer object.
         */
-        void setMultiplexer(CtrlMux* mux);
+        bool setMultiplexer(CtrlMux* mux);
 };
 
 #endif //MUXABLE_H

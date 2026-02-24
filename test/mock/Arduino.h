@@ -86,6 +86,9 @@ inline void _mock_reset_pins() {
     }
 }
 
+inline void noInterrupts() {}
+inline void interrupts() {}
+
 inline void pinMode(uint8_t, uint8_t) {}
 inline void digitalWrite(uint8_t pin, uint8_t val) {
     if (pin < MOCK_PIN_COUNT) _mock_digital_pins()[pin] = val;
@@ -164,7 +167,15 @@ public:
         return strcmp(buffer, other.buffer) == 0;
     }
 
+    bool operator==(const char* other) const {
+        return strcmp(buffer, other ? other : "") == 0;
+    }
+
     bool operator!=(const String& other) const {
+        return !(*this == other);
+    }
+
+    bool operator!=(const char* other) const {
         return !(*this == other);
     }
 

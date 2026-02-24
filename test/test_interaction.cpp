@@ -65,6 +65,12 @@ static void test_multiple_pots_on_mux_converge_independently()
         100
     );
 
+    converge(
+        [&]{ mux.process(); },
+        [&]{ return (int)potB.getValue(); },
+        200
+    );
+
     TEST_ASSERT_EQUAL_INT(100, potA.getValue());
     TEST_ASSERT_EQUAL_INT(200, potB.getValue());
 }

@@ -48,6 +48,10 @@ class CtrlMux
         size_t capacity = 0;
         size_t nextIndex = 0;
 
+        bool initialized = false;
+
+        void initialize();
+
         void setPinMode(uint8_t pinModeType);
 
         void setChannel(uint8_t channel) const;
@@ -86,7 +90,7 @@ class CtrlMux
         *
         * @param object Object to be added to the mux.
         */
-        void addObject(Muxable* object);
+        bool addObject(Muxable* object);
 
         void removeObject(Muxable* object);
 
@@ -105,8 +109,15 @@ class CtrlMux
         *
         * @param count (optional) The number of objects to process per call.
         * When 0 (default), all objects are processed. When > 0, objects are
-        * processed in round-robin order for time-sliced control processing
-        * in audio applications.
+        * processed in round-robin order for time-sliced, real-time-safe control
+        * processing. Use this to bound the worst-case execution time per loop
+        * iteration.
+        *
+        * Note: each channel read incurs a blocking delay of switchInterval
+        * microseconds (default: 1µs) for the multiplexer to settle. When
+        * processing N objects per call, the minimum blocking time is N * switchInterval
+        * microseconds — independent of analogRead() or digitalRead() costs. Factor
+        * this into your loop budget when sizing the count parameter.
         */
         void process(uint8_t count = 0);
 
@@ -130,6 +141,8 @@ class CtrlMux
         [[nodiscard]] uint16_t readPotSig(uint8_t channel, uint8_t pinModeType);
 
     private:
+        bool readDigitalChannel(uint8_t channel, uint8_t pinModeType);
+        uint16_t readAnalogChannel(uint8_t channel, uint8_t pinModeType);
         void resize();
 };
 

@@ -1,11 +1,18 @@
 /*
-  Time-sliced processing example (DSP / audio safe)
+  Time-sliced processing example (real-time safe)
 
   Description:
-  In DSP and audio applications, processing all controls in a single loop
-  iteration can cause timing jitter in the audio callback. This example
-  demonstrates how to use process(count) to spread the work across multiple
-  loop iterations using round-robin scheduling.
+  A real-time application is one where correctness depends not just on
+  what the system computes, but on when it delivers the result. The loop()
+  must complete each iteration within a bounded, predictable time window —
+  whether that window is driven by an audio callback, a USB polling interval,
+  a PID control rate, or any other time-critical constraint.
+
+  Processing all controls in a single loop iteration can cause that window
+  to be exceeded unpredictably, depending on how many controls are attached.
+  This example demonstrates how to use process(count) to spread the work
+  across multiple loop iterations using round-robin scheduling, keeping each
+  iteration's execution time short and constant.
 
   Key concepts:
   - reserve(n)       Pre-allocate memory for n objects to avoid heap reallocation

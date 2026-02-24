@@ -32,13 +32,13 @@ Available methods:
 #include <CtrlPot.h>
 
 // Define an onValueChange handler
-void onValueChange(const int value) {
+void onValueChange(int value) {
   Serial.print("Basic pot value: ");
   Serial.println(value);
 }
 
 // Create a potentiometer with the pin number, max. output value, sensitivity margin (can be 0.01 to 100) & onValueChange handler (optional).
-CtrlPot potentiometer(25, 100, 0.05, onValueChange);
+CtrlPot potentiometer(A0, 100, 0.05, onValueChange);
 
 void setup() {
   Serial.begin(9600);

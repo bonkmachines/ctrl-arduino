@@ -43,9 +43,13 @@ class CtrlEnc : public CtrlBase, public Muxable, public Groupable
         uint8_t resistorPull = PULL_UP;
         uint8_t values[2] = { 0, 0 };
         bool initialized = false;
+        bool previouslyDisabled = false;
+        volatile bool isrClkState = HIGH;
+        volatile bool isrDtState = HIGH;
+        volatile bool isrStatePending = false;
         using CallbackFunction = void (*)();
-        CallbackFunction onTurnLeftCallback;
-        CallbackFunction onTurnRightCallback;
+        CallbackFunction onTurnLeftCallback = nullptr;
+        CallbackFunction onTurnRightCallback = nullptr;
 
     public:
         /**
@@ -60,6 +64,13 @@ class CtrlEnc : public CtrlBase, public Muxable, public Groupable
         * @param onTurnRightCallback (optional) The on turn right callback handler. Default is nullptr.
         * @param mux (CtrlMux) (optional) The multiplexer the encoder is connected to. Default is nullptr.
         * @return A new instance of the CtrlEnc class.
+        *
+        * @note When connected to a multiplexer, CLK and DT are read as two separate channel
+        * switches, each requiring a settle delay. They are not read simultaneously. At high
+        * rotation speeds this means the two readings can disagree (CLK seen at time T,
+        * DT seen at time T+delay), which can cause missed or incorrect step detection.
+        * For reliable high-speed encoding, connect the encoder directly to GPIO pins and
+        * use hardware interrupts (attachInterrupt) on the CLK pin instead.
         */
         CtrlEnc(
             uint8_t clk,
@@ -84,6 +95,19 @@ class CtrlEnc : public CtrlBase, public Muxable, public Groupable
         * @brief The process method should be called within the loop method. It handles all functionality.
         */
         void process() override;
+
+        /**
+        * @brief Store pin states from an ISR or interrupt handler.
+        *
+        * Call this from a hardware interrupt (e.g. attachInterrupt on the CLK
+        * pin) to feed the encoder a pair of pin readings without blocking the
+        * interrupt context. The next call to process() will consume the stored
+        * states and apply state-table decoding as normal.
+        *
+        * @param clkState The CLK pin state (HIGH or LOW).
+        * @param dtState  The DT pin state (HIGH or LOW).
+        */
+        void storePinStates(bool clkState, bool dtState);
 
         /**
         * @brief Find out if an encoder is currently turning left.
@@ -122,6 +146,8 @@ class CtrlEnc : public CtrlBase, public Muxable, public Groupable
         [[nodiscard]] bool isInitialized() const;
         virtual void processInput();
         virtual int8_t readEncoder();
+        int8_t readEncoderFromIsr(bool clkState, bool dtState);
+        int8_t decodeStep();
         virtual void onTurnLeft();
         virtual void onTurnRight();
 };

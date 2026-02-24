@@ -58,9 +58,13 @@ void CtrlLed::initialize()
     this->initialized = true;
 }
 
-void CtrlLed::processOutput(const uint8_t sig, const uint8_t brightness)
+void CtrlLed::processOutput() const
 {
-    analogWrite(sig, brightness);
+    if (this->pwmMode) {
+        analogWrite(this->sig, this->brightness);
+    } else {
+        digitalWrite(this->sig, this->on ? HIGH : LOW);
+    }
 }
 
 void CtrlLed::toggle()
@@ -70,12 +74,12 @@ void CtrlLed::toggle()
     this->on = !this->on;
     if (this->pwmMode) {
         if (this->on) {
-            processOutput(sig, brightness);
+            processOutput();
         } else {
-            processOutput(sig, 0);
+            analogWrite(this->sig, 0);
         }
     } else {
-        digitalWrite(sig, this->on ? HIGH : LOW);
+        digitalWrite(this->sig, this->on ? HIGH : LOW);
     }
 }
 
@@ -85,7 +89,7 @@ void CtrlLed::turnOn()
     this->initialize();
     this->on = true;
     if (this->pwmMode) {
-        processOutput(this->sig, this->brightness);
+        processOutput();
     } else {
         digitalWrite(this->sig, HIGH);
     }
@@ -97,7 +101,7 @@ void CtrlLed::turnOff()
     this->initialize();
     this->on = false;
     if (this->pwmMode) {
-        processOutput(this->sig, 0);
+        analogWrite(this->sig, 0);
     } else {
         digitalWrite(this->sig, LOW);
     }
@@ -123,7 +127,7 @@ void CtrlLed::setBrightness(int percentage)
     if (percentage < 0) percentage = 0;
     this->brightness = map(percentage, 0, 100, 0, this->maxBrightness);
     if (this->on) {
-        processOutput(this->sig, this->brightness);
+        processOutput();
     }
 }
 

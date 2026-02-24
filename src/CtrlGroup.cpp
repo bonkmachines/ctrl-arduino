@@ -25,6 +25,7 @@
  * THE SOFTWARE.
  */
 
+#include <new>
 #include "CtrlGroup.h"
 
 CtrlGroup::CtrlGroup() = default;
@@ -45,21 +46,30 @@ bool CtrlGroup::isEnabled() const { return this->enabled; }
 
 bool CtrlGroup::isDisabled() const { return !this->enabled; }
 
-void CtrlGroup::addObject(Groupable* object) {
+bool CtrlGroup::addObject(Groupable* object) {
+    for (size_t i = 0; i < this->objectCount; ++i) {
+        if (this->objects[i] == object) return true;
+    }
     if (this->objectCount == this->capacity) {
         resize();
+        if (this->objectCount == this->capacity) return false;
     }
     this->objects[this->objectCount++] = object;
+    object->group = this;
+    object->grouped = true;
+    return true;
 }
 
 void CtrlGroup::removeObject(Groupable* object) {
     for (size_t i = 0; i < this->objectCount; ++i) {
         if (this->objects[i] == object) {
+            object->group = nullptr;
+            object->grouped = false;
             for (size_t j = i; j < this->objectCount - 1; ++j) {
                 this->objects[j] = this->objects[j + 1];
             }
             --this->objectCount;
-            if (this->nextIndex >= this->objectCount && this->objectCount > 0) {
+            if (this->objectCount == 0 || this->nextIndex >= this->objectCount) {
                 this->nextIndex = 0;
             }
             return;
@@ -69,7 +79,8 @@ void CtrlGroup::removeObject(Groupable* object) {
 
 void CtrlGroup::reserve(const size_t capacity) {
     if (capacity <= this->capacity) return;
-    auto** newObjects = new Groupable*[capacity];
+    auto** newObjects = new (std::nothrow) Groupable*[capacity];
+    if (newObjects == nullptr) return;
     for (size_t i = 0; i < this->objectCount; ++i) {
         newObjects[i] = this->objects[i];
     }
@@ -89,6 +100,7 @@ void CtrlGroup::process(const uint8_t count)
         const uint8_t n = count > this->objectCount ? static_cast<uint8_t>(this->objectCount) : count;
         for (uint8_t i = 0; i < n; ++i) {
             this->objects[this->nextIndex]->process();
+            if (this->objectCount == 0) return;
             this->nextIndex = (this->nextIndex + 1) % this->objectCount;
         }
     }
@@ -126,7 +138,9 @@ void CtrlGroup::setOnValueChange(void (*callback)(Groupable&, int value))
 
 void CtrlGroup::resize() {
     const size_t newCapacity = this->capacity == 0 ? 4 : this->capacity * 2;
-    auto** newObjects = new Groupable*[newCapacity];
+    if (newCapacity <= this->capacity) return;
+    auto** newObjects = new (std::nothrow) Groupable*[newCapacity];
+    if (newObjects == nullptr) return;
     for (size_t i = 0; i < this->objectCount; ++i) {
         newObjects[i] = this->objects[i];
     }

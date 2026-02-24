@@ -30,6 +30,46 @@
 
 #include <Arduino.h>
 
+#if defined(ARDUINO_ARCH_AVR)
+    using CtrlInterruptState = uint8_t;
+    inline CtrlInterruptState ctrlSaveInterrupts() {
+        uint8_t sreg = SREG;
+        cli();
+        return sreg;
+    }
+    inline void ctrlRestoreInterrupts(CtrlInterruptState state) {
+        SREG = state;
+    }
+#elif defined(TEENSYDUINO) || defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_NRF52) || defined(ARDUINO_ARCH_STM32) || defined(ARDUINO_ARCH_MBED) || defined(ARDUINO_ARCH_RP2040)
+    using CtrlInterruptState = uint32_t;
+    inline CtrlInterruptState ctrlSaveInterrupts() {
+        uint32_t primask;
+        __asm__ volatile ("mrs %0, primask" : "=r" (primask));
+        __asm__ volatile ("cpsid i" ::: "memory");
+        return primask;
+    }
+    inline void ctrlRestoreInterrupts(CtrlInterruptState state) {
+        __asm__ volatile ("msr primask, %0" :: "r" (state) : "memory");
+    }
+#elif defined(ARDUINO_ARCH_ESP32)
+    using CtrlInterruptState = unsigned int;
+    inline CtrlInterruptState ctrlSaveInterrupts() {
+        return portSET_INTERRUPT_MASK_FROM_ISR();
+    }
+    inline void ctrlRestoreInterrupts(CtrlInterruptState state) {
+        portCLEAR_INTERRUPT_MASK_FROM_ISR(state);
+    }
+#else
+    using CtrlInterruptState = uint8_t;
+    inline CtrlInterruptState ctrlSaveInterrupts() {
+        noInterrupts();
+        return 0;
+    }
+    inline void ctrlRestoreInterrupts(CtrlInterruptState) {
+        interrupts();
+    }
+#endif
+
 class CtrlBase
 {
     protected:
@@ -47,15 +87,17 @@ class CtrlBase
         [[nodiscard]] bool isDisabled() const;
 };
 
-[[deprecated("Use delayMicroseconds() instead")]]
-void setDelayMicroseconds(uint64_t duration);
-
-[[deprecated("Use delay() instead")]]
-void setDelayMilliseconds(uint64_t duration);
-
 extern const uint8_t DISCONNECTED;
-extern const uint8_t PULL_UP;
-extern const uint8_t PULL_DOWN;
+
+#ifdef PULL_UP
+    #undef PULL_UP
+#endif
+static constexpr uint8_t PULL_UP = 1;
+
+#ifdef PULL_DOWN
+    #undef PULL_DOWN
+#endif
+static constexpr uint8_t PULL_DOWN = 0;
 
 #ifndef INPUT_PULLUP
     #define INPUT_PULLUP 2 // Define a placeholder value for INPUT_PULLUP

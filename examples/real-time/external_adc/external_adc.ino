@@ -2,9 +2,17 @@
   External ADC example (DMA / async ADC)
 
   Description:
-  In audio and DSP applications, calling analogRead() blocks the CPU for
-  10-100 microseconds per read. With 8 knobs that's up to 800us of dead
-  time per loop — enough to cause audio glitches.
+  A real-time application is one where correctness depends not just on
+  what the system computes, but on when it delivers the result. Missing a
+  deadline — even by a few microseconds — can mean a dropped MIDI note,
+  a motor control glitch, a skipped sensor sample, or a timing fault in
+  a safety-critical system. The loop() must complete each iteration within
+  a bounded, predictable time window.
+
+  Calling analogRead() blocks the CPU for 10-100 microseconds per read.
+  With 8 knobs that's up to 800us of dead time per loop — enough to blow
+  past a real-time deadline and cause exactly the kind of jitter described
+  above.
 
   The solution is to let a DMA controller or timer ISR fill a buffer with
   ADC readings in the background, call storeRaw() on each CtrlPot from the
@@ -23,7 +31,7 @@
                     safe to call from an interrupt context.
   - process()       Called from loop() as normal. If a stored ISR value is
                     pending, it is consumed and processed (smoothing, mapping,
-                    callback). Otherwise falls back to analogRead() as usual.
+                    callback). Otherwise, falls back to analogRead() as usual.
 
   This example demonstrates a typical pattern: a timer ISR reads the ADC
   and calls storeRaw() on each pot. The main loop calls process() as usual.
@@ -51,10 +59,10 @@ void onDriveChange(int value) {
   Serial.println(value);
 }
 
-CtrlPot volumeKnob(A0, 127, 0.5, onVolumeChange);
-CtrlPot filterKnob(A1, 100, 0.5, onFilterChange);
-CtrlPot resonanceKnob(A2, 100, 0.5, onResonanceChange);
-CtrlPot driveKnob(A3, 255, 0.5, onDriveChange);
+CtrlPot volumeKnob(A0, 127, 0.05, onVolumeChange);
+CtrlPot filterKnob(A1, 100, 0.05, onFilterChange);
+CtrlPot resonanceKnob(A2, 100, 0.05, onResonanceChange);
+CtrlPot driveKnob(A3, 255, 0.05, onDriveChange);
 
 // --- DMA / ISR side (runs in background) ---
 // On Teensy/STM32/ESP32 you would configure a hardware timer

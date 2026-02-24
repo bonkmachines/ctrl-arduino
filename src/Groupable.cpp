@@ -33,12 +33,6 @@ Groupable::~Groupable()
     if (this->group != nullptr) {
         this->group->removeObject(this);
     }
-    const Node* current = properties;
-    while (current != nullptr) {
-        const Node* toDelete = current;
-        current = current->next;
-        delete toDelete;
-    }
 }
 
 bool Groupable::isGrouped() const
@@ -46,87 +40,111 @@ bool Groupable::isGrouped() const
     return this->grouped;
 }
 
-void Groupable::setGroup(CtrlGroup* group)
+bool Groupable::setGroup(CtrlGroup* group)
 {
     if (this->group != nullptr) {
         this->group->removeObject(this);
     }
     this->group = group;
     this->grouped = group != nullptr;
-    if (this->grouped) this->group->addObject(this);
-}
-
-void Groupable::setBoolean(const String& key, const bool value)
-{
-    Node* prop = findProperty(key);
-    if (prop == nullptr) {
-        prop = new Node{key, Property{0, value, "", Property::BOOL}, properties};
-        properties = prop;
-    } else {
-        prop->value.boolValue = value;
-        prop->value.type = Property::BOOL;
+    if (this->grouped) {
+        if (!this->group->addObject(this)) {
+            this->group = nullptr;
+            this->grouped = false;
+            return false;
+        }
     }
+    return true;
 }
 
-void Groupable::setInteger(const String& key, const int value)
+void Groupable::setBoolean(const char* key, const bool value)
 {
-    Node* prop = findProperty(key);
+    if (key == nullptr) return;
+    Property* prop = findProperty(key);
     if (prop == nullptr) {
-        prop = new Node{key, Property{value, false, "", Property::INT}, properties};
-        properties = prop;
-    } else {
-        prop->value.intValue = value;
-        prop->value.type = Property::INT;
+        if (this->propertyCount >= MAX_PROPERTIES) return;
+        prop = &this->properties[this->propertyCount++];
+        strncpy(prop->key, key, MAX_KEY_LENGTH);
+        prop->key[MAX_KEY_LENGTH] = '\0';
     }
+    prop->boolValue = value;
+    prop->type = Property::BOOL;
 }
 
-void Groupable::setString(const String& key, const String& value)
+void Groupable::setInteger(const char* key, const int value)
 {
-    Node* prop = findProperty(key);
+    if (key == nullptr) return;
+    Property* prop = findProperty(key);
     if (prop == nullptr) {
-        prop = new Node{key, Property{0, false, value, Property::STRING}, properties};
-        properties = prop;
-    } else {
-        prop->value.stringValue = value;
-        prop->value.type = Property::STRING;
+        if (this->propertyCount >= MAX_PROPERTIES) return;
+        prop = &this->properties[this->propertyCount++];
+        strncpy(prop->key, key, MAX_KEY_LENGTH);
+        prop->key[MAX_KEY_LENGTH] = '\0';
     }
+    prop->intValue = value;
+    prop->type = Property::INT;
 }
 
-bool Groupable::getBoolean(const String& key) const
+void Groupable::setString(const char* key, const char* value)
 {
-    Node* prop = findProperty(key);
-    if (prop != nullptr && prop->value.type == Property::BOOL) {
-        return prop->value.boolValue;
+    if (key == nullptr || value == nullptr) return;
+    Property* prop = findProperty(key);
+    if (prop == nullptr) {
+        if (this->propertyCount >= MAX_PROPERTIES) return;
+        prop = &this->properties[this->propertyCount++];
+        strncpy(prop->key, key, MAX_KEY_LENGTH);
+        prop->key[MAX_KEY_LENGTH] = '\0';
+    }
+    strncpy(prop->stringValue, value, MAX_STRING_LENGTH);
+    prop->stringValue[MAX_STRING_LENGTH] = '\0';
+    prop->type = Property::STRING;
+}
+
+bool Groupable::getBoolean(const char* key) const
+{
+    const Property* prop = findProperty(key);
+    if (prop != nullptr && prop->type == Property::BOOL) {
+        return prop->boolValue;
     }
     return false;
 }
 
-int Groupable::getInteger(const String& key) const
+int Groupable::getInteger(const char* key) const
 {
-    Node* prop = findProperty(key);
-    if (prop != nullptr && prop->value.type == Property::INT) {
-        return prop->value.intValue;
+    const Property* prop = findProperty(key);
+    if (prop != nullptr && prop->type == Property::INT) {
+        return prop->intValue;
     }
     return 0;
 }
 
-String Groupable::getString(const String& key) const
+const char* Groupable::getString(const char* key) const
 {
-    Node* prop = findProperty(key);
-    if (prop != nullptr && prop->value.type == Property::STRING) {
-        return prop->value.stringValue;
+    const Property* prop = findProperty(key);
+    if (prop != nullptr && prop->type == Property::STRING) {
+        return prop->stringValue;
     }
     return "";
 }
 
-Groupable::Node* Groupable::findProperty(const String& key) const
+Groupable::Property* Groupable::findProperty(const char* key)
 {
-    Node* current = properties;
-    while (current != nullptr) {
-        if (current->key == key) {
-            return current;
+    if (key == nullptr) return nullptr;
+    for (uint8_t i = 0; i < this->propertyCount; ++i) {
+        if (strcmp(this->properties[i].key, key) == 0) {
+            return &this->properties[i];
         }
-        current = current->next;
+    }
+    return nullptr;
+}
+
+const Groupable::Property* Groupable::findProperty(const char* key) const
+{
+    if (key == nullptr) return nullptr;
+    for (uint8_t i = 0; i < this->propertyCount; ++i) {
+        if (strcmp(this->properties[i].key, key) == 0) {
+            return &this->properties[i];
+        }
     }
     return nullptr;
 }

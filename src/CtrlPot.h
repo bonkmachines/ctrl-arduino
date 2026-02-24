@@ -40,8 +40,8 @@ class CtrlPot : public CtrlBase, public Muxable, public Groupable
         uint8_t sig; // Analog pin connected to the potentiometer.
         uint8_t pinModeType = INPUT;
         uint16_t lastValue = 0; // Last read value from the potentiometer.
-        volatile uint16_t lastMappedValue = 0; // Last mapped value based on a mapping to maxOutputValue.
-        int32_t smoothedValue_q16 = 0; // Smoothed value in Q16 fixed-point.
+        uint16_t lastMappedValue = 0; // Last mapped value based on a mapping to maxOutputValue.
+        uint32_t smoothedValue_q16 = 0; // Smoothed value in Q16 fixed-point.
         uint32_t alpha_q16 = 33; // Smoothing factor in Q16 fixed-point (0.0005 * 65536).
         float sensitivity = 0.05; // Sensitivity factor (0.01 - 100).
         int maxOutputValue; // The maximum output value at full turn.
@@ -50,7 +50,7 @@ class CtrlPot : public CtrlBase, public Muxable, public Groupable
         volatile uint16_t isrRawValue = 0;
         volatile bool isrValuePending = false;
         using CallbackFunction = void (*)(int);
-        CallbackFunction onValueChangeCallback;
+        CallbackFunction onValueChangeCallback = nullptr;
 
     public:
         /**
@@ -108,6 +108,23 @@ class CtrlPot : public CtrlBase, public Muxable, public Groupable
         * @return The value as a `uint16_t`.
         */
         [[nodiscard]] uint16_t getValue() const;
+
+        /**
+        * @brief Set the maximum value returned by analogRead().
+        *
+        * Defaults to 1023 (10-bit ADC). Set to 4095 for boards with
+        * 12-bit ADCs (ESP32, Teensy, RP2040, STM32, etc.).
+        *
+        * @param analogMax The maximum raw ADC value.
+        */
+        void setAnalogMax(uint16_t analogMax);
+
+        /**
+        * @brief Get the maximum value returned by analogRead().
+        *
+        * @return The maximum raw ADC value as a `uint16_t`.
+        */
+        [[nodiscard]] uint16_t getAnalogMax() const;
 
         /**
         * @brief Set the on value change handler.

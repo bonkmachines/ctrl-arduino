@@ -40,17 +40,20 @@ class CtrlBtn : public CtrlBase, public Muxable, public Groupable
         uint8_t sig; // Signal pin
         uint8_t pinModeType = INPUT_PULLUP;
         uint8_t resistorPull = PULL_UP;
-        volatile bool currentState = HIGH;
+        bool currentState = HIGH;
         bool lastState = HIGH;
         unsigned long debounceStart = 0;
         uint16_t bounceDuration; // In milliseconds
         bool initialized = false;
         unsigned long pressStartTime = 0;
         unsigned long delayedReleaseDuration = 500; // default 500 ms
+        bool previouslyDisabled = false;
+        volatile bool isrPinState = HIGH;
+        volatile bool isrStatePending = false;
         using CallbackFunction = void (*)();
-        CallbackFunction onPressCallback;
-        CallbackFunction onReleaseCallback;
-        CallbackFunction onDelayedReleaseCallback;
+        CallbackFunction onPressCallback = nullptr;
+        CallbackFunction onReleaseCallback = nullptr;
+        CallbackFunction onDelayedReleaseCallback = nullptr;
 
     public:
         /**
@@ -92,6 +95,18 @@ class CtrlBtn : public CtrlBase, public Muxable, public Groupable
         * It handles all functionality.
         */
         void process() override;
+
+        /**
+        * @brief Store a pin state from an ISR or interrupt handler.
+        *
+        * Call this from a hardware interrupt (e.g. attachInterrupt) to feed
+        * the button a pin reading without blocking the interrupt context.
+        * The next call to process() will consume the stored state and apply
+        * debouncing and state change detection as normal.
+        *
+        * @param state The pin state (HIGH or LOW).
+        */
+        void storePinState(bool state);
 
         /**
         * @brief Find out if a button is currently being pressed.
