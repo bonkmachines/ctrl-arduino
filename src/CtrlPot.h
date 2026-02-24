@@ -41,14 +41,16 @@ class CtrlPot : public CtrlBase, public Muxable, public Groupable
         uint8_t pinModeType = INPUT;
         uint16_t lastValue = 0; // Last read value from the potentiometer.
         uint16_t lastMappedValue = 0; // Last mapped value based on a mapping to maxOutputValue.
-        float smoothedValue = 0.0; // Smoothed value for the potentiometer.
-        float alpha = 0.0005; // Smoothing factor (0.0001 - 1).
+        uint32_t smoothedValue_q16 = 0; // Smoothed value in Q16 fixed-point.
+        uint32_t alpha_q16 = 33; // Smoothing factor in Q16 fixed-point (0.0005 * 65536).
         float sensitivity = 0.05; // Sensitivity factor (0.01 - 100).
         int maxOutputValue; // The maximum output value at full turn.
         uint16_t analogMax = 1023; // Maximum value from analogRead().
         bool initialized = false;
+        volatile uint16_t isrRawValue = 0;
+        volatile bool isrValuePending = false;
         using CallbackFunction = void (*)(int);
-        CallbackFunction onValueChangeCallback;
+        CallbackFunction onValueChangeCallback = nullptr;
 
     public:
         /**
@@ -78,6 +80,29 @@ class CtrlPot : public CtrlBase, public Muxable, public Groupable
         void process() override;
 
         /**
+        * @brief Provide an externally-read raw ADC value.
+        *
+        * Use this instead of process() when reading the ADC externally
+        * (e.g., via DMA or async ADC). Smoothing and value change
+        * detection are still applied.
+        *
+        * @param rawValue The raw ADC reading (0 - 1023).
+        */
+        void setRawValue(uint16_t rawValue);
+
+        /**
+        * @brief Store a raw ADC value from an ISR or DMA callback.
+        *
+        * Call this from your timer ISR or DMA completion handler. It stores
+        * the value in an internal volatile buffer without any processing.
+        * The next call to process() will consume the stored value and apply
+        * smoothing, mapping, and change detection as normal.
+        *
+        * @param rawValue The raw ADC reading (0 - 1023).
+        */
+        void storeRaw(uint16_t rawValue);
+
+        /**
         * @brief Get the current value of the shaft position.
         *
         * @return The value as a `uint16_t`.
@@ -85,9 +110,26 @@ class CtrlPot : public CtrlBase, public Muxable, public Groupable
         [[nodiscard]] uint16_t getValue() const;
 
         /**
-        * @brief Set the on value changehandler.
+        * @brief Set the maximum value returned by analogRead().
         *
-        * Pas in a handler that is called whenever the value of the
+        * Defaults to 1023 (10-bit ADC). Set to 4095 for boards with
+        * 12-bit ADCs (ESP32, Teensy, RP2040, STM32, etc.).
+        *
+        * @param analogMax The maximum raw ADC value.
+        */
+        void setAnalogMax(uint16_t analogMax);
+
+        /**
+        * @brief Get the maximum value returned by analogRead().
+        *
+        * @return The maximum raw ADC value as a `uint16_t`.
+        */
+        [[nodiscard]] uint16_t getAnalogMax() const;
+
+        /**
+        * @brief Set the on value change handler.
+        *
+        * Pass in a handler that is called whenever the value of the
         * potentiometer changes. In other words, when it's turned.
         *
         * @param callback The callback handler method.
@@ -101,6 +143,8 @@ class CtrlPot : public CtrlBase, public Muxable, public Groupable
         virtual void onValueChange(int value);
         void setSensitivity(float sensitivity);
         void updateAlpha();
+        uint16_t applySmoothing(uint16_t rawValue);
+        void processSmoothedValue(uint16_t newValue);
 };
 
 #endif

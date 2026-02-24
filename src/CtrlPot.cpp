@@ -36,7 +36,7 @@ CtrlPot::CtrlPot(
     CtrlMux* mux
 ) : Muxable(mux) {
     this->sig = sig;
-    this->maxOutputValue = maxOutputValue;
+    this->maxOutputValue = maxOutputValue < 0 ? 0 : maxOutputValue;
     setSensitivity(sensitivity);
     this->onValueChangeCallback = onValueChangeCallback;
 }
@@ -44,21 +44,56 @@ CtrlPot::CtrlPot(
 void CtrlPot::process()
 {
     if (!this->isInitialized()) this->initialize();
+
+    const auto irqState = ctrlSaveInterrupts();
+    const bool pending = this->isrValuePending;
+    const uint16_t raw = this->isrRawValue;
+    this->isrValuePending = false;
+    ctrlRestoreInterrupts(irqState);
+
     if (this->isDisabled()) return;
-    const uint16_t newValue = this->processInput();
-    if (newValue != this->lastValue) {
-        const uint16_t mappedValue = map(newValue, 0, this->analogMax, 0, this->maxOutputValue);
-        if (mappedValue != this->lastMappedValue) {
-            this->onValueChange(mappedValue);
-            this->lastMappedValue = mappedValue;
-        }
-        this->lastValue = newValue;
+    if (pending) {
+        this->processSmoothedValue(this->applySmoothing(raw));
+    } else {
+        this->processSmoothedValue(this->processInput());
     }
+}
+
+void CtrlPot::setRawValue(const uint16_t rawValue)
+{
+    if (!this->initialized) {
+        this->smoothedValue_q16 = static_cast<uint32_t>(rawValue) << 16;
+        this->initialized = true;
+    }
+    if (this->isDisabled()) return;
+    this->processSmoothedValue(this->applySmoothing(rawValue));
+}
+
+void CtrlPot::storeRaw(const uint16_t rawValue)
+{
+    const auto irqState = ctrlSaveInterrupts();
+    this->isrRawValue = rawValue;
+    this->isrValuePending = true;
+    ctrlRestoreInterrupts(irqState);
 }
 
 uint16_t CtrlPot::getValue() const
 {
-    return this->lastMappedValue;
+    const auto irqState = ctrlSaveInterrupts();
+    const uint16_t val = this->lastMappedValue;
+    ctrlRestoreInterrupts(irqState);
+    return val;
+}
+
+void CtrlPot::setAnalogMax(const uint16_t analogMax)
+{
+    if (analogMax == 0) return;
+    this->analogMax = analogMax;
+}
+
+uint16_t CtrlPot::getAnalogMax() const
+{
+    return this->analogMax;
 }
 
 void CtrlPot::setOnValueChange(const CallbackFunction callback)
@@ -69,8 +104,8 @@ void CtrlPot::setOnValueChange(const CallbackFunction callback)
 void CtrlPot::initialize()
 {
     if (!this->isMuxed()) pinMode(sig, INPUT);
-    this->lastValue = CtrlPot::processInput();
-    this->smoothedValue = static_cast<float>(this->lastValue);
+    this->lastValue = this->processInput();
+    this->smoothedValue_q16 = static_cast<uint32_t>(this->lastValue) << 16;
     this->initialized = true;
 }
 
@@ -82,27 +117,48 @@ uint16_t CtrlPot::processInput()
     if (this->isMuxed()) {
         rawValue = this->mux->readPotSig(this->sig, this->pinModeType);
     } else {
-        #ifdef UNIT_TEST
-            // Simulated analogRead for testing
-            extern uint16_t mockPotentiometerInput;
-            rawValue = mockPotentiometerInput;
-        #else
-            rawValue = analogRead(this->sig);
-        #endif
+        rawValue = analogRead(this->sig);
     }
+    return this->applySmoothing(rawValue);
+}
 
-    // Apply exponential smoothing
-    this->smoothedValue = this->smoothedValue + this->alpha * (static_cast<float>(rawValue) - this->smoothedValue);
-    return static_cast<uint16_t>(this->smoothedValue);
+uint16_t CtrlPot::applySmoothing(const uint16_t rawValue)
+{
+    const uint32_t raw_q16 = static_cast<uint32_t>(rawValue) << 16;
+    const int64_t diff = static_cast<int64_t>(raw_q16) - static_cast<int64_t>(this->smoothedValue_q16);
+    const int64_t step = (static_cast<int64_t>(this->alpha_q16) * diff) >> 16;
+    if (step < 0 && static_cast<uint32_t>(-step) > this->smoothedValue_q16) {
+        this->smoothedValue_q16 = 0;
+    } else {
+        this->smoothedValue_q16 = static_cast<uint32_t>(static_cast<int64_t>(this->smoothedValue_q16) + step);
+    }
+    const uint32_t maxQ16 = static_cast<uint32_t>(this->analogMax) << 16;
+    if (this->smoothedValue_q16 > maxQ16) this->smoothedValue_q16 = maxQ16;
+    return static_cast<uint16_t>((this->smoothedValue_q16 + (1u << 15)) >> 16);
+}
+
+void CtrlPot::processSmoothedValue(const uint16_t newValue)
+{
+    if (newValue != this->lastValue) {
+        const uint16_t mappedValue = static_cast<uint16_t>(
+            (static_cast<uint32_t>(newValue) * this->maxOutputValue + (this->analogMax / 2)) / this->analogMax
+        );
+        this->lastValue = newValue;
+        if (mappedValue != this->lastMappedValue) {
+            this->lastMappedValue = mappedValue;
+            this->onValueChange(mappedValue);
+        }
+    }
 }
 
 void CtrlPot::onValueChange(const int value)
 {
+    const auto callback = this->onValueChangeCallback;
     if (this->isGrouped() && this->group->onValueChangeCallback) {
         this->group->onValueChangeCallback(*this, value);
     }
-    if (this->onValueChangeCallback) {
-        this->onValueChangeCallback(value);
+    if (callback) {
+        callback(value);
     }
 }
 
@@ -118,11 +174,12 @@ void CtrlPot::setSensitivity(float sensitivity)
 
 void CtrlPot::updateAlpha()
 {
-    // Map sensitivity (0.01 - 100) to alpha (0.0001 - 1)
-    constexpr float minSensitivity = 0.01;
-    constexpr float maxSensitivity = 100.0;
-    constexpr float minAlpha = 0.0001;
-    constexpr float maxAlpha = 1.0;
+    constexpr float minSensitivity = 0.01f;
+    constexpr float maxSensitivity = 100.0f;
+    constexpr float minAlpha = 0.0001f;
+    constexpr float maxAlpha = 1.0f;
 
-    this->alpha = ((this->sensitivity - minSensitivity) * (maxAlpha - minAlpha) / (maxSensitivity - minSensitivity)) + minAlpha;
+    const float alpha = ((this->sensitivity - minSensitivity) * (maxAlpha - minAlpha) / (maxSensitivity - minSensitivity)) + minAlpha;
+    this->alpha_q16 = static_cast<uint32_t>(alpha * 65536.0f);
+    if (this->alpha_q16 == 0) this->alpha_q16 = 1;
 }

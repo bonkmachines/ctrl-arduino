@@ -3,50 +3,207 @@
 #include "CtrlBtn.h"
 #include "test_globals.h"
 
-void test_button_common_initial_state()
+static void test_button_common_initial_state()
 {
-    CtrlBtn button(1, 15);
+    CtrlBtn button(BTN_PIN, TEST_DEBOUNCE);
 
-    mockButtonInput = HIGH; // Ensure the button is not pressed
-    button.process(); // Process the current state
+    button.process();
 
-    TEST_ASSERT_FALSE(button.isPressed()); // Button should not be pressed
-    TEST_ASSERT_TRUE(button.isReleased()); // Button should be released
+    TEST_ASSERT_FALSE(button.isPressed());
+    TEST_ASSERT_TRUE(button.isReleased());
 }
 
-void test_button_common_can_be_disabled_and_enabled()
+static void test_button_common_can_be_disabled_and_enabled()
 {
-    CtrlBtn button(1, 15);
+    CtrlBtn button(BTN_PIN, TEST_DEBOUNCE);
 
-    button.disable(); // Disable the button
-    button.process(); // Process internal state
+    button.disable();
+    button.process();
+    TEST_ASSERT_TRUE(button.isDisabled());
 
-    TEST_ASSERT_TRUE(button.isDisabled()); // Button should be disabled
-
-    button.enable(); // Enable the button
-    button.process(); // Process internal state
-
-    TEST_ASSERT_TRUE(button.isEnabled()); // Button should be enabled
+    button.enable();
+    button.process();
+    TEST_ASSERT_TRUE(button.isEnabled());
 }
 
-void test_button_common_can_be_pressed_and_released()
+static void test_button_common_can_be_pressed_and_released()
 {
-    CtrlBtn button(1, 15);
+    CtrlBtn button(BTN_PIN, TEST_DEBOUNCE);
 
-    mockButtonInput = HIGH; // Reset
-    button.process(); // Process internal state
+    button.process();
 
-    mockButtonInput = LOW; // Simulate button press
-    button.process(); // Process internal state
-    delay(15 + 1); // Wait more than the debounce duration
-    button.process(); // Second call to ensure debounce logic has completed
+    _mock_digital_pins()[BTN_PIN] = LOW;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
 
-    TEST_ASSERT_TRUE(button.isPressed()); // Verify the button is currently pressed
+    TEST_ASSERT_TRUE(button.isPressed());
 
-    mockButtonInput = HIGH; // Simulate button release
-    button.process(); // Process internal state
-    delay(15 + 1); // Ensure debounce time has passed
-    button.process(); // Second call to complete debounce logic
+    _mock_digital_pins()[BTN_PIN] = HIGH;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
 
-    TEST_ASSERT_TRUE(button.isReleased()); // Verify the button is no longer currently pressed
+    TEST_ASSERT_TRUE(button.isReleased());
+}
+
+static void test_button_disabled_ignores_input()
+{
+    CtrlBtn button(BTN_PIN, TEST_DEBOUNCE);
+
+    button.process();
+    button.disable();
+
+    _mock_digital_pins()[BTN_PIN] = LOW;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
+
+    TEST_ASSERT_TRUE(button.isReleased());
+}
+
+static void test_button_double_press_without_release()
+{
+    CtrlBtn button(BTN_PIN, TEST_DEBOUNCE, []{ tracker.recordPress(); }, []{ tracker.recordRelease(); });
+
+    button.process();
+
+    _mock_digital_pins()[BTN_PIN] = LOW;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
+
+    TEST_ASSERT_EQUAL_INT(1, tracker.pressCount);
+    TEST_ASSERT_TRUE(button.isPressed());
+
+    _mock_digital_pins()[BTN_PIN] = LOW;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
+
+    TEST_ASSERT_EQUAL_INT(1, tracker.pressCount);
+    TEST_ASSERT_EQUAL_INT(0, tracker.releaseCount);
+}
+
+static void test_button_bounce_within_debounce_window()
+{
+    CtrlBtn button(BTN_PIN, TEST_DEBOUNCE, []{ tracker.recordPress(); });
+
+    button.process();
+
+    _mock_digital_pins()[BTN_PIN] = LOW;
+    button.process();
+    delay(5);
+    _mock_digital_pins()[BTN_PIN] = HIGH;
+    button.process();
+    delay(5);
+    _mock_digital_pins()[BTN_PIN] = LOW;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
+
+    TEST_ASSERT_EQUAL_INT(1, tracker.pressCount);
+}
+
+static void test_button_re_enable_preserves_state()
+{
+    CtrlBtn button(BTN_PIN, TEST_DEBOUNCE);
+
+    button.process();
+
+    _mock_digital_pins()[BTN_PIN] = LOW;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
+    TEST_ASSERT_TRUE(button.isPressed());
+
+    button.disable();
+    button.enable();
+
+    TEST_ASSERT_TRUE(button.isPressed());
+}
+
+static void test_button_zero_debounce()
+{
+    CtrlBtn button(BTN_PIN, 0, []{ tracker.recordPress(); }, []{ tracker.recordRelease(); });
+
+    button.process();
+
+    _mock_digital_pins()[BTN_PIN] = LOW;
+    button.process();
+    delay(1);
+    button.process();
+
+    TEST_ASSERT_EQUAL(TestEvent::ButtonPressed, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.pressCount);
+}
+
+static void test_button_rapid_press_release_cycles()
+{
+    CtrlBtn button(BTN_PIN, TEST_DEBOUNCE, []{ tracker.recordPress(); }, []{ tracker.recordRelease(); });
+
+    button.process();
+
+    for (int cycle = 0; cycle < 100; ++cycle) {
+        _mock_digital_pins()[BTN_PIN] = LOW;
+        button.process();
+        delay(TEST_DEBOUNCE + 1);
+        button.process();
+
+        _mock_digital_pins()[BTN_PIN] = HIGH;
+        button.process();
+        delay(TEST_DEBOUNCE + 1);
+        button.process();
+    }
+
+    TEST_ASSERT_EQUAL_INT(100, tracker.pressCount);
+    TEST_ASSERT_EQUAL_INT(100, tracker.releaseCount);
+    TEST_ASSERT_EQUAL_INT(200, tracker.eventCount);
+}
+
+static void test_button_set_pin_mode_invalid_type_ignored()
+{
+    CtrlBtn button(BTN_PIN, TEST_DEBOUNCE, []{ tracker.recordPress(); }, []{ tracker.recordRelease(); });
+
+    button.setPinMode(99);
+
+    button.process();
+
+    _mock_digital_pins()[BTN_PIN] = LOW;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
+
+    TEST_ASSERT_EQUAL_INT(1, tracker.pressCount);
+}
+
+static void test_button_set_pin_mode_invalid_resistor_ignored()
+{
+    CtrlBtn button(BTN_PIN, TEST_DEBOUNCE, []{ tracker.recordPress(); }, []{ tracker.recordRelease(); });
+
+    button.setPinMode(INPUT, 99);
+
+    button.process();
+
+    _mock_digital_pins()[BTN_PIN] = LOW;
+    button.process();
+    delay(TEST_DEBOUNCE + 1);
+    button.process();
+
+    TEST_ASSERT_EQUAL_INT(1, tracker.pressCount);
+}
+
+void run_button_common_tests()
+{
+    RUN_TEST(test_button_common_initial_state);
+    RUN_TEST(test_button_common_can_be_disabled_and_enabled);
+    RUN_TEST(test_button_common_can_be_pressed_and_released);
+    RUN_TEST(test_button_disabled_ignores_input);
+    RUN_TEST(test_button_double_press_without_release);
+    RUN_TEST(test_button_bounce_within_debounce_window);
+    RUN_TEST(test_button_re_enable_preserves_state);
+    RUN_TEST(test_button_zero_debounce);
+    RUN_TEST(test_button_rapid_press_release_cycles);
+    RUN_TEST(test_button_set_pin_mode_invalid_type_ignored);
+    RUN_TEST(test_button_set_pin_mode_invalid_resistor_ignored);
 }

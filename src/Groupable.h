@@ -34,26 +34,27 @@ class CtrlGroup;
 
 class Groupable
 {
+    friend class CtrlGroup;
+
     protected:
         CtrlGroup* group = nullptr;
         bool grouped = false;
 
+        static constexpr uint8_t MAX_PROPERTIES = 8;
+        static constexpr uint8_t MAX_KEY_LENGTH = 15;
+        static constexpr uint8_t MAX_STRING_LENGTH = 20;
+
         struct Property
         {
-            int intValue;
-            bool boolValue;
-            String stringValue;
-            enum { INT, BOOL, STRING } type;
+            char key[MAX_KEY_LENGTH + 1] = {};
+            enum { NONE, INT, BOOL, STRING } type = NONE;
+            int intValue = 0;
+            bool boolValue = false;
+            char stringValue[MAX_STRING_LENGTH + 1] = {};
         };
 
-        struct Node
-        {
-            String key;
-            Property value;
-            Node* next;
-        };
-
-        Node* properties = nullptr;
+        Property properties[MAX_PROPERTIES] = {};
+        uint8_t propertyCount = 0;
 
     public:
         virtual ~Groupable();
@@ -67,7 +68,7 @@ class Groupable
         /**
         * @brief Find out if an object is currently added to a group.
         *
-        * @return True if objected is added, false otherwise.
+        * @return True if object is added, false otherwise.
         */
         [[nodiscard]] bool isGrouped() const;
 
@@ -76,7 +77,7 @@ class Groupable
         *
         * @param group reference to the group object.
         */
-        void setGroup(CtrlGroup* group);
+        bool setGroup(CtrlGroup* group);
 
         /**
          * @brief Set a boolean on an object.
@@ -85,53 +86,54 @@ class Groupable
          * @param value The value of the boolean.
          * @note If the key does not exist, a new boolean property will be added to the object.
          */
-        void setBoolean(const String& key, bool value);
+        void setBoolean(const char* key, bool value);
 
         /**
          * @brief Set an integer on an object.
          *
-         * @param key Reference to the name of the integer.
+         * @param key The name of the integer.
          * @param value The value of the integer.
          * @note If the key does not exist, a new integer property will be added to the object.
          */
-        void setInteger(const String& key, const int value);
+        void setInteger(const char* key, int value);
 
         /**
          * @brief Set a string on an object.
          *
-         * @param key Reference to the name of the string.
+         * @param key The name of the string.
          * @param value The value of the string.
          * @note If the key does not exist, a new string property will be added to the object.
          */
-        void setString(const String& key, const String& value);
+        void setString(const char* key, const char* value);
 
         /**
          * @brief Get a boolean from an object.
          *
-         * @param key Reference to the name of the boolean.
+         * @param key The name of the boolean.
          * @return The value of the boolean, or false if the key does not exist or is not a boolean.
          */
-        [[nodiscard]] bool getBoolean(const String& key) const;
+        [[nodiscard]] bool getBoolean(const char* key) const;
 
         /**
          * @brief Get an integer from an object.
          *
-         * @param key Reference to the name of the integer.
+         * @param key The name of the integer.
          * @return The value of the integer, or 0 if the key does not exist or is not an integer.
          */
-        [[nodiscard]] int getInteger(const String& key) const;
+        [[nodiscard]] int getInteger(const char* key) const;
 
         /**
          * @brief Get a string from an object.
          *
-         * @param key Reference to the name of the string.
+         * @param key The name of the string.
          * @return The value of the string, or an empty string if the key does not exist or is not a string.
          */
-        [[nodiscard]] String getString(const String& key) const;
+        [[nodiscard]] const char* getString(const char* key) const;
 
 
     protected:
-        [[nodiscard]] Node* findProperty(const String& key) const;
+        [[nodiscard]] Property* findProperty(const char* key);
+        [[nodiscard]] const Property* findProperty(const char* key) const;
 };
 
 #endif // GROUPABLE_H

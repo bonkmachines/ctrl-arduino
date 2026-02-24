@@ -58,38 +58,72 @@ void CtrlBtn::setPinMode(const uint8_t pinModeType, const uint8_t resistorPull)
         if (resistorPull == PULL_DOWN) {
             this->currentState = LOW;
             this->lastState = LOW;
+            this->isrPinState = LOW;
+        } else {
+            this->currentState = HIGH;
+            this->lastState = HIGH;
+            this->isrPinState = HIGH;
         }
     }
     if (pinModeType == INPUT_PULLUP) {
         this->resistorPull = PULL_UP;
         this->currentState = HIGH;
         this->lastState = HIGH;
+        this->isrPinState = HIGH;
     }
     if (pinModeType == INPUT_PULLDOWN) {
         this->resistorPull = PULL_DOWN;
         this->currentState = LOW;
         this->lastState = LOW;
+        this->isrPinState = LOW;
     }
+}
+
+void CtrlBtn::storePinState(const bool state)
+{
+    const auto irqState = ctrlSaveInterrupts();
+    this->isrPinState = state;
+    this->isrStatePending = true;
+    ctrlRestoreInterrupts(irqState);
 }
 
 void CtrlBtn::process()
 {
     if (!this->isInitialized()) this->initialize();
-    if (this->isDisabled()) return;
+
+    const auto irqState = ctrlSaveInterrupts();
+    const bool pending = this->isrStatePending;
+    const bool isrState = this->isrPinState;
+    this->isrStatePending = false;
+    ctrlRestoreInterrupts(irqState);
+    if (this->isDisabled()) {
+        this->previouslyDisabled = true;
+        return;
+    }
     const unsigned long currentTime = millis();
-    const bool reading = this->processInput();
+    if (this->previouslyDisabled) {
+        this->previouslyDisabled = false;
+        const bool reading = pending ? isrState : this->processInput();
+        this->currentState = reading;
+        this->lastState = reading;
+        this->debounceStart = currentTime;
+        this->pressStartTime = currentTime;
+        return;
+    }
+    const bool reading = pending ? isrState : this->processInput();
     if (reading != this->lastState) {
         this->debounceStart = currentTime;
     }
-    if (currentTime - this->debounceStart > bounceDuration) {
+    this->lastState = reading;
+    if (currentTime - this->debounceStart >= bounceDuration) {
         if (reading != this->currentState) {
             this->currentState = reading;
             if (this->isPressed()) {
+                this->pressStartTime = currentTime;
                 this->onPress();
-                this->pressStartTime = millis();
             } else {
                 if (this->onDelayedReleaseCallback != nullptr &&
-                    millis() - this->pressStartTime >= this->delayedReleaseDuration
+                    currentTime - this->pressStartTime >= this->delayedReleaseDuration
                 ) {
                     this->onDelayedRelease();
                 } else {
@@ -98,7 +132,6 @@ void CtrlBtn::process()
             }
         }
     }
-    this->lastState = reading;
 }
 
 bool CtrlBtn::isPressed() const
@@ -140,7 +173,7 @@ void CtrlBtn::setDelayedReleaseDuration(const unsigned long duration)
 void CtrlBtn::initialize()
 {
     if (!this->isMuxed()) pinMode(sig, this->pinModeType);
-    this->currentState = CtrlBtn::processInput();
+    this->currentState = this->processInput();
     this->lastState = currentState;
     this->initialized = true;
 }
@@ -150,44 +183,40 @@ bool CtrlBtn::isInitialized() const { return this->initialized; }
 bool CtrlBtn::processInput()
 {
     if (this->isMuxed()) {
-        return  this->mux->readBtnSig(this->sig, this->pinModeType);
+        return this->mux->readBtnSig(this->sig, this->pinModeType);
     }
-    #ifdef UNIT_TEST
-        // Simulated digitalRead testing
-        extern uint8_t mockButtonInput;
-        return mockButtonInput;
-    #else
-        // Normal operation with real hardware
-        return digitalRead(this->sig);
-    #endif
+    return digitalRead(this->sig);
 }
 
 void CtrlBtn::onPress()
 {
+    const auto callback = this->onPressCallback;
     if (this->isGrouped() && this->group->onPressCallback) {
         this->group->onPressCallback(*this);
     }
-    if (this->onPressCallback) {
-        this->onPressCallback();
+    if (callback) {
+        callback();
     }
 }
 
 void CtrlBtn::onRelease()
 {
+    const auto callback = this->onReleaseCallback;
     if (this->isGrouped() && this->group->onReleaseCallback) {
         this->group->onReleaseCallback(*this);
     }
-    if (this->onReleaseCallback) {
-        this->onReleaseCallback();
+    if (callback) {
+        callback();
     }
 }
 
 void CtrlBtn::onDelayedRelease()
 {
+    const auto callback = this->onDelayedReleaseCallback;
     if (this->isGrouped() && this->group->onDelayedReleaseCallback) {
         this->group->onDelayedReleaseCallback(*this);
     }
-    if (this->onDelayedReleaseCallback) {
-        this->onDelayedReleaseCallback();
+    if (callback) {
+        callback();
     }
 }

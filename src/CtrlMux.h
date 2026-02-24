@@ -46,6 +46,11 @@ class CtrlMux
         Muxable** objects = nullptr;
         size_t objectCount = 0;
         size_t capacity = 0;
+        size_t nextIndex = 0;
+
+        bool initialized = false;
+
+        void initialize();
 
         void setPinMode(uint8_t pinModeType);
 
@@ -73,18 +78,48 @@ class CtrlMux
             uint8_t s3 = UINT8_MAX // Default to a value indicating S3 is not used
         );
 
+        ~CtrlMux();
+
+        CtrlMux(const CtrlMux&) = delete;
+        CtrlMux& operator=(const CtrlMux&) = delete;
+        CtrlMux(CtrlMux&&) = delete;
+        CtrlMux& operator=(CtrlMux&&) = delete;
+
         /**
         * @brief Add an object to the mux.
         *
         * @param object Object to be added to the mux.
         */
-        void addObject(Muxable* object);
+        bool addObject(Muxable* object);
+
+        void removeObject(Muxable* object);
+
+        /**
+        * @brief Pre-allocate capacity for a known number of objects.
+        *
+        * Call this before adding objects to avoid heap allocations during runtime.
+        *
+        * @param capacity The number of objects to pre-allocate space for.
+        */
+        void reserve(size_t capacity);
 
         /**
         * @brief The process method should be called within the loop method.
         * It handles the functionality of all added objects.
+        *
+        * @param count (optional) The number of objects to process per call.
+        * When 0 (default), all objects are processed. When > 0, objects are
+        * processed in round-robin order for time-sliced, real-time-safe control
+        * processing. Use this to bound the worst-case execution time per loop
+        * iteration.
+        *
+        * Note: each channel read incurs a blocking delay of switchInterval
+        * microseconds (default: 1µs) for the multiplexer to settle. When
+        * processing N objects per call, the minimum blocking time is N * switchInterval
+        * microseconds — independent of analogRead() or digitalRead() costs. Factor
+        * this into your loop budget when sizing the count parameter.
         */
-        void process() const;
+        void process(uint8_t count = 0);
 
         /**
         * @brief Set the switch interval of the multiplexer.
@@ -106,6 +141,8 @@ class CtrlMux
         [[nodiscard]] uint16_t readPotSig(uint8_t channel, uint8_t pinModeType);
 
     private:
+        bool readDigitalChannel(uint8_t channel, uint8_t pinModeType);
+        uint16_t readAnalogChannel(uint8_t channel, uint8_t pinModeType);
         void resize();
 };
 

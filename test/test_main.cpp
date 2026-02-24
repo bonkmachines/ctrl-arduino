@@ -1,147 +1,106 @@
 #include <Arduino.h>
 #include <unity.h>
+#include "test_globals.h"
 
-// Button test methods
-extern void test_button_common_initial_state();
-extern void test_button_common_can_be_disabled_and_enabled();
-extern void test_button_common_can_be_pressed_and_released();
-extern void test_button_basic_can_be_pressed_and_released();
-extern void test_button_alternative_can_be_pressed_and_released();
-extern void test_button_advanced_can_be_pressed_and_released();
-extern void test_button_internal_pull_down_can_be_pressed_and_released();
-extern void test_button_external_pull_down_can_be_pressed_and_released();
-extern void test_button_internal_pull_up_can_be_pressed_and_released();
-extern void test_button_external_pull_up_can_be_pressed_and_released();
+extern void run_button_common_tests();
+extern void run_button_basic_tests();
+extern void run_button_alternative_tests();
+extern void run_button_advanced_tests();
+extern void run_button_pull_down_tests();
+extern void run_button_pull_up_tests();
+extern void run_button_delayed_release_tests();
 
-// Encoder test methods
-extern void test_encoder_common_initial_state();
-extern void test_encoder_common_can_be_disabled_and_enabled();
-extern void test_encoder_basic_can_be_turned_left();
-extern void test_encoder_basic_can_be_turned_right();
-extern void test_encoder_alternative_can_be_turned_left();
-extern void test_encoder_alternative_can_be_turned_right();
-extern void test_encoder_advanced_can_be_turned_left();
-extern void test_encoder_advanced_can_be_turned_right();
-extern void test_encoder_internal_pull_down_can_be_turned_left();
-extern void test_encoder_internal_pull_down_can_be_turned_right();
-extern void test_encoder_external_pull_down_can_be_turned_left();
-extern void test_encoder_external_pull_down_can_be_turned_right();
-extern void test_encoder_internal_pull_up_can_be_turned_left();
-extern void test_encoder_internal_pull_up_can_be_turned_right();
-extern void test_encoder_external_pull_up_can_be_turned_left();
-extern void test_encoder_external_pull_up_can_be_turned_right();
+extern void run_encoder_common_tests();
+extern void run_encoder_basic_tests();
+extern void run_encoder_alternative_tests();
+extern void run_encoder_advanced_tests();
+extern void run_encoder_pull_down_tests();
+extern void run_encoder_pull_up_tests();
 
-// Potentiometer test methods
-extern void test_potentiometer_common_can_be_disabled_and_enabled();
-extern void test_potentiometer_common_can_be_turned();
-extern void test_potentiometer_basic_can_be_turned_to_minimum();
-extern void test_potentiometer_basic_can_be_turned_to_maximum();
-extern void test_potentiometer_alternative_can_be_turned_to_minimum();
-extern void test_potentiometer_alternative_can_be_turned_to_maximum();
-extern void test_potentiometer_advanced_can_be_turned_to_minimum();
-extern void test_potentiometer_advanced_can_be_turned_to_maximum();
+extern void run_potentiometer_common_tests();
+extern void run_potentiometer_basic_tests();
+extern void run_potentiometer_alternative_tests();
+extern void run_potentiometer_advanced_tests();
 
-// LED test methods
-extern void test_led_can_be_turned_on_and_off();
-extern void test_led_can_toggle();
-extern void test_led_can_change_brightness();
-extern void test_led_cant_change_brightness_beyond_maximum();
-extern void test_led_cant_change_brightness_beyond_minimum();
-extern void test_led_can_be_calibrated();
-extern void test_led_cant_be_calibrated_beyond_maximum();
-extern void test_led_cant_be_calibrated_beyond_minimum();
+extern void run_led_tests();
 
-// Multiplexer test methods
-extern void test_buttons_can_be_multiplexed();
-extern void test_potentiometers_can_be_multiplexed();
-extern void test_rotary_encoders_can_be_multiplexed();
+extern void run_multiplexer_button_tests();
+extern void run_multiplexer_encoder_tests();
+extern void run_multiplexer_potentiometer_tests();
 
-// Multiplexer test methods
-extern void test_button_can_be_grouped();
-extern void test_potentiometer_can_be_grouped();
-extern void test_rotary_encoder_can_be_grouped();
+extern void run_group_button_tests();
+extern void run_group_encoder_tests();
+extern void run_group_potentiometer_tests();
 
-void setUp(void) {
-    // Empty setup function
+extern void run_groupable_metadata_tests();
+
+extern void run_interaction_tests();
+
+void setUp(void)
+{
+    resetAllMocks();
 }
 
-void tearDown(void) {
-    // Empty teardown function
+void tearDown(void)
+{
 }
 
+int run_tests()
+{
+    UNITY_BEGIN();
+
+    run_button_common_tests();
+    run_button_basic_tests();
+    run_button_alternative_tests();
+    run_button_advanced_tests();
+    run_button_pull_down_tests();
+    run_button_pull_up_tests();
+    run_button_delayed_release_tests();
+
+    run_encoder_common_tests();
+    run_encoder_basic_tests();
+    run_encoder_alternative_tests();
+    run_encoder_advanced_tests();
+    run_encoder_pull_down_tests();
+    run_encoder_pull_up_tests();
+
+    run_potentiometer_common_tests();
+    run_potentiometer_basic_tests();
+    run_potentiometer_alternative_tests();
+    run_potentiometer_advanced_tests();
+
+    run_led_tests();
+
+    run_multiplexer_button_tests();
+    run_multiplexer_encoder_tests();
+    run_multiplexer_potentiometer_tests();
+
+    run_group_button_tests();
+    run_group_encoder_tests();
+    run_group_potentiometer_tests();
+
+    run_groupable_metadata_tests();
+
+    run_interaction_tests();
+
+    return UNITY_END();
+}
+
+#ifdef ARDUINO
 void setup()
 {
     delay(2000);
-
     Serial.begin(9600);
     while (!Serial) { }
-
-    UNITY_BEGIN(); // Start Unity Testing Framework
-
-    // Button tests
-    RUN_TEST(test_button_common_initial_state);
-    RUN_TEST(test_button_common_can_be_disabled_and_enabled);
-    RUN_TEST(test_button_common_can_be_pressed_and_released);
-    RUN_TEST(test_button_basic_can_be_pressed_and_released);
-    RUN_TEST(test_button_alternative_can_be_pressed_and_released);
-    RUN_TEST(test_button_advanced_can_be_pressed_and_released);
-    RUN_TEST(test_button_internal_pull_down_can_be_pressed_and_released);
-    RUN_TEST(test_button_external_pull_down_can_be_pressed_and_released);
-    RUN_TEST(test_button_internal_pull_up_can_be_pressed_and_released);
-    RUN_TEST(test_button_external_pull_up_can_be_pressed_and_released);
-
-    // Encoder tests
-    RUN_TEST(test_encoder_common_initial_state);
-    RUN_TEST(test_encoder_common_can_be_disabled_and_enabled);
-    RUN_TEST(test_encoder_basic_can_be_turned_left);
-    RUN_TEST(test_encoder_basic_can_be_turned_right);
-    RUN_TEST(test_encoder_alternative_can_be_turned_left);
-    RUN_TEST(test_encoder_alternative_can_be_turned_right);
-    RUN_TEST(test_encoder_advanced_can_be_turned_left);
-    RUN_TEST(test_encoder_advanced_can_be_turned_right);
-    RUN_TEST(test_encoder_internal_pull_down_can_be_turned_left);
-    RUN_TEST(test_encoder_internal_pull_down_can_be_turned_right);
-    RUN_TEST(test_encoder_external_pull_down_can_be_turned_left);
-    RUN_TEST(test_encoder_external_pull_down_can_be_turned_right);
-    RUN_TEST(test_encoder_internal_pull_up_can_be_turned_left);
-    RUN_TEST(test_encoder_internal_pull_up_can_be_turned_right);
-    RUN_TEST(test_encoder_external_pull_up_can_be_turned_left);
-    RUN_TEST(test_encoder_external_pull_up_can_be_turned_right);
-
-    // Potentiometer tests
-    RUN_TEST(test_potentiometer_common_can_be_disabled_and_enabled);
-    RUN_TEST(test_potentiometer_common_can_be_turned);
-    RUN_TEST(test_potentiometer_basic_can_be_turned_to_minimum);
-    RUN_TEST(test_potentiometer_basic_can_be_turned_to_maximum);
-    RUN_TEST(test_potentiometer_alternative_can_be_turned_to_minimum);
-    RUN_TEST(test_potentiometer_alternative_can_be_turned_to_maximum);
-    RUN_TEST(test_potentiometer_advanced_can_be_turned_to_minimum);
-    RUN_TEST(test_potentiometer_advanced_can_be_turned_to_maximum);
-
-    // LED tests
-    RUN_TEST(test_led_can_be_turned_on_and_off);
-    RUN_TEST(test_led_can_toggle);
-    RUN_TEST(test_led_can_change_brightness);
-    RUN_TEST(test_led_cant_change_brightness_beyond_maximum);
-    RUN_TEST(test_led_cant_change_brightness_beyond_minimum);
-    RUN_TEST(test_led_can_be_calibrated);
-    RUN_TEST(test_led_cant_be_calibrated_beyond_maximum);
-    RUN_TEST(test_led_cant_be_calibrated_beyond_minimum);
-
-    // Multiplexer tests
-    RUN_TEST(test_buttons_can_be_multiplexed);
-    RUN_TEST(test_rotary_encoders_can_be_multiplexed);
-    RUN_TEST(test_potentiometers_can_be_multiplexed);
-
-    // Groupo tests
-    RUN_TEST(test_button_can_be_grouped);
-    RUN_TEST(test_potentiometer_can_be_grouped);
-    RUN_TEST(test_rotary_encoder_can_be_grouped);
-
-    UNITY_END(); // Finish Unity Testing
+    run_tests();
 }
 
 void loop()
 {
-    // Intentionally left blank, required for Arduino framework
 }
+#else
+int main(int argc, char **argv)
+{
+    return run_tests();
+}
+#endif

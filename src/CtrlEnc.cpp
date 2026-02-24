@@ -62,16 +62,42 @@ void CtrlEnc::setPinMode(const uint8_t pinModeType, const uint8_t resistorPull)
     }
 }
 
+void CtrlEnc::storePinStates(const bool clkState, const bool dtState)
+{
+    const auto irqState = ctrlSaveInterrupts();
+    this->isrClkState = clkState;
+    this->isrDtState = dtState;
+    this->isrStatePending = true;
+    ctrlRestoreInterrupts(irqState);
+}
+
 void CtrlEnc::process()
 {
     if (!this->isInitialized()) this->initialize();
-    if (this->isDisabled()) return;
-    if (this->readEncoder()) {
-        if (this->isTurningLeft()) {
-            this->onTurnLeft();
-        } else if (this->isTurningRight()) {
-            this->onTurnRight();
-        }
+
+    const auto irqState = ctrlSaveInterrupts();
+    const bool pending = this->isrStatePending;
+    const bool clkSnap = this->isrClkState;
+    const bool dtSnap = this->isrDtState;
+    this->isrStatePending = false;
+    ctrlRestoreInterrupts(irqState);
+    if (this->isDisabled()) {
+        this->previouslyDisabled = true;
+        return;
+    }
+    if (this->previouslyDisabled) {
+        this->previouslyDisabled = false;
+        this->values[0] = 0;
+        this->values[1] = 0;
+        return;
+    }
+    const int8_t direction = pending
+        ? this->readEncoderFromIsr(clkSnap, dtSnap)
+        : this->readEncoder();
+    if (direction < 0) {
+        this->onTurnLeft();
+    } else if (direction > 0) {
+        this->onTurnRight();
     }
 }
 
@@ -106,15 +132,8 @@ void CtrlEnc::processInput()
         clkState = this->mux->readEncClk(this->clk, this->pinModeType);
         dtState = this->mux->readEncDt(this->dt, this->pinModeType);
     } else {
-        #ifdef UNIT_TEST
-            extern int8_t mockClkInput;
-            extern int8_t mockDtInput;
-            clkState = mockClkInput;
-            dtState = mockDtInput;
-        #else
-            clkState = digitalRead(clk);
-            dtState = digitalRead(dt);
-        #endif
+        clkState = digitalRead(clk);
+        dtState = digitalRead(dt);
     }
 
     if (this->resistorPull == PULL_DOWN) {
@@ -130,9 +149,26 @@ void CtrlEnc::processInput()
 
 int8_t CtrlEnc::readEncoder()
 {
-    const int8_t table[] = { 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0 };
     this->values[0] <<= 2;
     this->processInput();
+    return decodeStep();
+}
+
+int8_t CtrlEnc::readEncoderFromIsr(bool clkState, bool dtState)
+{
+    if (this->resistorPull == PULL_DOWN) {
+        clkState = !clkState;
+        dtState = !dtState;
+    }
+    this->values[0] <<= 2;
+    if (clkState) this->values[0] |= 0x01;
+    if (dtState) this->values[0] |= 0x02;
+    return decodeStep();
+}
+
+int8_t CtrlEnc::decodeStep()
+{
+    static constexpr int8_t table[] = { 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0 };
     this->values[0] &= 0x0f;
     if (table[this->values[0]]) {
         this->values[1] <<= 4;
@@ -145,20 +181,22 @@ int8_t CtrlEnc::readEncoder()
 
 void CtrlEnc::onTurnLeft()
 {
+    const auto callback = this->onTurnLeftCallback;
     if (this->isGrouped() && this->group->onTurnLeftCallback) {
         this->group->onTurnLeftCallback(*this);
     }
-    if (this->onTurnLeftCallback) {
-        this->onTurnLeftCallback();
+    if (callback) {
+        callback();
     }
 }
 
 void CtrlEnc::onTurnRight()
 {
+    const auto callback = this->onTurnRightCallback;
     if (this->isGrouped() && this->group->onTurnRightCallback) {
         this->group->onTurnRightCallback(*this);
     }
-    if (this->onTurnRightCallback) {
-        this->onTurnRightCallback();
+    if (callback) {
+        callback();
     }
 }

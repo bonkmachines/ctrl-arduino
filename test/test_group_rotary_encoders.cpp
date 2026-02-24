@@ -4,70 +4,52 @@
 #include "CtrlEnc.h"
 #include "test_globals.h"
 
-void onEncoderGroupTurnLeft(Groupable& encoder) {
-    const int integer = encoder.getInteger("integer");
-    const String string = encoder.getString("string");
-    const bool boolean = encoder.getBoolean("boolean");
-    if (boolean) {
-        encoderHandlerResult = "Turn left: " + std::to_string(integer) + " " + string.c_str();
-    }
-}
-
-void onEncoderGroupTurnRight(Groupable& encoder) {
-    const int integer = encoder.getInteger("integer");
-    const String string = encoder.getString("string");
-    const bool boolean = encoder.getBoolean("boolean");
-    if (boolean) {
-        encoderHandlerResult = "Turn right: " + std::to_string(integer) + " " + string.c_str();
-    }
-}
-
-void test_rotary_encoder_can_be_grouped()
+static void test_rotary_encoder_can_be_grouped()
 {
     CtrlGroup encoderGroup;
+    CtrlEnc encoder(ENC_CLK_PIN, ENC_DT_PIN);
 
-    CtrlEnc encoder(1, 2);
+    encoderGroup.setOnTurnLeft([](Groupable& enc) {
+        TEST_ASSERT_TRUE(enc.getBoolean("active"));
+        TEST_ASSERT_EQUAL_INT(10, enc.getInteger("id"));
+        tracker.recordTurnLeft();
+    });
 
-    encoderGroup.setOnTurnLeft(onEncoderGroupTurnLeft);
-    encoderGroup.setOnTurnRight(onEncoderGroupTurnRight);
+    encoderGroup.setOnTurnRight([](Groupable& enc) {
+        TEST_ASSERT_TRUE(enc.getBoolean("active"));
+        TEST_ASSERT_EQUAL_INT(10, enc.getInteger("id"));
+        tracker.recordTurnRight();
+    });
 
     encoder.setGroup(&encoderGroup);
+    encoder.setInteger("id", 10);
+    encoder.setString("name", "testEnc");
+    encoder.setBoolean("active", true);
 
-    encoder.setInteger("integer", 10);
-    encoder.setString("string", "Four");
-    encoder.setBoolean("boolean", true);
+    encoderGroup.process();
 
-    // Reset the state
-    encoderHandlerResult = "";
-    mockClkInput = LOW;
-    mockDtInput = LOW;
+    _mock_digital_pins()[ENC_DT_PIN] = HIGH;
+    encoderGroup.process();
+    _mock_digital_pins()[ENC_CLK_PIN] = HIGH;
+    encoderGroup.process();
 
-    encoderGroup.process(); // Process internal state
+    TEST_ASSERT_EQUAL(TestEvent::EncoderTurnedLeft, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.turnLeftCount);
 
-    // Simulate the sequence for a counterclockwise turn
-    mockClkInput = LOW;
-    mockDtInput = HIGH;
-    encoderGroup.process(); // Process internal state
-    mockClkInput = HIGH;
-    mockDtInput = HIGH;
-    encoderGroup.process(); // Process internal state
+    _mock_digital_pins()[ENC_CLK_PIN] = LOW;
+    _mock_digital_pins()[ENC_DT_PIN] = LOW;
+    encoder.process();
 
-    TEST_ASSERT_EQUAL_STRING("Turn left: 10 Four", encoderHandlerResult.c_str()); // Verify the button's on press handler has been called
+    _mock_digital_pins()[ENC_CLK_PIN] = HIGH;
+    encoder.process();
+    _mock_digital_pins()[ENC_DT_PIN] = HIGH;
+    encoder.process();
 
-    // Reset the state
-    encoderHandlerResult = "";
-    mockClkInput = LOW;
-    mockDtInput = LOW;
+    TEST_ASSERT_EQUAL(TestEvent::EncoderTurnedRight, tracker.lastEvent);
+    TEST_ASSERT_EQUAL_INT(1, tracker.turnRightCount);
+}
 
-    encoder.process(); // Process internal state
-
-    // Simulate the sequence for a clockwise turn
-    mockClkInput = HIGH;
-    mockDtInput = LOW;
-    encoder.process(); // Process internal state
-    mockClkInput = HIGH;
-    mockDtInput = HIGH;
-    encoder.process(); // Process internal state
-
-    TEST_ASSERT_EQUAL_STRING("Turn right: 10 Four", encoderHandlerResult.c_str()); // Verify the encoder has turned right
+void run_group_encoder_tests()
+{
+    RUN_TEST(test_rotary_encoder_can_be_grouped);
 }

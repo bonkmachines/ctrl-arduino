@@ -33,5 +33,9 @@
 #include "CtrlEnc.h"
 #include "CtrlPot.h"
 #include "CtrlLed.h"
+#include "CtrlMux.h"
+#include "CtrlGroup.h"
+#include "Groupable.h"
+#include "Muxable.h"
 
 #endif

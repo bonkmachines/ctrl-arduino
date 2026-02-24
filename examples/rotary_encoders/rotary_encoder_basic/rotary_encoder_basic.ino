@@ -18,14 +18,14 @@
                                  set to 'INPUT', you will have to implement an external pull-down or pull-up
                                  resistor. You should then set the second parameter to 'PULL_DOWN' or 'PULL_UP'.
   - process()                    Is used to poll the rotary encoder and handle all it's functionality (used in the loop method).
-  - setOnTurnLeft()              Sets the onTurnleft handler. Is called when you turn left.
+  - setOnTurnLeft()              Sets the onTurnLeft handler. Is called when you turn left.
   - setOnTurnRight()             Sets the onTurnRight handler. Is called when you turn right.
   - setMultiplexer(&mux)         Sets the multiplexer that the rotary encoder subscribes to.
   - disable()                    Disables the rotary encoder.
   - enable()                     Enables the rotary encoder.
   - isEnabled()                  Checks if the rotary encoder is enabled.
   - isDisabled()                 Checks if the rotary encoder is disabled.
-  - setGroup(&group)             Register the potentiometer to a group.
+  - setGroup(&group)             Register the encoder to a group.
   - setInteger("id", 0)          Define an integer. First parameter is the name of the variable, second parameter is the value.
   - setString("name", "Button")  Define a string. First parameter is the name of the variable, second parameter is the value.
   - setBoolean("active", true)   Define a boolean. First parameter is the name of the variable, second parameter is the value.
@@ -36,8 +36,8 @@
 
 #include <CtrlEnc.h>
 
-// Define an onTurnleft handler.
-void onTurnleft() {
+// Define an onTurnLeft handler.
+void onTurnLeft() {
   Serial.println("Basic rotary encoder turn left");
 }
 
@@ -47,8 +47,8 @@ void onTurnRight() {
 }
 
 // Create a rotary encoder with the clk signal pin number, dt signal pin number,
-// onTurnleft & onTurnRight handler.
-CtrlEnc encoder(1, 2, onTurnleft, onTurnRight);
+// onTurnLeft & onTurnRight handler.
+CtrlEnc encoder(1, 2, onTurnLeft, onTurnRight);
 
 void setup() {
   Serial.begin(9600);

@@ -20,34 +20,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        example: [test]
-
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
     - name: Install PlatformIO Core
       run: pip install --upgrade platformio
 
-    - name: Download Unity Library
-      run: |
-        wget https://github.com/ThrowTheSwitch/Unity/archive/refs/heads/master.zip -O /tmp/Unity.zip
-        unzip /tmp/Unity.zip -d /tmp
-
-    - name: Move Unity Library
-      run: mv /tmp/Unity-master /tmp/Unity
-
-    - name: Copy unity_config.h
-      run: cp test/unity_config.h /tmp/Unity/src/
-
-    - name: Run tests on the embedded target
-      env:
-        PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}
-      run: platformio remote test -e ci -v
+    - name: Run tests natively
+      run: platformio test -e native -v

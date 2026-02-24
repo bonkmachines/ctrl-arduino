@@ -25,6 +25,7 @@
  * THE SOFTWARE.
  */
 
+#include <new>
 #include "CtrlBase.h"
 #include "CtrlMux.h"
 #include "Muxable.h"
@@ -42,12 +43,26 @@ CtrlMux::CtrlMux(
     s3(s3),
     s3Present(s3 != UINT8_MAX)
 {
+}
+
+void CtrlMux::initialize()
+{
+    if (this->initialized) return;
     pinMode(this->s0, OUTPUT);
     pinMode(this->s1, OUTPUT);
     pinMode(this->s2, OUTPUT);
     if (this->s3Present) {
         pinMode(this->s3, OUTPUT);
     }
+    this->initialized = true;
+}
+
+CtrlMux::~CtrlMux() {
+    for (size_t i = 0; i < this->objectCount; ++i) {
+        this->objects[i]->mux = nullptr;
+        this->objects[i]->muxed = false;
+    }
+    delete[] this->objects;
 }
 
 void CtrlMux::setPinMode(const uint8_t pinModeType)
@@ -68,100 +83,119 @@ void CtrlMux::setChannel(const uint8_t channel) const
     }
 }
 
-void CtrlMux::addObject(Muxable* object) {
+bool CtrlMux::addObject(Muxable* object) {
+    for (size_t i = 0; i < this->objectCount; ++i) {
+        if (this->objects[i] == object) return true;
+    }
     if (this->objectCount == this->capacity) {
         resize();
+        if (this->objectCount == this->capacity) return false;
     }
     this->objects[this->objectCount++] = object;
+    object->mux = this;
+    object->muxed = true;
+    return true;
 }
 
-void CtrlMux::process() const
-{
+void CtrlMux::removeObject(Muxable* object) {
     for (size_t i = 0; i < this->objectCount; ++i) {
-        this->objects[i]->process();
+        if (this->objects[i] == object) {
+            object->mux = nullptr;
+            object->muxed = false;
+            for (size_t j = i; j < this->objectCount - 1; ++j) {
+                this->objects[j] = this->objects[j + 1];
+            }
+            --this->objectCount;
+            if (this->objectCount == 0 || this->nextIndex >= this->objectCount) {
+                this->nextIndex = 0;
+            }
+            return;
+        }
     }
+}
+
+void CtrlMux::process(const uint8_t count)
+{
+    if (this->objectCount == 0) return;
+    this->initialize();
+    if (count == 0) {
+        for (size_t i = 0; i < this->objectCount; ++i) {
+            this->objects[i]->process();
+        }
+    } else {
+        const uint8_t n = count > this->objectCount ? static_cast<uint8_t>(this->objectCount) : count;
+        for (uint8_t i = 0; i < n; ++i) {
+            this->objects[this->nextIndex]->process();
+            if (this->objectCount == 0) return;
+            this->nextIndex = (this->nextIndex + 1) % this->objectCount;
+        }
+    }
+}
+
+bool CtrlMux::readDigitalChannel(const uint8_t channel, const uint8_t pinModeType)
+{
+    this->initialize();
+    const uint8_t maxChannel = this->s3Present ? 15 : 7;
+    if (channel > maxChannel) return false;
+    this->setPinMode(pinModeType);
+    this->setChannel(channel);
+    delayMicroseconds(this->switchInterval);
+    return digitalRead(this->sig);
+}
+
+uint16_t CtrlMux::readAnalogChannel(const uint8_t channel, const uint8_t pinModeType)
+{
+    this->initialize();
+    const uint8_t maxChannel = this->s3Present ? 15 : 7;
+    if (channel > maxChannel) return 0;
+    this->setPinMode(pinModeType);
+    this->setChannel(channel);
+    delayMicroseconds(this->switchInterval);
+    return analogRead(this->sig);
 }
 
 bool CtrlMux::readBtnSig(const uint8_t channel, const uint8_t pinModeType)
 {
-    this->setPinMode(pinModeType);
-
-    this->setChannel(channel);
-
-    setDelayMicroseconds(this->switchInterval);
-
-    #ifdef UNIT_TEST
-        // Simulated digitalRead testing
-        extern uint8_t mockMuxBtnSigInput;
-        return mockMuxBtnSigInput;
-    #else
-        // Normal operation with real hardware
-        return digitalRead(this->sig);
-    #endif
+    return this->readDigitalChannel(channel, pinModeType);
 }
 
 bool CtrlMux::readEncClk(const uint8_t channel, const uint8_t pinModeType)
 {
-    this->setPinMode(pinModeType);
-
-    this->setChannel(channel);
-
-    setDelayMicroseconds(this->switchInterval);
-
-    #ifdef UNIT_TEST
-        // Simulated digitalRead testing
-        extern uint8_t mockMuxEncClkInput;
-        return mockMuxEncClkInput;
-    #else
-        // Normal operation with real hardware
-        return digitalRead(this->sig);
-    #endif
+    return this->readDigitalChannel(channel, pinModeType);
 }
 
 bool CtrlMux::readEncDt(const uint8_t channel, const uint8_t pinModeType)
 {
-    this->setPinMode(pinModeType);
-
-    this->setChannel(channel);
-
-    setDelayMicroseconds(this->switchInterval);
-
-    #ifdef UNIT_TEST
-        // Simulated digitalRead testing
-        extern uint8_t mockMuxEncDtInput;
-        return mockMuxEncDtInput;
-    #else
-        // Normal operation with real hardware
-        return digitalRead(this->sig);
-    #endif
+    return this->readDigitalChannel(channel, pinModeType);
 }
 
 uint16_t CtrlMux::readPotSig(const uint8_t channel, const uint8_t pinModeType)
 {
-    this->setPinMode(pinModeType);
-
-    this->setChannel(channel);
-
-    setDelayMicroseconds(this->switchInterval);
-
-    #ifdef UNIT_TEST
-        // Simulated analogRead testing
-        extern uint16_t mockMuxPotSigInput;
-        return mockMuxPotSigInput;
-    #else
-        // Normal operation with real hardware
-        return analogRead(this->sig);
-    #endif
+    return this->readAnalogChannel(channel, pinModeType);
 }
 
 void CtrlMux::setSwitchInterval(const uint8_t interval)
 {
-    this->switchInterval = interval;
+    this->switchInterval = interval < 1 ? 1 : interval;
+}
+
+void CtrlMux::reserve(const size_t capacity) {
+    if (capacity <= this->capacity) return;
+    auto** newObjects = new (std::nothrow) Muxable*[capacity];
+    if (newObjects == nullptr) return;
+    for (size_t i = 0; i < this->objectCount; ++i) {
+        newObjects[i] = this->objects[i];
+    }
+    delete[] this->objects;
+    this->objects = newObjects;
+    this->capacity = capacity;
 }
 
 void CtrlMux::resize() {
-    const size_t newCapacity = this->capacity == 0 ? 10 : this->capacity * 2;
-    auto** newObjects = new Muxable*[newCapacity];
+    const size_t newCapacity = this->capacity == 0 ? 4 : this->capacity * 2;
+    if (newCapacity <= this->capacity) return;
+    auto** newObjects = new (std::nothrow) Muxable*[newCapacity];
+    if (newObjects == nullptr) return;
     for (size_t i = 0; i < this->objectCount; ++i) {
         newObjects[i] = this->objects[i];
     }

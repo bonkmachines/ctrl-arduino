@@ -22,5 +22,9 @@
 // #include "../examples/rotary_encoders/rotary_encoder_advanced/rotary_encoder_advanced.ino"
 
 // #include "../examples/groups/button_group/button_group.ino"
-// #include "../examples/grousp/rotary_encoder_group/rotary_encoder_group.ino"
+// #include "../examples/groups/rotary_encoder_group/rotary_encoder_group.ino"
 // #include "../examples/groups/potentiometer_group/potentiometer_group.ino"
+// #include "../examples/groups/group_switching/group_switching.ino"
+
+// #include "../examples/real-time/time_sliced_processing/time_sliced_processing.ino"
+// #include "../examples/real-time/external_adc/external_adc.ino"

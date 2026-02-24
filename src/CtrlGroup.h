@@ -30,35 +30,78 @@
 
 #include "Groupable.h"
 
+class CtrlBtn;
+class CtrlEnc;
+class CtrlPot;
+
 class CtrlGroup final
 {
-    public:
-        Groupable** objects = nullptr;
-        size_t objectCount = 0;
-        size_t capacity = 0;
-        void (*onPressCallback)(Groupable&) = nullptr; // For buttons
-        void (*onReleaseCallback)(Groupable&) = nullptr; // For buttons
-        void (*onDelayedReleaseCallback)(Groupable&) = nullptr; // For buttons
-        void (*onTurnLeftCallback)(Groupable&) = nullptr; // For rotary encoders
-        void (*onTurnRightCallback)(Groupable&) = nullptr; // For rotary encoders
-        void (*onValueChangeCallback)(Groupable&, int value) = nullptr; // For potentiometers
+    friend class CtrlBtn;
+    friend class CtrlEnc;
+    friend class CtrlPot;
 
+    public:
         CtrlGroup();
 
         ~CtrlGroup();
+
+        CtrlGroup(const CtrlGroup&) = delete;
+        CtrlGroup& operator=(const CtrlGroup&) = delete;
+        CtrlGroup(CtrlGroup&&) = delete;
+        CtrlGroup& operator=(CtrlGroup&&) = delete;
+
+        /**
+        * @brief Enable the group. All objects in the group will be processed.
+        */
+        void enable();
+
+        /**
+        * @brief Disable the group. No objects will be processed while disabled.
+        */
+        void disable();
+
+        /**
+        * @brief Check if the group is enabled.
+        *
+        * @return True if the group is enabled, false otherwise.
+        */
+        [[nodiscard]] bool isEnabled() const;
+
+        /**
+        * @brief Check if the group is disabled.
+        *
+        * @return True if the group is disabled, false otherwise.
+        */
+        [[nodiscard]] bool isDisabled() const;
 
         /**
         * @brief Add an object to the group.
         *
         * @param object Object to be added to the group.
         */
-        void addObject(Groupable* object);
+        bool addObject(Groupable* object);
+
+        void removeObject(Groupable* object);
+
+        /**
+        * @brief Pre-allocate capacity for a known number of objects.
+        *
+        * Call this before adding objects to avoid heap allocations during runtime.
+        *
+        * @param capacity The number of objects to pre-allocate space for.
+        */
+        void reserve(size_t capacity);
 
         /**
         * @brief The process method should be called within the loop method.
         * It handles the functionality of all added objects.
+        *
+        * @param count (optional) The number of objects to process per call.
+        * When 0 (default), all objects are processed. When > 0, objects are
+        * processed in round-robin order for time-sliced control processing
+        * in audio applications.
         */
-        void process() const;
+        void process(uint8_t count = 0);
 
         /**
         * @brief Set the on press handler (for buttons).
@@ -117,6 +160,17 @@ class CtrlGroup final
         void setOnValueChange(void (*callback)(Groupable&, int value));
 
     private:
+        bool enabled = true;
+        Groupable** objects = nullptr;
+        size_t objectCount = 0;
+        size_t capacity = 0;
+        size_t nextIndex = 0;
+        void (*onPressCallback)(Groupable&) = nullptr;
+        void (*onReleaseCallback)(Groupable&) = nullptr;
+        void (*onDelayedReleaseCallback)(Groupable&) = nullptr;
+        void (*onTurnLeftCallback)(Groupable&) = nullptr;
+        void (*onTurnRightCallback)(Groupable&) = nullptr;
+        void (*onValueChangeCallback)(Groupable&, int value) = nullptr;
         void resize();
 };
 
