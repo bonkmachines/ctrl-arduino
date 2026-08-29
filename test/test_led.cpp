@@ -101,6 +101,12 @@ static void test_led_digital_mode_on_off()
 
     led.toggle();
     TEST_ASSERT_TRUE(led.isOff());
+
+    led.set(true);
+    TEST_ASSERT_TRUE(led.isOn());
+
+    led.set(false);
+    TEST_ASSERT_TRUE(led.isOff());
 }
 
 static void test_led_digital_mode_ignores_brightness()
@@ -128,6 +134,9 @@ static void test_led_disabled_ignores_toggle()
 
     led.turnOn();
     TEST_ASSERT_TRUE(led.isOff());
+
+    led.set(true);
+    TEST_ASSERT_TRUE(led.isOff())
 
     led.setBrightness(50);
     TEST_ASSERT_EQUAL_INT(100, led.getBrightness());

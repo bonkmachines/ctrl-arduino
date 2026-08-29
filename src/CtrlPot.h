@@ -61,7 +61,7 @@ class CtrlPot : public CtrlBase, public Muxable, public Groupable
         *
         * @param sig (uint8_t) The signal pin of the potentiometer.
         * @param maxOutputValue (int) The maximum output value of the potentiometer.
-        * @param sensitivity (float) The sensitivity factor. Decrease this for instable (jittery) pots, min: 0.01, max: 100.
+        * @param sensitivity (float) The sensitivity factor. Decrease this value to apply more smoothing for unstable (jittery) pots, min: 0.01, max: 100.
         * @param onValueChangeCallback (optional) The on value change callback handler. Default is nullptr.
         * @param mux (CtrlMux) (optional) The multiplexer the pot is connected to. Default is nullptr.
         * @return A new instance of the CtrlPot class.
