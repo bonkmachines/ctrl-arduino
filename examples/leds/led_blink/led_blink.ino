@@ -17,6 +17,7 @@
   Available methods:
   - turnOn()              Turns on the LED.
   - turnOff()             Turns off the LED.
+  - set()                 Set the LED's to a specific off/on state.
   - toggle()              Toggles the LED's off/on status.
   - setMaxBrightness(255) Sets the maximum brightness (PWM mode only).
   - setBrightness(100)    Sets the brightness in percentages (PWM mode only).

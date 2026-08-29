@@ -67,6 +67,22 @@ void CtrlLed::processOutput() const
     }
 }
 
+void CtrlLed::set(bool state)
+{
+    if (this->isDisabled()) return;
+    this->initialize();
+    this->on = state;
+    if (this->pwmMode) {
+        if (this->on) {
+            processOutput();
+        } else {
+            analogWrite(this->sig, 0);
+        }
+    } else {
+        digitalWrite(this->sig, this->on ? HIGH : LOW);
+    }
+}
+
 void CtrlLed::toggle()
 {
     if (this->isDisabled()) return;

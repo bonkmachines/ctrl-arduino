@@ -68,6 +68,13 @@ class CtrlLed : public CtrlBase
         explicit CtrlLed(uint8_t sig);
 
         /**
+        * @brief Set the LED to a specific on/off state.
+        * 
+        * @param state (bool) The target state.
+        */
+        void set(bool state);
+
+        /**
         * @brief Toggles the LED's off/on status.
         */
         void toggle();
