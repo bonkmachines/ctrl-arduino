@@ -136,7 +136,7 @@ static void test_led_disabled_ignores_toggle()
     TEST_ASSERT_TRUE(led.isOff());
 
     led.set(true);
-    TEST_ASSERT_TRUE(led.isOff())
+    TEST_ASSERT_TRUE(led.isOff());
 
     led.setBrightness(50);
     TEST_ASSERT_EQUAL_INT(100, led.getBrightness());
