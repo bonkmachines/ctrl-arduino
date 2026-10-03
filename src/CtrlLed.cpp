@@ -144,7 +144,8 @@ uint8_t CtrlLed::getMaxBrightness() const
 uint8_t CtrlLed::getBrightness() const
 {
     if (this->maxBrightness == 0) return 0;
-    return map(this->brightness, 0, this->maxBrightness, 0, 100);
+    // Rounded, so a percentage passed to setBrightness() reads back unchanged.
+    return (static_cast<uint16_t>(this->brightness) * 100 + this->maxBrightness / 2) / this->maxBrightness;
 }
 
 bool CtrlLed::isOn() const

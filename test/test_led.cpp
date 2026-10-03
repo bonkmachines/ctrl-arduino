@@ -249,6 +249,18 @@ static void test_led_disabled_ignores_set()
     TEST_ASSERT_EQUAL_INT(HIGH, digitalRead(1));
 }
 
+static void test_led_brightness_round_trips()
+{
+    const uint8_t maxBrightnesses[] = {255, 200, 100};
+    for (const uint8_t maxBrightness : maxBrightnesses) {
+        CtrlLed led(1, maxBrightness);
+        for (int percentage = 0; percentage <= 100; ++percentage) {
+            led.setBrightness(percentage);
+            TEST_ASSERT_EQUAL_INT(percentage, led.getBrightness());
+        }
+    }
+}
+
 void run_led_tests()
 {
     RUN_TEST(test_led_can_be_turned_on_and_off);
@@ -270,4 +282,5 @@ void run_led_tests()
     RUN_TEST(test_led_set_drives_digital_pin);
     RUN_TEST(test_led_set_drives_pwm_pin_at_current_brightness);
     RUN_TEST(test_led_disabled_ignores_set);
+    RUN_TEST(test_led_brightness_round_trips);
 }
