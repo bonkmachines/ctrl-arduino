@@ -110,6 +110,13 @@ class CtrlPot : public CtrlBase, public Muxable, public Groupable
         [[nodiscard]] uint16_t getValue() const;
 
         /**
+         * @brief Get the current value of the shaft position as a percentage.
+         * 
+         * @return The value as a `uint8_t` (0 - 100)
+         */
+        [[nodiscard]] uint8_t getPercentage() const;
+
+        /**
         * @brief Set the maximum value returned by analogRead().
         *
         * Defaults to 1023 (10-bit ADC). Set to 4095 for boards with
@@ -125,6 +132,15 @@ class CtrlPot : public CtrlBase, public Muxable, public Groupable
         * @return The maximum raw ADC value as a `uint16_t`.
         */
         [[nodiscard]] uint16_t getAnalogMax() const;
+
+        /**
+         * @brief Get the maximum output value provided by getValue()
+         * 
+         * This value is declared in the objects' constructor.
+         * 
+         * @return The maximum output value.
+         */
+        [[nodiscard]] uint16_t getMax() const;
 
         /**
         * @brief Set the on value change handler.
