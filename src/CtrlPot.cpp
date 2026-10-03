@@ -85,10 +85,20 @@ uint16_t CtrlPot::getValue() const
     return val;
 }
 
+uint8_t CtrlPot::getPercentage() const
+{
+    return (getValue() * 100) / getMax();
+}
+
 void CtrlPot::setAnalogMax(const uint16_t analogMax)
 {
     if (analogMax == 0) return;
     this->analogMax = analogMax;
+}
+
+uint16_t CtrlPot::getMax() const
+{
+    return this->maxOutputValue;
 }
 
 uint16_t CtrlPot::getAnalogMax() const
