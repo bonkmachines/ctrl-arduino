@@ -129,8 +129,46 @@ static void test_potentiometer_store_raw_process_uses_isr_branch()
     TEST_ASSERT_EQUAL_INT(100, potentiometer.getValue());
 }
 
+static void test_potentiometer_get_max_output_value()
+{
+    CtrlPot potentiometer(POT_PIN, 1023, TEST_SENSITIVITY);
+    TEST_ASSERT_EQUAL_INT(1023, potentiometer.getMaxOutputValue());
+}
+
+static void test_potentiometer_get_percentage()
+{
+    CtrlPot potentiometer(POT_PIN, 1023, TEST_SENSITIVITY);
+    TEST_ASSERT_EQUAL_INT(0, potentiometer.getPercentage());
+
+    // Above 655 a 16-bit `value * 100` would overflow; the percentage must stay correct.
+    converge(
+        [&]{ potentiometer.setRawValue(1023); },
+        [&]{ return (int)potentiometer.getValue(); },
+        1023
+    );
+    TEST_ASSERT_EQUAL_INT(1023, potentiometer.getValue());
+    TEST_ASSERT_EQUAL_INT(100, potentiometer.getPercentage());
+
+    converge(
+        [&]{ potentiometer.setRawValue(767); },
+        [&]{ return (int)potentiometer.getValue(); },
+        767
+    );
+    TEST_ASSERT_EQUAL_INT(74, potentiometer.getPercentage());
+}
+
+static void test_potentiometer_get_percentage_with_zero_max_output_value()
+{
+    CtrlPot potentiometer(POT_PIN, 0, TEST_SENSITIVITY);
+    potentiometer.setRawValue(1023);
+    TEST_ASSERT_EQUAL_INT(0, potentiometer.getPercentage());
+}
+
 void run_potentiometer_common_tests()
 {
+    RUN_TEST(test_potentiometer_get_max_output_value);
+    RUN_TEST(test_potentiometer_get_percentage);
+    RUN_TEST(test_potentiometer_get_percentage_with_zero_max_output_value);
     RUN_TEST(test_potentiometer_common_can_be_disabled_and_enabled);
     RUN_TEST(test_potentiometer_common_can_be_turned);
     RUN_TEST(test_potentiometer_disabled_ignores_input);

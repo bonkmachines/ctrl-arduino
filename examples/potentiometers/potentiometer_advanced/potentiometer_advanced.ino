@@ -16,6 +16,8 @@
   Available methods:
   - process()                    Is used to poll the potentiometer and handle all it's functionality (used in the loop method).
   - getValue()                   Retrieves the current value of the potentiometer.
+  - getPercentage()              Retrieves the current value as a percentage (0 - 100).
+  - getMaxOutputValue()          Returns the maximum output value set in the constructor.
   - setOnValueChange()           Sets the onValueChange handler. Will be called as soon as the reading of the potentiometer changes.
   - setAnalogMax(1023)           Sets the maximum value returned by analogRead() (default 1023, use 4095 for 12-bit ADCs).
   - getAnalogMax()               Returns the maximum ADC value.
