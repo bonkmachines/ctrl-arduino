@@ -28,9 +28,10 @@ the shorter leg is the cathode (-). An LED also needs a resistor in series to
 limit the current, otherwise it (or your Arduino's pin) can burn out. A 220Ω 
 resistor is a safe value for most LEDs at 5V and 3.3V.
 
-* Connect the Arduino pin to one end of the resistor.
-* Connect the other end of the resistor to the anode (long leg) of the LED.
-* Connect the cathode (short leg) of the LED to GND.
+| LED leg             | Connects to                          |
+|---------------------|--------------------------------------|
+| Anode (long leg)    | 220Ω resistor → Arduino pin (e.g. 9) |
+| Cathode (short leg) | GND                                  |
 
 The CTRL library can drive an LED in two ways:
 
@@ -61,9 +62,17 @@ If you're not sure which type you have, check its datasheet, or simply try
 both: with the wrong type set, the colours will be inverted (white shows as 
 off and off shows as white).
 
-* Connect the common (longest) leg to GND (common cathode) or 5V (common anode).
-* Connect each of the other three legs, through its own 220Ω resistor, to a 
-PWM-capable pin. In the examples we use pin 9 for red, 10 for green and 11 for blue.
+The legs are usually in this order, with the longest leg second (check your LED's datasheet):
+
+| RGB LED leg      | Common cathode         | Common anode             |
+|------------------|------------------------|--------------------------|
+| Red              | 220Ω resistor → pin 9  | 220Ω resistor → pin 9    |
+| Common (longest) | GND                    | 5V (3.3V on 3.3V boards) |
+| Green            | 220Ω resistor → pin 10 | 220Ω resistor → pin 10   |
+| Blue             | 220Ω resistor → pin 11 | 220Ω resistor → pin 11   |
+
+Each colour gets its own resistor; don't share one resistor on the common leg, 
+or the colours will affect each other's brightness.
 
 All three pins need to be PWM-capable, as the colour is made by setting the 
 brightness of each leg.
