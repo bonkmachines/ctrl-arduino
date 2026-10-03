@@ -5,6 +5,36 @@
 [![Compile examples](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/compile-examples.yml/badge.svg)](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/compile-examples.yml)
 [![Spell Check status](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/spell-check.yml/badge.svg)](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/spell-check.yml)
 
+**CTRL gives buttons, rotary encoders, potentiometers, LEDs and multiplexers one 
+consistent, beginner-friendly interface**, with debouncing, smoothing, groups and 
+interrupt-safe input built in. One library instead of a separate one for every 
+kind of control.
+
+```c++
+#include <CTRL.h>
+
+void onPress() {
+  Serial.println("Pressed!");
+}
+
+CtrlBtn button(2, 15, onPress);   // A debounced button on pin 2.
+CtrlLed led(LED_BUILTIN);         // The board's built-in LED.
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  button.process();               // Poll the button.
+  led.set(button.isPressed());    // The LED lights up while the button is held.
+}
+```
+
+Works on Arduino AVR boards (Uno, Mega, …), ESP32, Raspberry Pi Pico (RP2040), Teensy and more. 
+See the [examples](https://github.com/bonkmachines/ctrl-arduino/tree/main/examples "View the examples") & [hookup guides](https://github.com/bonkmachines/ctrl-arduino/tree/main/docs "Documentation") to get started.
+
+***
+
 Welcome to CTRL! This library contains interfaces for the usage of buttons, 
 rotary encoders, potentiometers, LEDs, RGB LEDs & multiplexers. Whether you need a nicely 
 debounced button or encoder, a smooth yet responsive and accurate potentiometer, 
