@@ -31,11 +31,13 @@ CtrlRGBLed::CtrlRGBLed(
     const uint8_t sigR,
     const uint8_t sigG,
     const uint8_t sigB,
-    const uint8_t maxBrightness
+    const uint8_t maxBrightness,
+    const uint8_t type
 ) {
-    this->sigR = sigR;
-    this->sigG = sigG;
-    this->sigB = sigB;
+    this->sig[0] = sigR;
+    this->sig[1] = sigG;
+    this->sig[2] = sigB;
+    this->type = type;
     this->on = false;
     this->brightness = maxBrightness;
     this->maxBrightness = maxBrightness;
@@ -44,64 +46,35 @@ CtrlRGBLed::CtrlRGBLed(
 void CtrlRGBLed::initialize()
 {
     if (this->initialized) return;
-    this->sigArr[0] = this-> sigR;
-    this->sigArr[1] = this-> sigG;
-    this->sigArr[2] = this-> sigB;
-
-    for (uint8_t i = 0; i < 3; i++) {
-        pinMode(this->sigArr[i], OUTPUT);
-        analogWrite(this->sigArr[i], 0);
+    for (const uint8_t pin : this->sig) {
+        pinMode(pin, OUTPUT);
+        this->writeChannel(pin, 0);
     }
     this->initialized = true;
 }
 
-void CtrlRGBLed::processOutput() const {
-    for (uint8_t i = 0; i < 3; i++) {
-        uint8_t out = 0;
-        if (this->maxBrightness > 0) {
-            out = (uint16_t(this->rgbArr[i]) * uint16_t(this->brightness)) / 255;
-        }
-        analogWrite(this->sigArr[i], out);
-    }
+void CtrlRGBLed::writeChannel(const uint8_t pin, const uint8_t value) const
+{
+    // A common anode LED lights up when its pin is pulled low, so its output is inverted.
+    analogWrite(pin, this->type == COMMON_ANODE ? 255 - value : value);
 }
 
-void CtrlRGBLed::set(bool state)
+void CtrlRGBLed::processOutput() const
 {
-    if (this->isDisabled()) return;
-    this->initialize();
-    this->on = state;
-    if (this->on) {
-        processOutput();
-    } else {
-        for (uint8_t i = 0; i < 3; i++) {
-            analogWrite(this->sigArr[i], 0);
-        }
-    }
+    const CtrlRGB output = this->getOutputColor();
+    this->writeChannel(this->sig[0], output.r);
+    this->writeChannel(this->sig[1], output.g);
+    this->writeChannel(this->sig[2], output.b);
 }
 
-void CtrlRGBLed::setRGB(const uint8_t rgb[3])
+void CtrlRGBLed::set(const bool state)
 {
-    if (this->isDisabled()) return;
-    this->initialize();
-    this->on = true;
-    for (uint8_t i = 0; i < 3; i++) {
-        this->rgbArr[i] = rgb[i];
-    }
-    processOutput();
+    state ? this->turnOn() : this->turnOff();
 }
 
 void CtrlRGBLed::toggle()
 {
-    if (this->isDisabled()) return;
-    this->initialize();
-    this->on = !this->on;
-    if (this->on) {
-        processOutput();
-    } else {
-        for (uint8_t i = 0; i < 3; i++) {
-            analogWrite(this->sigArr[i], 0);
-        }
-    }
+    this->set(!this->on);
 }
 
 void CtrlRGBLed::turnOn()
@@ -109,7 +82,7 @@ void CtrlRGBLed::turnOn()
     if (this->isDisabled()) return;
     this->initialize();
     this->on = true;
-    processOutput();
+    this->processOutput();
 }
 
 void CtrlRGBLed::turnOff()
@@ -117,8 +90,21 @@ void CtrlRGBLed::turnOff()
     if (this->isDisabled()) return;
     this->initialize();
     this->on = false;
-    for (uint8_t i = 0; i < 3; i++) {
-        analogWrite(this->sigArr[i], 0);
+    this->processOutput();
+}
+
+void CtrlRGBLed::setColor(const uint8_t r, const uint8_t g, const uint8_t b)
+{
+    this->setColor(CtrlRGB{r, g, b});
+}
+
+void CtrlRGBLed::setColor(const CtrlRGB color)
+{
+    if (this->isDisabled()) return;
+    this->initialize();
+    this->color = color;
+    if (this->on) {
+        this->processOutput();
     }
 }
 
@@ -130,6 +116,9 @@ void CtrlRGBLed::setMaxBrightness(int maxBrightness)
     if (this->brightness > this->maxBrightness) {
         this->brightness = this->maxBrightness;
     }
+    if (this->on) {
+        this->processOutput();
+    }
 }
 
 void CtrlRGBLed::setBrightness(int percentage)
@@ -140,8 +129,23 @@ void CtrlRGBLed::setBrightness(int percentage)
     if (percentage < 0) percentage = 0;
     this->brightness = map(percentage, 0, 100, 0, this->maxBrightness);
     if (this->on) {
-        processOutput();
+        this->processOutput();
     }
+}
+
+CtrlRGB CtrlRGBLed::getColor() const
+{
+    return this->color;
+}
+
+CtrlRGB CtrlRGBLed::getOutputColor() const
+{
+    if (!this->on) return CtrlColor::Off;
+    return CtrlRGB{
+        static_cast<uint8_t>(static_cast<uint16_t>(this->color.r) * this->brightness / 255),
+        static_cast<uint8_t>(static_cast<uint16_t>(this->color.g) * this->brightness / 255),
+        static_cast<uint8_t>(static_cast<uint16_t>(this->color.b) * this->brightness / 255)
+    };
 }
 
 uint8_t CtrlRGBLed::getMaxBrightness() const
@@ -152,21 +156,7 @@ uint8_t CtrlRGBLed::getMaxBrightness() const
 uint8_t CtrlRGBLed::getBrightness() const
 {
     if (this->maxBrightness == 0) return 0;
-    return map(this->brightness, 0, this->maxBrightness, 0, 100);
-}
-
-std::array<uint8_t, 3> CtrlRGBLed::getRGBRaw() const {
-    return this->rgbArr;
-}
-
-std::array<uint8_t, 3> CtrlRGBLed::getRGB() const {
-    std::array<uint8_t, 3> var = {0, 0, 0};
-    if (this->maxBrightness > 0) {
-        for (uint8_t i = 0; i < 3; i++) {
-            var[i] = (uint16_t(this->rgbArr[i]) * uint16_t(this->brightness)) / 255;
-        }
-    }
-    return var;
+    return (static_cast<uint16_t>(this->brightness) * 100 + this->maxBrightness / 2) / this->maxBrightness;
 }
 
 bool CtrlRGBLed::isOn() const
@@ -177,4 +167,9 @@ bool CtrlRGBLed::isOn() const
 bool CtrlRGBLed::isOff() const
 {
     return !this->on;
+}
+
+bool CtrlRGBLed::isCommonAnode() const
+{
+    return this->type == COMMON_ANODE;
 }
