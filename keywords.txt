@@ -1,0 +1,97 @@
+#######################################
+# Syntax Coloring Map for CTRL
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+CtrlBase	KEYWORD1
+CtrlBtn	KEYWORD1
+CtrlEnc	KEYWORD1
+CtrlPot	KEYWORD1
+CtrlLed	KEYWORD1
+CtrlRGBLed	KEYWORD1
+CtrlRGB	KEYWORD1
+CtrlColor	KEYWORD1
+CtrlMux	KEYWORD1
+CtrlGroup	KEYWORD1
+Groupable	KEYWORD1
+Muxable	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+process	KEYWORD2
+enable	KEYWORD2
+disable	KEYWORD2
+isEnabled	KEYWORD2
+isDisabled	KEYWORD2
+isInitialized	KEYWORD2
+turnOn	KEYWORD2
+turnOff	KEYWORD2
+toggle	KEYWORD2
+set	KEYWORD2
+isOn	KEYWORD2
+isOff	KEYWORD2
+isPwmMode	KEYWORD2
+setBrightness	KEYWORD2
+getBrightness	KEYWORD2
+setMaxBrightness	KEYWORD2
+getMaxBrightness	KEYWORD2
+setColor	KEYWORD2
+getColor	KEYWORD2
+getOutputColor	KEYWORD2
+isCommonAnode	KEYWORD2
+isPressed	KEYWORD2
+isReleased	KEYWORD2
+setPinMode	KEYWORD2
+setDelayedReleaseDuration	KEYWORD2
+setOnPress	KEYWORD2
+setOnRelease	KEYWORD2
+setOnDelayedRelease	KEYWORD2
+isTurningLeft	KEYWORD2
+isTurningRight	KEYWORD2
+setOnTurnLeft	KEYWORD2
+setOnTurnRight	KEYWORD2
+getValue	KEYWORD2
+getPercentage	KEYWORD2
+getMaxOutputValue	KEYWORD2
+setAnalogMax	KEYWORD2
+getAnalogMax	KEYWORD2
+setRawValue	KEYWORD2
+storeRaw	KEYWORD2
+setOnValueChange	KEYWORD2
+storePinState	KEYWORD2
+storePinStates	KEYWORD2
+setSwitchInterval	KEYWORD2
+onPress	KEYWORD2
+onRelease	KEYWORD2
+onDelayedRelease	KEYWORD2
+onTurnLeft	KEYWORD2
+onTurnRight	KEYWORD2
+onValueChange	KEYWORD2
+setGroup	KEYWORD2
+isGrouped	KEYWORD2
+setMultiplexer	KEYWORD2
+isMuxed	KEYWORD2
+addObject	KEYWORD2
+removeObject	KEYWORD2
+reserve	KEYWORD2
+setBoolean	KEYWORD2
+getBoolean	KEYWORD2
+setInteger	KEYWORD2
+getInteger	KEYWORD2
+setString	KEYWORD2
+getString	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+PULL_UP	LITERAL1
+PULL_DOWN	LITERAL1
+COMMON_CATHODE	LITERAL1
+COMMON_ANODE	LITERAL1
+DISCONNECTED	LITERAL1
