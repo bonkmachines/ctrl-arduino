@@ -29,57 +29,80 @@
 #define CtrlRGBLed_h
 
 #include <Arduino.h>
-#include <array>
 #include "CtrlBase.h"
+
+/**
+ * @brief A colour, as red, green and blue values (0 - 255 each).
+ */
+struct CtrlRGB
+{
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+};
+
+/**
+ * @brief Ready-made colours, e.g. `led.setColor(CtrlColor::Red);`
+ */
+namespace CtrlColor
+{
+    constexpr CtrlRGB Off     = {0, 0, 0};
+    constexpr CtrlRGB White   = {255, 255, 255};
+    constexpr CtrlRGB Red     = {255, 0, 0};
+    constexpr CtrlRGB Green   = {0, 255, 0};
+    constexpr CtrlRGB Blue    = {0, 0, 255};
+    constexpr CtrlRGB Yellow  = {255, 255, 0};
+    constexpr CtrlRGB Cyan    = {0, 255, 255};
+    constexpr CtrlRGB Magenta = {255, 0, 255};
+}
+
+#ifdef COMMON_CATHODE
+    #undef COMMON_CATHODE
+#endif
+static constexpr uint8_t COMMON_CATHODE = 0;
+
+#ifdef COMMON_ANODE
+    #undef COMMON_ANODE
+#endif
+static constexpr uint8_t COMMON_ANODE = 1;
 
 class CtrlRGBLed : public CtrlBase
 {
     protected:
-        uint8_t sigR; // Signal pin connected to the LED
-        uint8_t sigG; // Signal pin connected to the LED
-        uint8_t sigB; // Signal pin connected to the LED
-        uint8_t sigArr[3];
-        std::array<uint8_t, 3> rgbArr = {255, 255, 255}; // default to white
+        uint8_t sig[3]; // Signal pins connected to the red, green & blue legs of the LED
+        uint8_t type; // COMMON_CATHODE or COMMON_ANODE
+        CtrlRGB color = CtrlColor::White; // Current colour of the LED
         bool on; // Current state of the LED
-        uint8_t brightness; // Current brightness level (PWM mode only)
-        uint8_t maxBrightness; // Maximum brightness value (PWM mode only)
+        uint8_t brightness; // Current brightness level
+        uint8_t maxBrightness; // Maximum brightness value
 
     public:
-        std::array<uint8_t, 3> kWhite = {255, 255, 255};
-        std::array<uint8_t, 3> kOff = {0, 0, 0};
-        std::array<uint8_t, 3> kRed = {255, 0, 0};
-        std::array<uint8_t, 3> kGreen = {0, 255, 0};
-        std::array<uint8_t, 3> kBlue = {0, 0, 255};
-        
         /**
-        * @brief Instantiate a 4-pin RGB LED
-        * 
-        * @param sigR (uint8_t) The Red channel pin of the LED.
-        * @param sigG (uint8_t) The Green channel pin of the LED.
-        * @param sigB (uint8_t) The Blue channel pin of the LED.
+        * @brief Instantiate an RGB LED object (4-pin RGB LED).
+        *
+        * All three signal pins need to be PWM-capable.
+        *
+        * @param sigR (uint8_t) The pin connected to the red leg of the LED.
+        * @param sigG (uint8_t) The pin connected to the green leg of the LED.
+        * @param sigB (uint8_t) The pin connected to the blue leg of the LED.
         * @param maxBrightness (uint8_t) Sets the maximum brightness of the LED, for calibration purposes (0 - 255).
-        * @return A new CtrlRGBLed object
+        * @param type (uint8_t) COMMON_CATHODE (default) or COMMON_ANODE, depending on your LED.
+        * @return A new instance of the CtrlRGBLed class.
         */
-        explicit CtrlRGBLed(
+        CtrlRGBLed(
             uint8_t sigR,
             uint8_t sigG,
             uint8_t sigB,
-            uint8_t maxBrightness
+            uint8_t maxBrightness,
+            uint8_t type = COMMON_CATHODE
         );
 
         /**
-        * @brief Set the LED to a specific on/off state.
-        * 
-        * @param state (bool) The target state.
+        * @brief Turns the LED on or off according to the given state.
+        *
+        * @param state (bool) True to turn the LED on, false to turn it off.
         */
         void set(bool state);
-
-        /**
-         * @brief Set the RGB values for the LED.
-         *
-         * @param rgb (uint8_t[3]) Array with values {R, G, B} (0-255).
-         */
-        void setRGB(const uint8_t rgb[3]);
 
         /**
         * @brief Toggles the LED's off/on status.
@@ -97,24 +120,52 @@ class CtrlRGBLed : public CtrlBase
         void turnOff();
 
         /**
-        * @brief Sets the maximum brightness of the LED, for calibration purposes (PWM mode only).
+        * @brief Sets the colour of the LED.
         *
-        * This method is only available when the LED is connected to a PWM-capable pin.
-        * In digital mode, this method is ignored.
+        * The colour is kept when the LED is turned off and on again.
+        * Setting a colour does not turn the LED on.
         *
-        * @param maxBrightness (int) Sets the maximum brightness of the LED, for calibration purposes (0 - 255).
+        * @param r (uint8_t) Red (0 - 255).
+        * @param g (uint8_t) Green (0 - 255).
+        * @param b (uint8_t) Blue (0 - 255).
+        */
+        void setColor(uint8_t r, uint8_t g, uint8_t b);
+
+        /**
+        * @brief Sets the colour of the LED, e.g. `led.setColor(CtrlColor::Red);`
+        *
+        * @param color (CtrlRGB) The colour.
+        */
+        void setColor(CtrlRGB color);
+
+        /**
+        * @brief Sets the maximum brightness of the LED, for calibration purposes.
+        *
+        * @param maxBrightness (int) Sets the maximum brightness of the LED (0 - 255).
         */
         void setMaxBrightness(int maxBrightness);
 
         /**
-        * @brief Sets the brightness of the LED in percentages (PWM mode only).
-        *
-        * This method is only available when the LED is connected to a PWM-capable pin.
-        * In digital mode, this method is ignored.
+        * @brief Sets the brightness of the LED in percentages.
         *
         * @param percentage (int) Sets the brightness. (0 - 100).
         */
         void setBrightness(int percentage);
+
+        /**
+        * @brief Returns the colour set for the LED, regardless of its brightness.
+        *
+        * @return The colour as a `CtrlRGB`.
+        */
+        [[nodiscard]] CtrlRGB getColor() const;
+
+        /**
+        * @brief Returns the colour the LED actually outputs: its colour scaled by its brightness.
+        * Returns CtrlColor::Off while the LED is off.
+        *
+        * @return The output colour as a `CtrlRGB`.
+        */
+        [[nodiscard]] CtrlRGB getOutputColor() const;
 
         /**
         * @brief Returns the maximum brightness set for the LED.
@@ -145,25 +196,17 @@ class CtrlRGBLed : public CtrlBase
         [[nodiscard]] bool isOff() const;
 
         /**
-         * @brief Get the raw RGB values pushed to the LED.
-         * 
-         * @return The array of raw RGB values.
-         */
-        [[nodiscard]] std::array<uint8_t, 3> getRGBRaw() const;
-
-        /**
-         * @brief Get the scaled RGB values pushed to the LED.
-         * 
-         * Scaled values are multiplied by the LED's brightness percentage.
-         * 
-         * @return The array of scaled RGB values.
-         */
-        [[nodiscard]] std::array<uint8_t, 3> getRGB() const;
+        * @brief Checks if the LED is a common anode LED.
+        *
+        * @return True for a common anode LED, false for a common cathode LED.
+        */
+        [[nodiscard]] bool isCommonAnode() const;
 
     protected:
         bool initialized = false;
         void initialize();
         void processOutput() const;
+        void writeChannel(uint8_t pin, uint8_t value) const;
 };
 
 #endif

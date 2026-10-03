@@ -33,6 +33,7 @@
 #include "CtrlEnc.h"
 #include "CtrlPot.h"
 #include "CtrlLed.h"
+#include "CtrlRGBLed.h"
 #include "CtrlMux.h"
 #include "CtrlGroup.h"
 #include "Groupable.h"
