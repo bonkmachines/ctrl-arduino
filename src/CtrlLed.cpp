@@ -67,6 +67,11 @@ void CtrlLed::processOutput() const
     }
 }
 
+void CtrlLed::set(const bool state)
+{
+    state ? this->turnOn() : this->turnOff();
+}
+
 void CtrlLed::toggle()
 {
     if (this->isDisabled()) return;

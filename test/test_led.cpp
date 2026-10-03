@@ -101,6 +101,12 @@ static void test_led_digital_mode_on_off()
 
     led.toggle();
     TEST_ASSERT_TRUE(led.isOff());
+
+    led.set(true);
+    TEST_ASSERT_TRUE(led.isOn());
+
+    led.set(false);
+    TEST_ASSERT_TRUE(led.isOff());
 }
 
 static void test_led_digital_mode_ignores_brightness()
@@ -127,6 +133,9 @@ static void test_led_disabled_ignores_toggle()
     TEST_ASSERT_TRUE(led.isOff());
 
     led.turnOn();
+    TEST_ASSERT_TRUE(led.isOff());
+
+    led.set(true);
     TEST_ASSERT_TRUE(led.isOff());
 
     led.setBrightness(50);
@@ -188,6 +197,58 @@ static void test_led_set_max_brightness_clamps_brightness()
     TEST_ASSERT_TRUE(led.getMaxBrightness() == 50);
 }
 
+static void test_led_set_drives_digital_pin()
+{
+    CtrlLed led(1);
+
+    led.set(true);
+    TEST_ASSERT_TRUE(led.isOn());
+    TEST_ASSERT_EQUAL_INT(HIGH, digitalRead(1));
+
+    led.set(true);
+    TEST_ASSERT_TRUE(led.isOn());
+    TEST_ASSERT_EQUAL_INT(HIGH, digitalRead(1));
+
+    led.set(false);
+    TEST_ASSERT_TRUE(led.isOff());
+    TEST_ASSERT_EQUAL_INT(LOW, digitalRead(1));
+}
+
+static void test_led_set_drives_pwm_pin_at_current_brightness()
+{
+    CtrlLed led(1, 255);
+
+    led.setBrightness(50);
+    led.set(true);
+    TEST_ASSERT_TRUE(led.isOn());
+    TEST_ASSERT_EQUAL_INT(127, analogRead(1));
+
+    led.set(false);
+    TEST_ASSERT_TRUE(led.isOff());
+    TEST_ASSERT_EQUAL_INT(0, analogRead(1));
+
+    // Brightness is kept while the LED is off.
+    led.set(true);
+    TEST_ASSERT_EQUAL_INT(127, analogRead(1));
+}
+
+static void test_led_disabled_ignores_set()
+{
+    CtrlLed led(1);
+
+    led.disable();
+    led.set(true);
+    TEST_ASSERT_TRUE(led.isOff());
+    TEST_ASSERT_EQUAL_INT(LOW, digitalRead(1));
+
+    led.enable();
+    led.set(true);
+    led.disable();
+    led.set(false);
+    TEST_ASSERT_TRUE(led.isOn());
+    TEST_ASSERT_EQUAL_INT(HIGH, digitalRead(1));
+}
+
 void run_led_tests()
 {
     RUN_TEST(test_led_can_be_turned_on_and_off);
@@ -206,4 +267,7 @@ void run_led_tests()
     RUN_TEST(test_led_disabled_ignores_turn_off);
     RUN_TEST(test_led_brightness_zero_max_returns_zero);
     RUN_TEST(test_led_set_max_brightness_clamps_brightness);
+    RUN_TEST(test_led_set_drives_digital_pin);
+    RUN_TEST(test_led_set_drives_pwm_pin_at_current_brightness);
+    RUN_TEST(test_led_disabled_ignores_set);
 }

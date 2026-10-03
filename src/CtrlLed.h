@@ -68,6 +68,15 @@ class CtrlLed : public CtrlBase
         explicit CtrlLed(uint8_t sig);
 
         /**
+        * @brief Turns the LED on or off according to the given state.
+        *
+        * Equivalent to calling turnOn() or turnOff(), e.g. `led.set(button.isPressed());`
+        *
+        * @param state (bool) True to turn the LED on, false to turn it off.
+        */
+        void set(bool state);
+
+        /**
         * @brief Toggles the LED's off/on status.
         */
         void toggle();
