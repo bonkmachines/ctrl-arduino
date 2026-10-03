@@ -44,12 +44,12 @@ CtrlGroup filterGroup;
 
 CtrlPot knob(A0, 127, 0.5);
 
-void onVolumeChange(Groupable& pot, int value) {
+void onVolumeChange(Groupable& /* pot */, int value) {
   Serial.print("Volume: ");
   Serial.println(value);
 }
 
-void onFilterChange(Groupable& pot, int value) {
+void onFilterChange(Groupable& /* pot */, int value) {
   Serial.print("Filter: ");
   Serial.println(value);
 }
