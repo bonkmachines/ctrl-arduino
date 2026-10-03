@@ -6,7 +6,7 @@
 [![Spell Check status](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/spell-check.yml/badge.svg)](https://github.com/bonkmachines/ctrl-arduino/actions/workflows/spell-check.yml)
 
 Welcome to CTRL! This library contains interfaces for the usage of buttons, 
-rotary encoders, potentiometers, LEDs & multiplexers. Whether you need a nicely 
+rotary encoders, potentiometers, LEDs, RGB LEDs & multiplexers. Whether you need a nicely 
 debounced button or encoder, a smooth yet responsive and accurate potentiometer, 
 or a flashing LED, you've come to the right place. All these real-world objects 
 are represented by feature-rich software counterparts. You can instantiate them 
@@ -56,6 +56,7 @@ If you only need a portion of the library, you can import that specific part. Yo
   #include <CtrlEnc.h>
   #include <CtrlPot.h>
   #include <CtrlLed.h>
+  #include <CtrlRGBLed.h>
 ```
 
 Ok, so let's draw up a simple sketch for a button:
@@ -101,7 +102,7 @@ Finally, all we need to do is to make sure we call the button's process method d
 looping so that all its data readings and functionality can be continuously processed.
 
 And that's it! Have a look at the [examples](https://github.com/bonkmachines/ctrl-arduino/tree/main/examples "View all examples") to see how to use 
-potentiometers, rotary encoders and LED's. For more extensive and in depth information on
+potentiometers, rotary encoders, LEDs and RGB LEDs. For more extensive and in depth information on
 how to hook everything up, please refer to the [documentation](https://github.com/bonkmachines/ctrl-arduino/tree/main/docs "Documentation").
 
 P.S. If you have ideas or suggestions, feel free to contact me at <johannesprins@knalgeel.com>

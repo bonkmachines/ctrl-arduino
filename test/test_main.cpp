@@ -23,6 +23,7 @@ extern void run_potentiometer_alternative_tests();
 extern void run_potentiometer_advanced_tests();
 
 extern void run_led_tests();
+extern void run_ledrgb_tests();
 
 extern void run_multiplexer_button_tests();
 extern void run_multiplexer_encoder_tests();
@@ -70,6 +71,7 @@ int run_tests()
     run_potentiometer_advanced_tests();
 
     run_led_tests();
+    run_ledrgb_tests();
 
     run_multiplexer_button_tests();
     run_multiplexer_encoder_tests();

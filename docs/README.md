@@ -12,4 +12,5 @@ easy to follow.
 - [Button hookup guide](buttons.md): Learn how to incorporate buttons into your circuits and add interactive functionality.
 - [Potentiometer hookup guide](potentiometers.md): Explore the versatility of potentiometers and their applications in analog circuits.
 - [Rotary encoder hookup guide](rotary_encoders.md): Discover how rotary encoders can be used for precise control and navigation in your projects.
+- [LED hookup guide](leds.md): Connect regular and RGB LEDs, from a simple status light to any colour you like.
 - [Multiplexer hookup guide](multiplexers.md): Master the use of multiplexers to expand your input/output capabilities and streamline your circuit designs.
