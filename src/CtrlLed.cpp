@@ -121,6 +121,9 @@ void CtrlLed::setMaxBrightness(int maxBrightness)
     if (this->brightness > this->maxBrightness) {
         this->brightness = this->maxBrightness;
     }
+    if (this->on && this->isEnabled()) {
+        this->processOutput();
+    }
 }
 
 void CtrlLed::setBrightness(int percentage)

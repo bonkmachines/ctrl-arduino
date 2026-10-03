@@ -212,6 +212,21 @@ static void test_ledrgb_disabled_ignores_input()
     assert_pins(255, 255, 255);
 }
 
+static void test_ledrgb_disabled_max_brightness_leaves_output()
+{
+    CtrlRGBLed led(PIN_R, PIN_G, PIN_B, 255);
+
+    led.turnOn();
+    led.disable();
+    led.setMaxBrightness(50);
+    assert_pins(255, 255, 255);
+    TEST_ASSERT_EQUAL_INT(50, led.getMaxBrightness());
+
+    led.enable();
+    led.turnOn();
+    assert_pins(50, 50, 50);
+}
+
 void run_ledrgb_tests()
 {
     RUN_TEST(test_ledrgb_starts_off_and_white);
@@ -227,4 +242,5 @@ void run_ledrgb_tests()
     RUN_TEST(test_ledrgb_max_brightness_calibrates_output);
     RUN_TEST(test_ledrgb_common_anode_inverts_output);
     RUN_TEST(test_ledrgb_disabled_ignores_input);
+    RUN_TEST(test_ledrgb_disabled_max_brightness_leaves_output);
 }

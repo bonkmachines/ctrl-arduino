@@ -261,6 +261,28 @@ static void test_led_brightness_round_trips()
     }
 }
 
+static void test_led_lowering_max_brightness_updates_output()
+{
+    CtrlLed led(1, 255);
+
+    led.turnOn();
+    TEST_ASSERT_EQUAL_INT(255, analogRead(1));
+
+    led.setMaxBrightness(50);
+    TEST_ASSERT_EQUAL_INT(50, analogRead(1));
+}
+
+static void test_led_disabled_max_brightness_leaves_output()
+{
+    CtrlLed led(1, 255);
+
+    led.turnOn();
+    led.disable();
+    led.setMaxBrightness(50);
+    TEST_ASSERT_EQUAL_INT(255, analogRead(1));
+    TEST_ASSERT_EQUAL_INT(50, led.getMaxBrightness());
+}
+
 void run_led_tests()
 {
     RUN_TEST(test_led_can_be_turned_on_and_off);
@@ -283,4 +305,6 @@ void run_led_tests()
     RUN_TEST(test_led_set_drives_pwm_pin_at_current_brightness);
     RUN_TEST(test_led_disabled_ignores_set);
     RUN_TEST(test_led_brightness_round_trips);
+    RUN_TEST(test_led_lowering_max_brightness_updates_output);
+    RUN_TEST(test_led_disabled_max_brightness_leaves_output);
 }

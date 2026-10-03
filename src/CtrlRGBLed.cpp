@@ -116,7 +116,7 @@ void CtrlRGBLed::setMaxBrightness(int maxBrightness)
     if (this->brightness > this->maxBrightness) {
         this->brightness = this->maxBrightness;
     }
-    if (this->on) {
+    if (this->on && this->isEnabled()) {
         this->processOutput();
     }
 }
