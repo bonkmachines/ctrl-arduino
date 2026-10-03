@@ -16,7 +16,7 @@
 */
 
 // The button mux. Connect 'sig' to a digital pin on your board.
-CtrlMux btnMux(1, 3, 4, 5, 6);
+CtrlMux btnMux(7, 3, 4, 5, 6);
 
 // The potentiometer mux. Connect 'sig' to an analog pin on your board.
 CtrlMux potMux(A0, 3, 4, 5, 6);

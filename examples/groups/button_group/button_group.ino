@@ -45,8 +45,8 @@
 CtrlGroup buttonGroup;
 
 // Create 2 buttons with: pin number & bounce duration.
-CtrlBtn button1(1, 15);
-CtrlBtn button2(2, 15);
+CtrlBtn button1(2, 15);
+CtrlBtn button2(3, 15);
 
 // Define an onPress handler. This will be triggered by all buttons registered to the group.
 void onPress(Groupable& button) {

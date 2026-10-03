@@ -45,8 +45,8 @@
 CtrlGroup encoderGroup;
 
 // Create 2 rotary encoders with: clk pin number & dt pin number.
-CtrlEnc encoder1(1, 2);
-CtrlEnc encoder2(3, 4);
+CtrlEnc encoder1(2, 3);
+CtrlEnc encoder2(4, 5);
 
 // Define an onTurnLeft handler. This will be triggered by all rotary encoders registered to the group.
 void onTurnLeft(Groupable& encoder) {

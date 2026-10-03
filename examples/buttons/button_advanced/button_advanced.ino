@@ -66,7 +66,7 @@ class CustomButton : public CtrlBtn
 };
 
 // Create a button with the signal pin number & bounce duration.
-CustomButton button(1, 15);
+CustomButton button(2, 15);
 
 void setup() {
   Serial.begin(9600);

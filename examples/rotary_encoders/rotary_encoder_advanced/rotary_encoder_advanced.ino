@@ -62,7 +62,7 @@ class CustomEncoder : public CtrlEnc
 };
 
 // Create a rotary encoder with the clk pin number & dt pin number.
-CustomEncoder encoder(1, 2);
+CustomEncoder encoder(2, 3);
 
 void setup() {
   Serial.begin(9600);

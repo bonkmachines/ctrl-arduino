@@ -32,7 +32,7 @@
 #include <CtrlMux.h>
 #include <CtrlBtn.h>
 
-CtrlMux mux(1, 2, 3, 4, 5);
+CtrlMux mux(6, 2, 3, 4, 5);
 
 void onPress0() { Serial.println("Button 0 pressed"); }
 void onPress1() { Serial.println("Button 1 pressed"); }

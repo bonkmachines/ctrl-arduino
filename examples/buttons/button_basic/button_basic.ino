@@ -63,7 +63,7 @@ void onRelease() {
   - onPress handler (optional).
   - onRelease handler (optional).
  */
-CtrlBtn button(1, 15, onPress, onRelease);
+CtrlBtn button(2, 15, onPress, onRelease);
 
 void setup() {
   Serial.begin(9600);

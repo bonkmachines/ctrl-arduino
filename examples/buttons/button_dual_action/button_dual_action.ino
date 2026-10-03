@@ -64,7 +64,7 @@ void onDelayedRelease() {
   - onRelease handler.
   - onDelayedRelease handler.
  */
-CtrlBtn button(1, 15, nullptr, onRelease, onDelayedRelease);
+CtrlBtn button(2, 15, nullptr, onRelease, onDelayedRelease);
 
 void setup() {
   Serial.begin(9600);

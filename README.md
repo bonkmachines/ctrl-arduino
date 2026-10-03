@@ -72,7 +72,7 @@ void onRelease() {
   Serial.println("Button released");
 }
 
-CtrlBtn button(1, 15, onPress, onRelease);
+CtrlBtn button(2, 15, onPress, onRelease);
 
 void setup() {
   Serial.begin(9600);
@@ -90,8 +90,8 @@ soon as the button is released and goes back 'up'. You can omit the onRelease if
 you don't need it (the same goes for the onPress, by the way).
 
 After that, we create a button of the type CtrlBtn and pass it some data. The first 
-parameter (1) tells the software what pin the button is hooked up to (this pin will 
-be pulled HIGH on initialization, so make sure you wire the button from pin 1 to the 
+parameter (2) tells the software what pin the button is hooked up to (this pin will 
+be pulled HIGH on initialization, so make sure you wire the button from pin 2 to the 
 button and from the button to ground). The second parameter (15) is the bounce duration 
 in milliseconds. I usually set this to around 15 as it accommodates the bouncing of 
 most buttons that I use. If you have a very 'noisy' button, you can increase this number. 

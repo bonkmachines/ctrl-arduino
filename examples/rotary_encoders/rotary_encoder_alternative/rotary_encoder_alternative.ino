@@ -51,7 +51,7 @@
 #include <CtrlEnc.h>
 
 // Create a rotary encoder with the clk pin number & dt pin number.
-CtrlEnc encoder(1, 2);
+CtrlEnc encoder(2, 3);
 
 // Define an onTurnLeft handler.
 void onTurnLeft() {

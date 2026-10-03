@@ -39,7 +39,7 @@
   - signal pin.
   - s0 - s3: the channel select pins (s3 is optional).
 */
-CtrlMux mux(1, 2, 3, 4, 5);
+CtrlMux mux(6, 2, 3, 4, 5);
 
 // Define an onTurnLeft handler for encoder 1.
 void onTurnLeft1() {
