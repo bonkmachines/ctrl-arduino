@@ -24,6 +24,8 @@ jobs:
       matrix:
         include:
           - fqbn: "arduino:avr:uno"
+            platforms: |
+              - name: arduino:avr
             sketch-paths: |
               - ./examples/buttons
               - ./examples/groups
@@ -35,9 +37,23 @@ jobs:
               - ./examples/real-time/external_adc
               - ./examples/rotary_encoders
           - fqbn: "arduino:avr:mega:cpu=atmega2560"
+            platforms: |
+              - name: arduino:avr
             sketch-paths: |
               - ./examples/multiplexers/multiplexers_daisy_chained
               - ./examples/real-time/time_sliced_processing
+          - fqbn: "esp32:esp32:esp32s3"
+            platforms: |
+              - name: esp32:esp32
+                source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+            sketch-paths: |
+              - ./examples
+          - fqbn: "rp2040:rp2040:rpipico"
+            platforms: |
+              - name: rp2040:rp2040
+                source-url: https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+            sketch-paths: |
+              - ./examples
 
     steps:
       - name: Checkout repository
@@ -52,6 +68,7 @@ jobs:
         uses: arduino/compile-sketches@v1
         with:
           fqbn: ${{ matrix.fqbn }}
+          platforms: ${{ matrix.platforms }}
           sketch-paths: ${{ matrix.sketch-paths }}
           libraries: |
             - source-path: ./src
