@@ -39,7 +39,7 @@ The CTRL library can drive an LED in two ways:
 * PWM mode, on a PWM-capable pin: the brightness can also be set. On an Arduino 
 Uno these are pins 3, 5, 6, 9, 10 & 11 (marked with a ~ on the board).
 
-NOTE: On ESP32 boards, PWM mode and RGB LEDs need version 3.0 or later of the 
+NOTE: On ESP32 boards, PWM mode and RGB LEDs need version 2.0.1 or later of the 
 ESP32 board package (Tools > Board > Boards Manager), as older versions lack 
 `analogWrite()`. Most pins on ESP32 and Raspberry Pi Pico boards are PWM-capable.
 
