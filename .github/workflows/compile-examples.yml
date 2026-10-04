@@ -42,6 +42,7 @@ jobs:
             sketch-paths: |
               - ./examples/multiplexers/multiplexers_daisy_chained
               - ./examples/real-time/time_sliced_processing
+              - ./examples/real-time/benchmark
           - fqbn: "esp32:esp32:esp32s3"
             platforms: |
               - name: esp32:esp32
