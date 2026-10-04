@@ -37,8 +37,9 @@ const uint8_t LED_PIN = 2;
 // An LED on the built-in LED pin (digital mode, on/off only).
 CtrlLed led(LED_PIN);
 
-// A button on pin 2, with 15ms debouncing, using the internal pull-up resistor.
-CtrlBtn button(2, 15);
+// A button on pin 4, with 15ms debouncing, using the internal pull-up resistor.
+// (Not pin 2: that is where the LED goes on boards without LED_BUILTIN.)
+CtrlBtn button(4, 15);
 
 void setup()
 {
