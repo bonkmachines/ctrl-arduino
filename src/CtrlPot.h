@@ -34,6 +34,20 @@
 #include "Groupable.h"
 #include "Muxable.h"
 
+/**
+ * @brief Response curves for CtrlPot::getNormalized().
+ *
+ * - Linear:  the output follows the shaft position (halfway = 0.5).
+ * - Log:     "audio taper", slow start, for volume (halfway is about 0.09).
+ * - AntiLog: "reverse audio taper", fast start (halfway is about 0.91).
+ */
+enum class CtrlTaper : uint8_t
+{
+    Linear,
+    Log,
+    AntiLog
+};
+
 class CtrlPot : public CtrlBase, public Muxable, public Groupable
 {
     protected:
@@ -49,6 +63,7 @@ class CtrlPot : public CtrlBase, public Muxable, public Groupable
         bool initialized = false;
         volatile uint16_t isrRawValue = 0;
         volatile bool isrValuePending = false;
+        volatile bool changed = false; // Set when the value changes, cleared by hasChanged().
         using CallbackFunction = void (*)(int);
         CallbackFunction onValueChangeCallback = nullptr;
 
@@ -116,6 +131,27 @@ class CtrlPot : public CtrlBase, public Muxable, public Groupable
         * @return The value as a `uint8_t` (0 - 100).
         */
         [[nodiscard]] uint8_t getPercentage() const;
+
+        /**
+        * @brief Get the current value as a fraction of the maximum output value,
+        * optionally shaped by a response curve.
+        *
+        * Handy for audio parameters, e.g. `gain = pot.getNormalized(CtrlTaper::Log);`
+        *
+        * @param taper (CtrlTaper) The response curve: Linear (default), Log or AntiLog.
+        * @return The value as a `float` (0.0 - 1.0).
+        */
+        [[nodiscard]] float getNormalized(CtrlTaper taper = CtrlTaper::Linear) const;
+
+        /**
+        * @brief Checks if the value changed since the last call.
+        *
+        * Use it to poll for changes instead of (or next to) the onValueChange handler.
+        * Safe to call from an interrupt, e.g. an audio callback.
+        *
+        * @return True once after each change, false otherwise.
+        */
+        bool hasChanged();
 
         /**
         * @brief Set the maximum value returned by analogRead().

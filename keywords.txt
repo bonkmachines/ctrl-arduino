@@ -14,6 +14,7 @@ CtrlLed	KEYWORD1
 CtrlRGBLed	KEYWORD1
 CtrlRGB	KEYWORD1
 CtrlColor	KEYWORD1
+CtrlTaper	KEYWORD1
 CtrlMux	KEYWORD1
 CtrlGroup	KEYWORD1
 Groupable	KEYWORD1
@@ -58,6 +59,8 @@ setOnTurnRight	KEYWORD2
 getValue	KEYWORD2
 getPercentage	KEYWORD2
 getMaxOutputValue	KEYWORD2
+getNormalized	KEYWORD2
+hasChanged	KEYWORD2
 setAnalogMax	KEYWORD2
 getAnalogMax	KEYWORD2
 setRawValue	KEYWORD2

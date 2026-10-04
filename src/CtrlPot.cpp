@@ -27,6 +27,7 @@
 
 #include "CtrlPot.h"
 #include "CtrlGroup.h"
+#include <math.h>
 
 CtrlPot::CtrlPot(
     const uint8_t sig,
@@ -98,6 +99,34 @@ void CtrlPot::setAnalogMax(const uint16_t analogMax)
     this->analogMax = analogMax;
 }
 
+float CtrlPot::getNormalized(const CtrlTaper taper) const
+{
+    if (this->maxOutputValue <= 0) return 0.0f;
+    float x = static_cast<float>(this->getValue()) / static_cast<float>(this->maxOutputValue);
+    if (x > 1.0f) x = 1.0f;
+    // Exponential curve through (0, 0) and (1, 1); k sets how strongly it bends.
+    constexpr float k = 4.6f;
+    const float scale = 1.0f / (expf(k) - 1.0f);
+    switch (taper) {
+        case CtrlTaper::Log:
+            return (expf(k * x) - 1.0f) * scale;
+        case CtrlTaper::AntiLog:
+            return 1.0f - (expf(k * (1.0f - x)) - 1.0f) * scale;
+        case CtrlTaper::Linear:
+        default:
+            return x;
+    }
+}
+
+bool CtrlPot::hasChanged()
+{
+    const auto irqState = ctrlSaveInterrupts();
+    const bool wasChanged = this->changed;
+    this->changed = false;
+    ctrlRestoreInterrupts(irqState);
+    return wasChanged;
+}
+
 uint16_t CtrlPot::getMaxOutputValue() const
 {
     return this->maxOutputValue;
@@ -157,7 +186,12 @@ void CtrlPot::processSmoothedValue(const uint16_t newValue)
         );
         this->lastValue = newValue;
         if (mappedValue != this->lastMappedValue) {
+            // Written with interrupts held off, so an interrupt (e.g. an audio callback)
+            // reading the value never sees a half-written one on 8-bit boards.
+            const auto irqState = ctrlSaveInterrupts();
             this->lastMappedValue = mappedValue;
+            this->changed = true;
+            ctrlRestoreInterrupts(irqState);
             this->onValueChange(mappedValue);
         }
     }
