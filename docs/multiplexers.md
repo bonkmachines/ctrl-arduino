@@ -95,7 +95,7 @@ CtrlBtn button2(1, 15, onPress2, nullptr, nullptr, &mux);
 void setup() {
     Serial.begin(9600);
     mux.setSwitchInterval(2); // In microseconds.
-}o
+}
 
 void loop() {
     // The process methods will poll the button objects and handle all their functionality.

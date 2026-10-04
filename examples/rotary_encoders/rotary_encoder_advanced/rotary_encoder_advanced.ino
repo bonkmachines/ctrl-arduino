@@ -2,7 +2,7 @@
   Advanced rotary encoder example
 
   Description:
-  This sketch demonstrates an more advanced implementation of a rotary encoder.
+  This sketch demonstrates a more advanced implementation of a rotary encoder.
 
   With this approach you can extend the base class (CtrlEnc) into your own class,
   and expand on the base functionality as you please. The sky is the limit here.

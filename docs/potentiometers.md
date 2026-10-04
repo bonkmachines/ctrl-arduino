@@ -98,7 +98,7 @@ void setup() {
 }
 
 void loop() {
-  // The process method will keep polling our potentiometer object and handle all it's functionality.
+  // Handle all potentiometer functionality.
   potentiometer.process();
 }
 ```

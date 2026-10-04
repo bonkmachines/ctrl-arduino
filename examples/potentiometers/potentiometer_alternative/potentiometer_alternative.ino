@@ -2,7 +2,7 @@
   Alternative potentiometer example
 
   Description:
-  This sketch demonstrates the basic implementation of a potentiometer.
+  This sketch demonstrates an alternative implementation of a potentiometer.
 
   With this alternative approach you can instantiate all your objects first, while setting
   the handlers at a later point. This is especially handy in larger projects where you have

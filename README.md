@@ -87,6 +87,8 @@ If you only need a portion of the library, you can import that specific part. Yo
   #include <CtrlPot.h>
   #include <CtrlLed.h>
   #include <CtrlRGBLed.h>
+  #include <CtrlMux.h>
+  #include <CtrlGroup.h>
 ```
 
 Ok, so let's draw up a simple sketch for a button:
