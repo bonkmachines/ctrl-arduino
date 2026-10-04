@@ -52,8 +52,24 @@ static void test_mux_encoder_can_turn_right()
     TEST_ASSERT_EQUAL_INT(1, tracker.turnRightCount);
 }
 
+static void test_mux_encoder_selects_clk_then_dt_channel()
+{
+    CtrlMux mux(MUX_SIG_PIN, MUX_S0_PIN, MUX_S1_PIN, MUX_S2_PIN, MUX_S3_PIN);
+    CtrlEnc encoder(9, 6); // CLK on channel 9 (0b1001), DT on channel 6 (0b0110)
+    encoder.setMultiplexer(&mux);
+
+    mux.process();
+
+    // DT is read last, so the select pins are left on its channel.
+    TEST_ASSERT_EQUAL_INT(LOW, digitalRead(MUX_S0_PIN));
+    TEST_ASSERT_EQUAL_INT(HIGH, digitalRead(MUX_S1_PIN));
+    TEST_ASSERT_EQUAL_INT(HIGH, digitalRead(MUX_S2_PIN));
+    TEST_ASSERT_EQUAL_INT(LOW, digitalRead(MUX_S3_PIN));
+}
+
 void run_multiplexer_encoder_tests()
 {
     RUN_TEST(test_mux_encoder_can_turn_left);
     RUN_TEST(test_mux_encoder_can_turn_right);
+    RUN_TEST(test_mux_encoder_selects_clk_then_dt_channel);
 }
