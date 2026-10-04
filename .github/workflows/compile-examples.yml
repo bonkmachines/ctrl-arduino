@@ -72,3 +72,38 @@ jobs:
           sketch-paths: ${{ matrix.sketch-paths }}
           libraries: |
             - source-path: ./src
+
+  library-warnings:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        fqbn:
+          - "arduino:avr:mega:cpu=atmega2560"
+          - "rp2040:rp2040:rpipico"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Install platform
+        run: |
+          arduino-cli config init
+          arduino-cli config add board_manager.additional_urls https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+          arduino-cli core update-index
+          arduino-cli core install "$(echo '${{ matrix.fqbn }}' | cut -d: -f1,2)"
+
+      # Compiling any sketch that includes the library compiles all of src/.
+      # Only warnings from the library itself fail the build, not those from the board's core.
+      - name: Compile with all warnings, fail on library warnings
+        run: |
+          output=$(arduino-cli compile --fqbn "${{ matrix.fqbn }}" --library . --warnings all examples/multiplexers/multiplexers_daisy_chained 2>&1) || { echo "$output"; exit 1; }
+          warnings=$(echo "$output" | grep -E "/src/[^:]+:[0-9]+:[0-9]+: warning:" | grep -F "$GITHUB_WORKSPACE/src/" || true)
+          if [ -n "$warnings" ]; then
+            echo "$warnings"
+            exit 1
+          fi
+          echo "No library warnings."
