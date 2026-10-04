@@ -8,8 +8,6 @@
   monitor at 115200 baud and read the table.
 
   Usage:
-  This sketch needs more than 2 KB of RAM, so it runs on e.g. an Arduino Mega,
-  Teensy, ESP32 or Raspberry Pi Pico, but not on an Arduino Uno.
   Nothing needs to be connected: the readings themselves don't matter, only
   the time they take. The times include the board's own digitalRead() and
   analogRead(), which is what your sketch pays for as well.

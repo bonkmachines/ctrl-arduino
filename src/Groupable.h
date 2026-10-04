@@ -32,6 +32,35 @@
 
 class CtrlGroup;
 
+/**
+ * @brief Storage for an object's custom properties (setInteger(), setBoolean() & setString()).
+ *
+ * You normally never touch this: an object allocates its storage the first time
+ * you set a property. If your project must avoid the heap entirely, declare one
+ * per object yourself and hand it over with setProperties(), e.g.:
+ *
+ *   CtrlProperties buttonProperties;
+ *   button.setProperties(buttonProperties);
+ */
+struct CtrlProperties
+{
+    static constexpr uint8_t MAX_PROPERTIES = 8;
+    static constexpr uint8_t MAX_KEY_LENGTH = 15;
+    static constexpr uint8_t MAX_STRING_LENGTH = 20;
+
+    struct Property
+    {
+        char key[MAX_KEY_LENGTH + 1] = {};
+        enum { NONE, INT, BOOL, STRING } type = NONE;
+        int intValue = 0;
+        bool boolValue = false;
+        char stringValue[MAX_STRING_LENGTH + 1] = {};
+    };
+
+    Property properties[MAX_PROPERTIES] = {};
+    uint8_t count = 0;
+};
+
 class Groupable
 {
     friend class CtrlGroup;
@@ -40,24 +69,31 @@ class Groupable
         CtrlGroup* group = nullptr;
         bool grouped = false;
 
-        static constexpr uint8_t MAX_PROPERTIES = 8;
-        static constexpr uint8_t MAX_KEY_LENGTH = 15;
-        static constexpr uint8_t MAX_STRING_LENGTH = 20;
+        static constexpr uint8_t MAX_PROPERTIES = CtrlProperties::MAX_PROPERTIES;
+        static constexpr uint8_t MAX_KEY_LENGTH = CtrlProperties::MAX_KEY_LENGTH;
+        static constexpr uint8_t MAX_STRING_LENGTH = CtrlProperties::MAX_STRING_LENGTH;
 
-        struct Property
-        {
-            char key[MAX_KEY_LENGTH + 1] = {};
-            enum { NONE, INT, BOOL, STRING } type = NONE;
-            int intValue = 0;
-            bool boolValue = false;
-            char stringValue[MAX_STRING_LENGTH + 1] = {};
-        };
+        using Property = CtrlProperties::Property;
 
-        Property properties[MAX_PROPERTIES] = {};
-        uint8_t propertyCount = 0;
+        // Allocated on first use, so objects that never set a property stay small.
+        CtrlProperties* propertyStorage = nullptr;
+        bool ownsPropertyStorage = false;
 
     public:
+        Groupable() = default;
+        Groupable(const Groupable& other);
+        Groupable& operator=(const Groupable& other);
         virtual ~Groupable();
+
+        /**
+         * @brief Use your own storage for this object's custom properties instead of
+         * allocating it on first use (for projects that must avoid the heap).
+         *
+         * Properties already set are copied over. The storage must outlive the object.
+         *
+         * @param storage The storage to use.
+         */
+        void setProperties(CtrlProperties& storage);
 
         /**
         * @brief The process method should be called within the loop method.
@@ -134,6 +170,8 @@ class Groupable
     protected:
         [[nodiscard]] Property* findProperty(const char* key);
         [[nodiscard]] const Property* findProperty(const char* key) const;
+        Property* addProperty(const char* key);
+        void releasePropertyStorage();
 };
 
 #endif // GROUPABLE_H

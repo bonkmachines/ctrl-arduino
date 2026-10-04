@@ -27,15 +27,7 @@ jobs:
             platforms: |
               - name: arduino:avr
             sketch-paths: |
-              - ./examples/buttons
-              - ./examples/groups
-              - ./examples/leds
-              - ./examples/multiplexers/multiplexed_buttons
-              - ./examples/multiplexers/multiplexed_potentiometers
-              - ./examples/multiplexers/multiplexed_rotary_encoder
-              - ./examples/potentiometers
-              - ./examples/real-time/external_adc
-              - ./examples/rotary_encoders
+              - ./examples
           - fqbn: "arduino:avr:mega:cpu=atmega2560"
             platforms: |
               - name: arduino:avr

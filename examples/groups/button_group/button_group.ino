@@ -33,9 +33,12 @@
   - getInteger("id")              Get the value of an integer.
   - getString("name")             Get the value of a string.
   - getBoolean("active")          Get the value of a boolean.
+  - setProperties(storage)        Optional: use your own CtrlProperties storage instead of allocating it on first use.
 
-  Note: setInteger/setString/setBoolean use fixed-size memory (max 8
-  properties per object, 'name' up to 15 chars, 'value' up to 20 chars).
+  Note: an object only reserves memory for its properties the first time you
+  set one (max 8 properties per object, 'name' up to 15 chars, 'value' up to
+  20 chars). To avoid the heap, declare the storage yourself and hand it over:
+  CtrlProperties properties; button.setProperties(properties);
 */
 
 #include <CtrlGroup.h>

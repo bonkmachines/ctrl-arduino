@@ -15,6 +15,7 @@ CtrlRGBLed	KEYWORD1
 CtrlRGB	KEYWORD1
 CtrlColor	KEYWORD1
 CtrlTaper	KEYWORD1
+CtrlProperties	KEYWORD1
 CtrlMux	KEYWORD1
 CtrlGroup	KEYWORD1
 Groupable	KEYWORD1
@@ -87,6 +88,7 @@ getBoolean	KEYWORD2
 setInteger	KEYWORD2
 getInteger	KEYWORD2
 setString	KEYWORD2
+setProperties	KEYWORD2
 getString	KEYWORD2
 
 #######################################

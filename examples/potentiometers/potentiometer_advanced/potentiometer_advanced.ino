@@ -39,6 +39,7 @@
   - getInteger("id")             Get the value of an integer.
   - getString("name")            Get the value of a string.
   - getBoolean("active")         Get the value of a boolean.
+  - setProperties(storage)       Optional: use your own CtrlProperties storage instead of allocating it on first use.
 */
 
 #include <CtrlPot.h>

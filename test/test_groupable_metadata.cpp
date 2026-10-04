@@ -3,6 +3,14 @@
 #include "CtrlBtn.h"
 #include "test_globals.h"
 
+// Exposes whether a button has property storage, to test that it is only allocated on first use.
+class InspectableButton : public CtrlBtn
+{
+    public:
+        using CtrlBtn::CtrlBtn;
+        bool hasPropertyStorage() const { return this->propertyStorage != nullptr; }
+};
+
 static void test_groupable_missing_integer_returns_zero()
 {
     CtrlBtn button(1, TEST_DEBOUNCE);
@@ -89,8 +97,103 @@ static void test_groupable_multiple_properties()
     TEST_ASSERT_EQUAL_INT(5, button.getInteger("channel"));
 }
 
+static void test_groupable_storage_is_allocated_on_first_use()
+{
+    InspectableButton button(1, TEST_DEBOUNCE);
+    TEST_ASSERT_FALSE(button.hasPropertyStorage());
+
+    // Reading never allocates.
+    TEST_ASSERT_EQUAL_INT(0, button.getInteger("note"));
+    TEST_ASSERT_FALSE(button.getBoolean("on"));
+    TEST_ASSERT_EQUAL_STRING("", button.getString("name"));
+    TEST_ASSERT_FALSE(button.hasPropertyStorage());
+
+    button.setInteger("note", 60);
+    TEST_ASSERT_TRUE(button.hasPropertyStorage());
+    TEST_ASSERT_EQUAL_INT(60, button.getInteger("note"));
+}
+
+static void test_groupable_uses_provided_storage()
+{
+    CtrlProperties storage;
+    InspectableButton button(1, TEST_DEBOUNCE);
+    button.setProperties(storage);
+
+    button.setInteger("note", 60);
+    button.setBoolean("on", true);
+    button.setString("name", "Kick");
+
+    TEST_ASSERT_EQUAL_INT(3, storage.count);
+    TEST_ASSERT_EQUAL_STRING("note", storage.properties[0].key);
+    TEST_ASSERT_EQUAL_INT(60, button.getInteger("note"));
+    TEST_ASSERT_TRUE(button.getBoolean("on"));
+    TEST_ASSERT_EQUAL_STRING("Kick", button.getString("name"));
+}
+
+static void test_groupable_set_properties_keeps_existing_values()
+{
+    CtrlBtn button(1, TEST_DEBOUNCE);
+    button.setInteger("note", 60);
+
+    CtrlProperties storage;
+    button.setProperties(storage);
+
+    TEST_ASSERT_EQUAL_INT(1, storage.count);
+    TEST_ASSERT_EQUAL_INT(60, button.getInteger("note"));
+    button.setInteger("velocity", 100);
+    TEST_ASSERT_EQUAL_INT(2, storage.count);
+}
+
+static void test_groupable_provided_storage_respects_limits()
+{
+    CtrlProperties storage;
+    CtrlBtn button(1, TEST_DEBOUNCE);
+    button.setProperties(storage);
+
+    char key[8];
+    for (int i = 0; i < CtrlProperties::MAX_PROPERTIES + 2; ++i) {
+        snprintf(key, sizeof(key), "k%d", i);
+        button.setInteger(key, i);
+    }
+    TEST_ASSERT_EQUAL_INT(CtrlProperties::MAX_PROPERTIES, storage.count);
+    TEST_ASSERT_EQUAL_INT(0, button.getInteger("k9"));
+}
+
+static void test_groupable_copy_has_its_own_storage()
+{
+    CtrlBtn original(1, TEST_DEBOUNCE);
+    original.setInteger("note", 60);
+
+    CtrlBtn copy = original;
+    TEST_ASSERT_EQUAL_INT(60, copy.getInteger("note"));
+
+    copy.setInteger("note", 62);
+    TEST_ASSERT_EQUAL_INT(60, original.getInteger("note"));
+    TEST_ASSERT_EQUAL_INT(62, copy.getInteger("note"));
+
+    CtrlBtn assigned(2, TEST_DEBOUNCE);
+    assigned.setInteger("note", 1);
+    assigned = original;
+    TEST_ASSERT_EQUAL_INT(60, assigned.getInteger("note"));
+    assigned = assigned; // Self-assignment keeps the values.
+    TEST_ASSERT_EQUAL_INT(60, assigned.getInteger("note"));
+}
+
+static void test_groupable_copies_without_properties_stay_empty()
+{
+    InspectableButton original(1, TEST_DEBOUNCE);
+    InspectableButton copy = original;
+    TEST_ASSERT_FALSE(copy.hasPropertyStorage());
+}
+
 void run_groupable_metadata_tests()
 {
+    RUN_TEST(test_groupable_storage_is_allocated_on_first_use);
+    RUN_TEST(test_groupable_uses_provided_storage);
+    RUN_TEST(test_groupable_set_properties_keeps_existing_values);
+    RUN_TEST(test_groupable_provided_storage_respects_limits);
+    RUN_TEST(test_groupable_copy_has_its_own_storage);
+    RUN_TEST(test_groupable_copies_without_properties_stay_empty);
     RUN_TEST(test_groupable_missing_integer_returns_zero);
     RUN_TEST(test_groupable_missing_boolean_returns_false);
     RUN_TEST(test_groupable_missing_string_returns_empty);
