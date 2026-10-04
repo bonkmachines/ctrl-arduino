@@ -5,3 +5,10 @@
 .vscode/extensions.json
 .vscode/launch.json
 /compile_commands.json
+/.journal/
+/.claude/
+/.agents/
+/.mcp.json
+/AGENTS.md
+/CLAUDE.md
+/.cache/
