@@ -26,8 +26,16 @@
 #include <CtrlLed.h>
 #include <CtrlBtn.h>
 
+// The pin of the board's built-in LED. Some boards (e.g. the ESP32 Dev Module)
+// don't define LED_BUILTIN, so pin 2 is used there. Change it to match your wiring.
+#ifdef LED_BUILTIN
+const uint8_t LED_PIN = LED_BUILTIN;
+#else
+const uint8_t LED_PIN = 2;
+#endif
+
 // An LED on the built-in LED pin (digital mode, on/off only).
-CtrlLed led(LED_BUILTIN);
+CtrlLed led(LED_PIN);
 
 // A button on pin 2, with 15ms debouncing, using the internal pull-up resistor.
 CtrlBtn button(2, 15);

@@ -39,6 +39,16 @@
 
 #include <CtrlPot.h>
 
+// Classic ESP32 boards (e.g. the ESP32 Dev Module) have no A1 & A2,
+// so A4 & A5 are used there instead.
+#if defined(CONFIG_IDF_TARGET_ESP32)
+const uint8_t ANALOG_PIN_1 = A4;
+const uint8_t ANALOG_PIN_2 = A5;
+#else
+const uint8_t ANALOG_PIN_1 = A1;
+const uint8_t ANALOG_PIN_2 = A2;
+#endif
+
 void onVolumeChange(int value) {
   Serial.print("Volume: ");
   Serial.println(value);
@@ -60,8 +70,8 @@ void onDriveChange(int value) {
 }
 
 CtrlPot volumeKnob(A0, 127, 0.05, onVolumeChange);
-CtrlPot filterKnob(A1, 100, 0.05, onFilterChange);
-CtrlPot resonanceKnob(A2, 100, 0.05, onResonanceChange);
+CtrlPot filterKnob(ANALOG_PIN_1, 100, 0.05, onFilterChange);
+CtrlPot resonanceKnob(ANALOG_PIN_2, 100, 0.05, onResonanceChange);
 CtrlPot driveKnob(A3, 255, 0.05, onDriveChange);
 
 // --- DMA / ISR side (runs in background) ---
@@ -70,8 +80,8 @@ CtrlPot driveKnob(A3, 255, 0.05, onDriveChange);
 // storeRaw() is ISR-safe: it only writes to a volatile buffer and sets a flag.
 void timerISR() {
   volumeKnob.storeRaw(analogRead(A0));
-  filterKnob.storeRaw(analogRead(A1));
-  resonanceKnob.storeRaw(analogRead(A2));
+  filterKnob.storeRaw(analogRead(ANALOG_PIN_1));
+  resonanceKnob.storeRaw(analogRead(ANALOG_PIN_2));
   driveKnob.storeRaw(analogRead(A3));
 }
 

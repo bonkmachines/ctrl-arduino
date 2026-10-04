@@ -41,12 +41,20 @@
 #include <CtrlGroup.h>
 #include <CtrlPot.h>
 
+// Classic ESP32 boards (e.g. the ESP32 Dev Module) have no A1,
+// so A4 is used there instead.
+#if defined(CONFIG_IDF_TARGET_ESP32)
+const uint8_t ANALOG_PIN_1 = A4;
+#else
+const uint8_t ANALOG_PIN_1 = A1;
+#endif
+
 // Create a potentiometer group.
 CtrlGroup potentiometerGroup;
 
 // Create 2 potentiometers with: pin number, max output value & sensitivity margin.
 CtrlPot potentiometer1(A0, 100, 0.05);
-CtrlPot potentiometer2(A1, 100, 0.05);
+CtrlPot potentiometer2(ANALOG_PIN_1, 100, 0.05);
 
 // Define an onValueChange handler. This will be triggered by all potentiometers registered to the group.
 void onValueChange(Groupable& potentiometer, int value) {

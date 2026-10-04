@@ -35,11 +35,19 @@
 
 #include <CtrlLed.h>
 
+// The pin of the board's built-in LED. Some boards (e.g. the ESP32 Dev Module)
+// don't define LED_BUILTIN, so pin 2 is used there. Change it to match your wiring.
+#ifdef LED_BUILTIN
+const uint8_t LED_PIN = LED_BUILTIN;
+#else
+const uint8_t LED_PIN = 2;
+#endif
+
 // PWM mode example (PWM-capable pin with brightness control):
 // This assumes you have connected your LED to a pin with PWM capabilities:
 // The maximum brightness (second parameter) can be used to calibrate an LED,
 // in case you are using multiple LEDs that have different maximum brightness.
-CtrlLed led(LED_BUILTIN, 50);
+CtrlLed led(LED_PIN, 50);
 
 void setup()
 {
